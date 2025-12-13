@@ -26,10 +26,10 @@ ai-backend/
 
 ```bash
 # イメージをビルド
-docker build --platform linux/amd64 -t ai-backend .
+docker build  linux/amd64 -t ai-backend-apple .
 
 # コンテナを起動
-docker run -p 8080:8080 ai-backend
+docker run -p 8080:8080 ai-backend-apple
 
 # 別のターミナルで確認
 curl http://localhost:8080/
