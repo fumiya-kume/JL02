@@ -151,10 +151,18 @@ private struct ReticleCornersShape: Shape {
 }
 
 #Preview {
-    VStack(spacing: 30) {
+    let sampleLandmark = Landmark(
+        name: "Sample Building",
+        yearBuilt: "2020",
+        subtitle: "A sample landmark for preview.",
+        history: "This is a sample landmark for preview purposes.",
+        distanceMeters: 150,
+        bearingDegrees: 45
+    )
+    return VStack(spacing: 30) {
         TargetMarkerView(recognitionState: .searching)
-        TargetMarkerView(recognitionState: .scanning(candidate: HUDViewModel.demoLandmarks[0], progress: 0.42))
-        TargetMarkerView(recognitionState: .locked(target: HUDViewModel.demoLandmarks[1], confidence: 0.93))
+        TargetMarkerView(recognitionState: .scanning(candidate: sampleLandmark, progress: 0.42))
+        TargetMarkerView(recognitionState: .locked(target: sampleLandmark, confidence: 0.93))
     }
     .padding()
     .background(Color.black)
