@@ -24,7 +24,10 @@
 "settings_title" = "Settings";
 "settings_interests" = "Interests";
 "settings_edit_interests" = "Edit Interests";
+"settings_edit_interests_subtitle" = "Change your interests to customize your experience";
 "settings_done" = "Done";
+"settings_save" = "Save";
+"settings_cancel" = "Cancel";
 
 /* History */
 "history_title" = "History";

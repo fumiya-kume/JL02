@@ -10,13 +10,7 @@ struct DebugStatusOverlay: View {
             apiStatusView
         }
         .font(.system(size: 10, weight: .medium, design: .monospaced))
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(.ultraThinMaterial, in: Capsule(style: .continuous))
-        .overlay {
-            Capsule(style: .continuous)
-                .stroke(Color.white.opacity(0.15), lineWidth: 1)
-        }
+        .hudTopCapsuleStyle()
     }
 
     private var cameraStateView: some View {

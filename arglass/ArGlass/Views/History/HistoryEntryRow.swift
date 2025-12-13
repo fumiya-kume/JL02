@@ -6,7 +6,6 @@ struct HistoryEntryRow: View {
     let formattedTime: String
     let imageURL: URL?
     let onTap: () -> Void
-    let onDelete: () -> Void
 
     var body: some View {
         Button(action: onTap) {
@@ -32,11 +31,6 @@ struct HistoryEntryRow: View {
         }
         .buttonStyle(.plain)
         .animation(.easeInOut(duration: 0.25), value: isExpanded)
-        .contextMenu {
-            Button(role: .destructive, action: onDelete) {
-                Label(NSLocalizedString("history_delete", comment: ""), systemImage: "trash")
-            }
-        }
     }
 
     private var collapsedContent: some View {

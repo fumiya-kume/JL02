@@ -50,7 +50,7 @@ struct LandmarkAPIResponse: Codable {
     }
 }
 
-actor VLMAPIClient {
+actor VLMAPIClient: VLMAPIClientProtocol {
     static let shared = VLMAPIClient()
 
     private let baseURL = URL(string: "https://ungravitative-unsedately-vanetta.ngrok-free.dev")!

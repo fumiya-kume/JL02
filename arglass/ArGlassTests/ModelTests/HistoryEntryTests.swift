@@ -21,6 +21,21 @@ final class HistoryEntryTests: XCTestCase {
         XCTAssertEqual(entry.distanceMeters, 150.0)
         XCTAssertEqual(entry.bearingDegrees, 45.0)
         XCTAssertNil(entry.imageFileName)
+        XCTAssertNil(entry.captureOrientation)
+    }
+
+    func testInit_withCaptureOrientation_storesValue() {
+        let entry = HistoryEntry(
+            name: "Test",
+            yearBuilt: "2020",
+            subtitle: "Test",
+            history: "Test",
+            distanceMeters: 100.0,
+            bearingDegrees: 0.0,
+            captureOrientation: .landscapeLeft
+        )
+
+        XCTAssertEqual(entry.captureOrientation, .landscapeLeft)
     }
 
     func testInit_fromLandmark_copiesAllValues() {
@@ -41,6 +56,21 @@ final class HistoryEntryTests: XCTestCase {
         XCTAssertEqual(entry.history, landmark.history)
         XCTAssertEqual(entry.distanceMeters, landmark.distanceMeters)
         XCTAssertEqual(entry.bearingDegrees, landmark.bearingDegrees)
+    }
+
+    func testInit_fromLandmark_withCaptureOrientation() {
+        let landmark = Landmark(
+            name: "Test",
+            yearBuilt: "2020",
+            subtitle: "Test",
+            history: "Test",
+            distanceMeters: 100.0,
+            bearingDegrees: 0.0
+        )
+
+        let entry = HistoryEntry(landmark: landmark, captureOrientation: .landscapeRight)
+
+        XCTAssertEqual(entry.captureOrientation, .landscapeRight)
     }
 
     func testInit_generatesUniqueIDs() {
@@ -100,6 +130,51 @@ final class HistoryEntryTests: XCTestCase {
         let decoded = try decoder.decode(HistoryEntry.self, from: data)
 
         XCTAssertNil(decoded.imageFileName)
+    }
+
+    func testCodable_encodesAndDecodesCaptureOrientation() throws {
+        let entry = HistoryEntry(
+            name: "Test",
+            yearBuilt: "2020",
+            subtitle: "Test",
+            history: "Test",
+            distanceMeters: 100.0,
+            bearingDegrees: 0.0,
+            captureOrientation: .landscapeLeft
+        )
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(entry)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(HistoryEntry.self, from: data)
+
+        XCTAssertEqual(decoded.captureOrientation, .landscapeLeft)
+    }
+
+    func testCodable_backwardCompatibility_handlesNilCaptureOrientation() throws {
+        // JSON without captureOrientation field (legacy data)
+        let json = """
+        {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "name": "Legacy Entry",
+            "yearBuilt": "2020",
+            "subtitle": "Test",
+            "history": "Test",
+            "distanceMeters": 100.0,
+            "bearingDegrees": 0.0,
+            "timestamp": "2024-01-01T00:00:00Z"
+        }
+        """
+
+        let data = json.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(HistoryEntry.self, from: data)
+
+        XCTAssertNil(decoded.captureOrientation)
     }
 
     // MARK: - Equatable Tests

@@ -5,11 +5,32 @@ struct InterestBubbleView: View {
     let interest: Interest
     let isSelected: Bool
     let canSelect: Bool
+    let scaleFactor: CGFloat
     let onTap: () -> Void
 
     @State private var bounceScale: CGFloat = 1.0
 
     private let hapticFeedback = UIImpactFeedbackGenerator(style: .light)
+
+    // Base sizes (designed for iPhone)
+    private let baseBubbleSize: CGFloat = 110
+    private let baseGlowSize: CGFloat = 120
+    private let baseIconSize: CGFloat = 32
+    private let baseFontSize: CGFloat = 13
+
+    init(
+        interest: Interest,
+        isSelected: Bool,
+        canSelect: Bool,
+        scaleFactor: CGFloat = 1.0,
+        onTap: @escaping () -> Void
+    ) {
+        self.interest = interest
+        self.isSelected = isSelected
+        self.canSelect = canSelect
+        self.scaleFactor = scaleFactor
+        self.onTap = onTap
+    }
 
     // Animation parameters for floating effect - derived from interest id for stability
     private var amplitude: CGFloat {
@@ -30,43 +51,94 @@ struct InterestBubbleView: View {
     }
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 1.0 / 15.0)) { context in
-            let time = context.date.timeIntervalSinceReferenceDate
-            let yOffset = sin(time * frequencyY * .pi * 2 + phaseOffset) * amplitude
-            let xOffset = cos(time * frequencyX * .pi * 2 + phaseOffset) * (amplitude * 0.4)
-
-            bubbleContent
-                .scaleEffect(bounceScale)
-                .offset(x: xOffset, y: yOffset)
-        }
-        .onTapGesture {
-            handleTap()
-        }
-        .onAppear {
-            hapticFeedback.prepare()
-        }
+        bubbleContent
+            .scaleEffect(bounceScale)
+            .onTapGesture {
+                handleTap()
+            }
+            .onAppear {
+                hapticFeedback.prepare()
+            }
     }
 
     private var bubbleContent: some View {
-        VStack(spacing: 6) {
-            Image(systemName: interest.icon)
-                .font(.system(size: 22, weight: .semibold))
-                .symbolEffect(.pulse, isActive: isSelected)
+        let bubbleSize = baseBubbleSize * scaleFactor
+        let glowSize = baseGlowSize * scaleFactor
+        let iconSize = baseIconSize * scaleFactor
+        let fontSize = baseFontSize * scaleFactor
+
+        return VStack(spacing: 12 * scaleFactor) {
+            ZStack {
+                // Outer glow circle
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color.white.opacity(0.05),
+                                Color.clear
+                            ],
+                            center: .center,
+                            startRadius: 50 * scaleFactor,
+                            endRadius: 60 * scaleFactor
+                        )
+                    )
+                    .frame(width: glowSize, height: glowSize)
+
+                // Main circle with glass effect
+                Circle()
+                    .fill(.ultraThinMaterial)
+
+                // Inner highlight for depth
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color.white.opacity(0.2),
+                                Color.white.opacity(0.05),
+                                Color.clear
+                            ],
+                            center: .top,
+                            startRadius: 0,
+                            endRadius: 55 * scaleFactor
+                        )
+                    )
+
+                // Multiple border layers for depth
+                Circle()
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.6),
+                                Color.white.opacity(0.1)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+
+                Circle()
+                    .stroke(borderGradient, lineWidth: isSelected ? 3 : 2)
+
+                Image(systemName: interest.icon)
+                    .font(.system(size: iconSize, weight: .semibold))
+                    .foregroundStyle(iconColor)
+                    .shadow(color: isSelected ? .accentColor.opacity(0.8) : .clear, radius: 8 * scaleFactor)
+                    .shadow(color: isSelected ? .accentColor.opacity(0.5) : .clear, radius: 16 * scaleFactor)
+                    .symbolEffect(.pulse, isActive: isSelected)
+            }
+            .frame(width: bubbleSize, height: bubbleSize)
+            .neonGlow(color: glowColor, radius: glowRadius * scaleFactor, intensity: glowIntensity)
+            .shadow(color: Color.black.opacity(0.3), radius: 8 * scaleFactor, y: 4 * scaleFactor)
+            .shadow(color: isSelected ? Color.accentColor.opacity(0.5) : .clear, radius: 20 * scaleFactor, y: 8 * scaleFactor)
 
             Text(interest.localizedName)
-                .font(.system(size: 11, weight: .bold))
+                .font(.system(size: fontSize, weight: .bold))
+                .foregroundStyle(foregroundColor)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
+                .frame(width: bubbleSize)
         }
-        .foregroundStyle(foregroundColor)
-        .frame(width: 80, height: 80)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(borderGradient, lineWidth: isSelected ? 2 : 1.2)
-        }
-        .neonGlow(color: glowColor, radius: glowRadius, intensity: glowIntensity)
-        .shadow(color: isSelected ? Color.accentColor.opacity(0.3) : .clear, radius: 12, y: 4)
         .animation(.easeInOut(duration: 0.25), value: isSelected)
     }
 
@@ -75,6 +147,16 @@ struct InterestBubbleView: View {
     private var foregroundColor: Color {
         if isSelected {
             return .white.opacity(0.95)
+        } else if canSelect {
+            return .white.opacity(0.75)
+        } else {
+            return .white.opacity(0.4)
+        }
+    }
+
+    private var iconColor: Color {
+        if isSelected {
+            return .accentColor
         } else if canSelect {
             return .white.opacity(0.75)
         } else {

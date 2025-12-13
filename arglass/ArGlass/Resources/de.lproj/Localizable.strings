@@ -24,7 +24,10 @@
 "settings_title" = "Einstellungen";
 "settings_interests" = "Interessen";
 "settings_edit_interests" = "Interessen bearbeiten";
+"settings_edit_interests_subtitle" = "Ändern Sie Ihre Interessen, um Ihr Erlebnis anzupassen";
 "settings_done" = "Fertig";
+"settings_save" = "Speichern";
+"settings_cancel" = "Abbrechen";
 
 /* History */
 "history_title" = "Verlauf";

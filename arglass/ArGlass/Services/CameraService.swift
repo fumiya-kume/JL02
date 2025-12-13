@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 import UIKit
 
-final class CameraService: ObservableObject {
+final class CameraService: ObservableObject, CameraServiceProtocol {
     enum CameraState: Equatable {
         case idle
         case running
@@ -69,7 +69,7 @@ final class CameraService: ObservableObject {
         guard !isConfigured else { return true }
 
         session.beginConfiguration()
-        session.sessionPreset = .high
+        session.sessionPreset = .hd1280x720
 
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
               let input = try? AVCaptureDeviceInput(device: camera),
@@ -82,6 +82,9 @@ final class CameraService: ObservableObject {
         session.addInput(input)
 
         let output = AVCaptureVideoDataOutput()
+        output.videoSettings = [
+            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+        ]
         output.setSampleBufferDelegate(frameHandler, queue: DispatchQueue(label: "camera.frame"))
         output.alwaysDiscardsLateVideoFrames = true
 
@@ -99,7 +102,7 @@ final class CameraService: ObservableObject {
     }
 
     func captureCurrentFrame() -> UIImage? {
-        frameHandler.latestFrame
+        frameHandler.captureCurrentFrame()
     }
 
     private func setState(_ newState: CameraState) {
@@ -116,12 +119,19 @@ final class CameraService: ObservableObject {
 final class FrameHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let lock = NSLock()
     private let context = CIContext()
-    private var _latestFrame: UIImage?
+    private var latestPixelBuffer: CVPixelBuffer?
 
-    var latestFrame: UIImage? {
+    func captureCurrentFrame() -> UIImage? {
+        guard let pixelBuffer = copyLatestPixelBuffer() else { return nil }
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return nil }
+        return UIImage(cgImage: cgImage)
+    }
+
+    private func copyLatestPixelBuffer() -> CVPixelBuffer? {
         lock.lock()
         defer { lock.unlock() }
-        return _latestFrame
+        return latestPixelBuffer
     }
 
     func captureOutput(
@@ -129,16 +139,8 @@ final class FrameHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-
-        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-
-        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
-
-        let image = UIImage(cgImage: cgImage)
-
         lock.lock()
-        _latestFrame = image
+        latestPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
         lock.unlock()
     }
 }

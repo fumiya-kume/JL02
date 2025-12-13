@@ -1,29 +1,40 @@
 import Foundation
 import UIKit
 
-actor HistoryService {
+actor HistoryService: HistoryServiceProtocol {
     static let shared = HistoryService()
 
     private let maxEntries = 50
     private let duplicateThresholdSeconds: TimeInterval = 300
     private let fileName = "history.json"
     private let imageDirectoryName = "history_images"
+    
+    private let fileURL: URL
+    private let imageDirectoryURL: URL
 
-    private var fileURL: URL {
+    nonisolated private static var defaultFileURL: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(fileName)
+            .appendingPathComponent("history.json")
+    }
+    
+    nonisolated private static var defaultImageDirectoryURL: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("history_images")
     }
 
-    private var imageDirectoryURL: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(imageDirectoryName)
+    init() {
+        self.fileURL = Self.defaultFileURL
+        self.imageDirectoryURL = Self.defaultImageDirectoryURL
+        createImageDirectoryIfNeeded()
     }
-
-    private init() {
+    
+    init(fileURL: URL, imageDirectoryURL: URL) {
+        self.fileURL = fileURL
+        self.imageDirectoryURL = imageDirectoryURL
         createImageDirectoryIfNeeded()
     }
 
-    private func createImageDirectoryIfNeeded() {
+    nonisolated private func createImageDirectoryIfNeeded() {
         let fileManager = FileManager.default
         if !fileManager.fileExists(atPath: imageDirectoryURL.path) {
             try? fileManager.createDirectory(at: imageDirectoryURL, withIntermediateDirectories: true)
@@ -69,7 +80,8 @@ actor HistoryService {
                     distanceMeters: entry.distanceMeters,
                     bearingDegrees: entry.bearingDegrees,
                     timestamp: entry.timestamp,
-                    imageFileName: imageFileName
+                    imageFileName: imageFileName,
+                    captureOrientation: entry.captureOrientation
                 )
             }
         }

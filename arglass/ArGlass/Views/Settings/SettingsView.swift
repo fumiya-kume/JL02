@@ -6,6 +6,8 @@ struct SettingsView: View {
 
     var body: some View {
         GeometryReader { geometry in
+            let safeRect = geometry.safeAreaInsets.safeRect(in: geometry.size)
+
             ZStack {
                 Color.black
 
@@ -15,18 +17,19 @@ struct SettingsView: View {
                 VStack(spacing: 0) {
                     // Header
                     headerSection
-                        .padding(.top, max(geometry.safeAreaInsets.top, 20) + 40)
+                        .padding(.top, geometry.safeAreaInsets.top + 16)
+                        .hudHorizontalPadding(geometry.safeAreaInsets)
 
                     // Settings list
                     settingsList
-                        .padding(.horizontal, 20)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.top, 30)
 
                     Spacer()
 
                     // Close button
                     closeButton
-                        .padding(.horizontal, 20)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.bottom, max(geometry.safeAreaInsets.bottom, 40))
                 }
             }
@@ -34,7 +37,9 @@ struct SettingsView: View {
         .ignoresSafeArea()
         .statusBarHidden(true)
         .fullScreenCover(isPresented: $showingInterestSettings) {
-            InterestSettingsView()
+            OnboardingView(isEditing: true) {
+                showingInterestSettings = false
+            }
         }
     }
 
@@ -89,6 +94,7 @@ struct SettingsView: View {
                 .foregroundStyle(.white.opacity(0.6))
                 .padding(.vertical, 14)
                 .padding(.horizontal, 32)
+                .frame(maxWidth: .infinity)
                 .background(.ultraThinMaterial, in: Capsule(style: .continuous))
                 .overlay {
                     Capsule(style: .continuous)
