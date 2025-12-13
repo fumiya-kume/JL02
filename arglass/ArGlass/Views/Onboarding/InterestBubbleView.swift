@@ -9,62 +9,108 @@ struct InterestBubbleView: View {
 
     @State private var bounceScale: CGFloat = 1.0
 
-    private let amplitude: CGFloat
-    private let frequencyY: Double
-    private let frequencyX: Double
-    private let phaseOffset: Double
-
     private let hapticFeedback = UIImpactFeedbackGenerator(style: .light)
 
-    init(interest: Interest, isSelected: Bool, canSelect: Bool, onTap: @escaping () -> Void) {
-        self.interest = interest
-        self.isSelected = isSelected
-        self.canSelect = canSelect
-        self.onTap = onTap
-
+    // Animation parameters for floating effect - derived from interest id for stability
+    private var amplitude: CGFloat {
         let hash = abs(interest.id.hashValue)
-        self.amplitude = CGFloat(3 + (hash % 3))  // 3-6pt for subtle floating
-        self.frequencyY = 0.25 + Double(hash % 100) / 600.0  // slower, gentler
-        self.frequencyX = 0.15 + Double(hash % 80) / 800.0
-        self.phaseOffset = Double(hash % 1000) / 1000.0 * .pi * 2
+        return CGFloat(4 + (hash % 5))
+    }
+    private var frequencyY: Double {
+        let hash = abs(interest.id.hashValue)
+        return 0.15 + Double(hash % 100) / 1000.0
+    }
+    private var frequencyX: Double {
+        let hash = abs(interest.id.hashValue >> 8)
+        return 0.1 + Double(hash % 100) / 1000.0
+    }
+    private var phaseOffset: Double {
+        let hash = abs(interest.id.hashValue >> 16)
+        return Double(hash % 628) / 100.0
     }
 
     var body: some View {
-        TimelineView(.animation) { context in
-            let time = context.date.timeIntervalSinceReferenceDate
-            let yOffset = sin(time * frequencyY * .pi * 2 + phaseOffset) * amplitude
-            let xOffset = cos(time * frequencyX * .pi * 2 + phaseOffset) * (amplitude * 0.4)
-
-            bubbleContent
-                .scaleEffect(bounceScale)
-                .offset(x: xOffset, y: yOffset)
-        }
-        .onTapGesture {
-            handleTap()
-        }
-        .onAppear {
-            hapticFeedback.prepare()
-        }
+        bubbleContent
+            .scaleEffect(bounceScale)
+            .onTapGesture {
+                handleTap()
+            }
+            .onAppear {
+                hapticFeedback.prepare()
+            }
     }
 
     private var bubbleContent: some View {
-        VStack(spacing: 6) {
-            Image(systemName: interest.icon)
-                .font(.system(size: 22, weight: .semibold))
+        VStack(spacing: 12) {
+            ZStack {
+                // Outer glow circle
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color.white.opacity(0.05),
+                                Color.clear
+                            ],
+                            center: .center,
+                            startRadius: 50,
+                            endRadius: 60
+                        )
+                    )
+                    .frame(width: 120, height: 120)
+
+                // Main circle with glass effect
+                Circle()
+                    .fill(.ultraThinMaterial)
+
+                // Inner highlight for depth
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color.white.opacity(0.2),
+                                Color.white.opacity(0.05),
+                                Color.clear
+                            ],
+                            center: .top,
+                            startRadius: 0,
+                            endRadius: 55
+                        )
+                    )
+
+                // Multiple border layers for depth
+                Circle()
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.6),
+                                Color.white.opacity(0.1)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+
+                Circle()
+                    .stroke(borderGradient, lineWidth: isSelected ? 3 : 2)
+
+                Image(systemName: interest.icon)
+                    .font(.system(size: 32, weight: .semibold))
+                    .foregroundStyle(foregroundColor)
+                    .symbolEffect(.pulse, isActive: isSelected)
+            }
+            .frame(width: 110, height: 110)
+            .neonGlow(color: glowColor, radius: glowRadius, intensity: glowIntensity)
+            .shadow(color: Color.black.opacity(0.3), radius: 8, y: 4)
+            .shadow(color: isSelected ? Color.accentColor.opacity(0.5) : .clear, radius: 20, y: 8)
 
             Text(interest.localizedName)
-                .font(.system(size: 13, weight: .semibold))
-                .lineLimit(1)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(foregroundColor)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+                .frame(width: 110)
         }
-        .foregroundStyle(foregroundColor)
-        .padding(.vertical, 16)
-        .padding(.horizontal, 20)
-        .background(.ultraThinMaterial, in: Capsule(style: .continuous))
-        .overlay {
-            Capsule(style: .continuous)
-                .stroke(borderGradient, lineWidth: isSelected ? 1.5 : 1)
-        }
-        .neonGlow(color: glowColor, radius: glowRadius, intensity: glowIntensity)
         .animation(.easeInOut(duration: 0.25), value: isSelected)
     }
 
@@ -100,11 +146,11 @@ struct InterestBubbleView: View {
     }
 
     private var glowRadius: CGFloat {
-        isSelected ? 20 : 0
+        isSelected ? 24 : 0
     }
 
     private var glowIntensity: Double {
-        isSelected ? 0.35 : 0
+        isSelected ? 0.5 : 0
     }
 
     // MARK: - Tap Handling

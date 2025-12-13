@@ -15,7 +15,7 @@ struct SettingsView: View {
                 VStack(spacing: 0) {
                     // Header
                     headerSection
-                        .padding(.top, max(geometry.safeAreaInsets.top, 20) + 40)
+                        .padding(.top, geometry.safeAreaInsets.top + 16)
 
                     // Settings list
                     settingsList
@@ -26,7 +26,7 @@ struct SettingsView: View {
 
                     // Close button
                     closeButton
-                        .padding(.horizontal, 20)
+                        .frame(width: geometry.size.width * 0.5)
                         .padding(.bottom, max(geometry.safeAreaInsets.bottom, 40))
                 }
             }
