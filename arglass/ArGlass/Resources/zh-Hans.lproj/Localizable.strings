@@ -10,15 +10,12 @@
 
 /* Interest Categories */
 "interest_history" = "历史";
-"interest_finance" = "金融";
-"interest_technology" = "科技";
-"interest_science" = "科学";
-"interest_art" = "艺术";
-"interest_sports" = "体育";
-"interest_music" = "音乐";
-"interest_travel" = "旅行";
-"interest_food" = "美食";
 "interest_nature" = "自然";
+"interest_art" = "艺术";
+"interest_food" = "美食";
+"interest_architecture" = "建筑";
+"interest_shopping" = "购物";
+"interest_nightlife" = "夜生活";
 
 /* Settings */
 "settings_title" = "设置";
@@ -52,6 +49,7 @@
 "hud_searching_landmarks" = "正在搜索地标...";
 "hud_status_online" = "在线";
 "hud_status_offline" = "离线";
+"hud_area_info" = "周边信息";
 
 /* Compass Directions */
 "compass_n" = "北";
@@ -65,3 +63,33 @@
 
 /* Settings Additional */
 "settings_close" = "关闭";
+
+/* Age Group */
+"settings_age_group" = "年龄段";
+"age_group_20s" = "20多岁";
+"age_group_30_40s" = "30-40岁";
+"age_group_50splus" = "50岁以上";
+"age_group_family_with_kids" = "有孩子的家庭";
+
+/* Budget Level */
+"settings_budget" = "预算";
+"budget_budget" = "经济型";
+"budget_mid_range" = "中档";
+"budget_luxury" = "豪华";
+
+/* Activity Level */
+"settings_activity" = "活动水平";
+"activity_active" = "活跃";
+"activity_moderate" = "适中";
+"activity_relaxed" = "轻松";
+
+/* Language */
+"settings_language" = "语言";
+"language_japanese" = "日本語";
+"language_english" = "English";
+"language_chinese" = "中文";
+"language_korean" = "한국어";
+"language_spanish" = "Español";
+"language_french" = "Français";
+"language_german" = "Deutsch";
+"language_thai" = "ไทย";

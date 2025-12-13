@@ -30,7 +30,8 @@ enum TestFixtures {
         distanceMeters: Double = 50.0,
         bearingDegrees: Double = 90.0,
         timestamp: Date = Date(),
-        imageFileName: String? = nil
+        imageFileName: String? = nil,
+        captureOrientation: CaptureOrientation? = nil
     ) -> HistoryEntry {
         HistoryEntry(
             id: id,
@@ -41,7 +42,8 @@ enum TestFixtures {
             distanceMeters: distanceMeters,
             bearingDegrees: bearingDegrees,
             timestamp: timestamp,
-            imageFileName: imageFileName
+            imageFileName: imageFileName,
+            captureOrientation: captureOrientation
         )
     }
 }

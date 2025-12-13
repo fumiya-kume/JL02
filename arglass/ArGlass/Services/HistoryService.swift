@@ -62,10 +62,15 @@ actor HistoryService: HistoryServiceProtocol {
 
         let recentThreshold = Date().addingTimeInterval(-duplicateThresholdSeconds)
         let isDuplicate = entries.contains { existing in
-            existing.name == entry.name && existing.timestamp > recentThreshold
+            let isSameContent = existing.history == entry.history
+            let isSameName = existing.name == entry.name
+            return (isSameContent || isSameName) && existing.timestamp > recentThreshold
         }
 
-        guard !isDuplicate else { return }
+        guard !isDuplicate else {
+            print("[History] Skipping duplicate entry: \(entry.name.prefix(30))...")
+            return
+        }
 
         var entryToSave = entry
         if let image = image {
