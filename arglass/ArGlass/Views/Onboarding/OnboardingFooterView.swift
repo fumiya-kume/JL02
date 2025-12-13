@@ -6,21 +6,21 @@ struct OnboardingFooterView: View {
     let onSkip: () -> Void
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
             // Validation message
             Text(viewModel.validationMessage)
-                .font(.system(size: 14, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(validationColor)
                 .animation(.easeInOut(duration: 0.2), value: viewModel.selectionCount)
 
-            HStack(spacing: 16) {
+            HStack(spacing: 14) {
                 // Skip button
                 Button(action: onSkip) {
                     Text(NSLocalizedString("onboarding_skip", comment: ""))
-                        .font(.system(size: 15, weight: .medium))
+                        .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(.white.opacity(0.6))
-                        .padding(.vertical, 14)
-                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 20)
                         .background(.ultraThinMaterial, in: Capsule(style: .continuous))
                         .overlay {
                             Capsule(style: .continuous)
@@ -30,16 +30,16 @@ struct OnboardingFooterView: View {
 
                 // Continue button
                 Button(action: handleContinue) {
-                    HStack(spacing: 10) {
+                    HStack(spacing: 8) {
                         Text(NSLocalizedString("onboarding_continue", comment: ""))
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
 
                         Image(systemName: "arrow.right")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold))
                     }
                     .foregroundStyle(buttonForeground)
-                    .padding(.vertical, 16)
-                    .padding(.horizontal, 32)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 28)
                     .background(buttonBackground, in: Capsule(style: .continuous))
                     .overlay {
                         Capsule(style: .continuous)
