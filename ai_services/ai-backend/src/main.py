@@ -140,9 +140,7 @@ def build_rag_query_prompt(
             prompt += f"  - {part}\n"
         prompt += "\n"
 
-    prompt += (
-        "上記の場所について、ユーザーの属性にパーソナライズした3行程度の説明を生成してください。"
-    )
+    prompt += "上記の場所について、ユーザーの属性にパーソナライズした3行程度の説明を生成してください。"
 
     # Add language instruction if specified
     if user_language and user_language != "japanese":
@@ -270,7 +268,8 @@ async def vlm_inference(
     sakura_token = os.getenv("SAKURA_OPENAI_API_TOKEN")
     if not sakura_token:
         raise HTTPException(
-            status_code=500, detail="SAKURA_OPENAI_API_TOKEN environment variable not set"
+            status_code=500,
+            detail="SAKURA_OPENAI_API_TOKEN environment variable not set",
         )
 
     image_data = await image.read()
@@ -333,8 +332,12 @@ async def vlm_inference(
             address=address,
             user_age_group=user_age_group.value if user_age_group else None,
             user_budget_level=user_budget_level.value if user_budget_level else None,
-            user_interests=[interest.value for interest in user_interests] if user_interests else None,
-            user_activity_level=user_activity_level.value if user_activity_level else None,
+            user_interests=[interest.value for interest in user_interests]
+            if user_interests
+            else None,
+            user_activity_level=user_activity_level.value
+            if user_activity_level
+            else None,
             user_language=user_language.value if user_language else None,
         )
 
@@ -350,12 +353,8 @@ async def vlm_inference(
             # RAG APIがすでに言語対応しているため、ここではそのまま返す
             # 必要に応じて言語指定をRAGクエリに含める
 
-            return VLMResponse(
-                generated_text=guide_text, success=True
-            )
+            return VLMResponse(generated_text=guide_text, success=True)
         else:
             # RAGが失敗した場合はVLMの出力を返す
             print("RAG query failed, returning VLM output")
-            return VLMResponse(
-                generated_text=vlm_caption, success=True
-            )
+            return VLMResponse(generated_text=vlm_caption, success=True)
