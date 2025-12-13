@@ -1,3 +1,4 @@
+import AVFoundation
 import SwiftUI
 
 struct HUDRootView: View {
@@ -9,12 +10,14 @@ struct HUDRootView: View {
     @State private var showingImageViewer = false
 
     @StateObject private var speechTranscriber = SpeechTranscriber()
+    @StateObject private var speechSpeaker = SpeechSpeaker()
     @State private var isVoiceInputEnabled = false
     @State private var voiceQueryText = ""
     @State private var isVoiceSending = false
     @State private var voiceCooldownUntil = Date.distantPast
     @State private var autoInferenceWasEnabledBeforeVoice = false
     @State private var queryClearToken = UUID()
+    @State private var lastSpokenLandmarkID: UUID?
 
     var body: some View {
         GeometryReader { geometry in
@@ -43,6 +46,13 @@ struct HUDRootView: View {
                 triggerCaptureFlash()
                 triggerGlitch()
             }
+
+            guard isVoiceInputEnabled else { return }
+            guard case let .locked(target, _) = newValue else { return }
+            guard lastSpokenLandmarkID != target.id else { return }
+
+            lastSpokenLandmarkID = target.id
+            speakInferenceResult(target: target)
         }
         .onChange(of: isVoiceInputEnabled) { _, enabled in
             enabled ? startVoiceInputMode() : stopVoiceInputMode()
@@ -53,6 +63,11 @@ struct HUDRootView: View {
             guard !trimmed.isEmpty else { return }
             cancelQueryClear()
             voiceQueryText = trimmed
+            
+            // ? が含まれている場合は即座に音声認識を終了させて確定
+            if trimmed.contains("?") || trimmed.contains("？") {
+                speechTranscriber.finalizeCurrentText()
+            }
         }
         .onChange(of: speechTranscriber.finalText) { _, newValue in
             guard isVoiceInputEnabled else { return }
@@ -64,6 +79,13 @@ struct HUDRootView: View {
 
             guard isQuestionLike(trimmed) else { return }
             triggerAutoSendIfPossible(text: trimmed)
+        }
+        .onChange(of: viewModel.apiRequestState) { _, newValue in
+            guard isVoiceInputEnabled else { return }
+            guard case .requesting = newValue else { return }
+            
+            voiceQueryText = ""
+            cancelQueryClear()
         }
         .onAppear {
             viewModel.start()
@@ -204,6 +226,8 @@ struct HUDRootView: View {
         cancelQueryClear()
         voiceQueryText = ""
         isVoiceSending = false
+        lastSpokenLandmarkID = nil
+        speechSpeaker.stop()
 
         if autoInferenceWasEnabledBeforeVoice {
             autoInferenceWasEnabledBeforeVoice = false
@@ -258,8 +282,68 @@ struct HUDRootView: View {
     private func cancelQueryClear() {
         queryClearToken = UUID()
     }
+
+    private func speakInferenceResult(target: Landmark) {
+        // 読み上げ中に自分の音声を拾って暴発しないよう、認識を一時停止してから読み上げる
+        speechTranscriber.pause()
+
+        let speakText: String
+        if target.subtitle.isEmpty {
+            speakText = target.name
+        } else {
+            speakText = "\(target.name)。\(target.subtitle)"
+        }
+
+        speechSpeaker.speak(text: speakText, language: "ja-JP") { [isVoiceInputEnabled] in
+            guard isVoiceInputEnabled else { return }
+            self.speechTranscriber.start(localeIdentifier: "ja-JP")
+        }
+    }
 }
 
+#if DEBUG
 #Preview {
     HUDRootView(viewModel: HUDViewModel())
+}
+#endif
+
+@MainActor
+private final class SpeechSpeaker: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+    private let synthesizer = AVSpeechSynthesizer()
+    private var onFinish: (() -> Void)?
+
+    override init() {
+        super.init()
+        synthesizer.delegate = self
+    }
+
+    func speak(text: String, language: String, onFinish: @escaping () -> Void) {
+        self.onFinish = onFinish
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
+
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: language)
+        utterance.rate = 0.52
+        utterance.pitchMultiplier = 1.0
+        utterance.preUtteranceDelay = 0.0
+        utterance.postUtteranceDelay = 0.1
+        synthesizer.speak(utterance)
+    }
+
+    func stop() {
+        onFinish = nil
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        Task { @MainActor in
+            let callback = self.onFinish
+            self.onFinish = nil
+            callback?()
+        }
+    }
 }
