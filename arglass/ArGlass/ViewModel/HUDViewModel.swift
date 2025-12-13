@@ -39,7 +39,8 @@ final class HUDViewModel: ObservableObject {
     private var startupTask: Task<Void, Never>?
     private var inferenceTask: Task<Void, Never>?
 
-    private let inferenceInterval: TimeInterval = 4.0
+    private let inferenceInterval: Duration = .seconds(4)
+    private let retryInterval: Duration = .seconds(1)
     private var consecutiveErrorCount: Int = 0
     private let maxRetries: Int = 3
 
@@ -56,13 +57,7 @@ final class HUDViewModel: ObservableObject {
     }
 
     func start() {
-        startupTask?.cancel()
-        startupTask = Task { [weak self] in
-            guard let self else { return }
-            await self.cameraService.requestAccessAndStart()
-            self.locationService.requestAuthorization()
-            self.startAutoInference()
-        }
+        startAutoInference()
     }
 
     func stop() {
@@ -76,6 +71,8 @@ final class HUDViewModel: ObservableObject {
     func startAutoInference() {
         guard !isAutoInferenceEnabled else { return }
         isAutoInferenceEnabled = true
+        locationService.requestAuthorization()
+        ensureCameraRunning()
         inferenceTask?.cancel()
         inferenceTask = Task { [weak self] in
             while !Task.isCancelled {
@@ -83,14 +80,17 @@ final class HUDViewModel: ObservableObject {
                 let success = await self.performInference()
                 if success {
                     self.consecutiveErrorCount = 0
-                    try? await Task.sleep(for: .seconds(self.inferenceInterval))
+                    try? await Task.sleep(for: self.inferenceInterval)
                 } else {
                     self.consecutiveErrorCount += 1
-                    if self.consecutiveErrorCount >= self.maxRetries {
-                        self.consecutiveErrorCount = 0
-                        print("[VLM] Max retries (\(self.maxRetries)) reached, waiting before next attempt")
-                        try? await Task.sleep(for: .seconds(self.inferenceInterval))
+                    if self.consecutiveErrorCount < self.maxRetries {
+                        try? await Task.sleep(for: self.retryInterval)
+                        continue
                     }
+
+                    self.consecutiveErrorCount = 0
+                    print("[VLM] Max retries (\(self.maxRetries)) reached, waiting before next attempt")
+                    try? await Task.sleep(for: self.inferenceInterval)
                 }
             }
         }
@@ -98,8 +98,31 @@ final class HUDViewModel: ObservableObject {
 
     func stopAutoInference() {
         isAutoInferenceEnabled = false
+        consecutiveErrorCount = 0
         inferenceTask?.cancel()
         inferenceTask = nil
+        locationService.stopUpdating()
+        if !isCameraPreviewEnabled {
+            cameraService.stop()
+        }
+    }
+
+    func toggleCameraPreview() {
+        isCameraPreviewEnabled.toggle()
+
+        if isCameraPreviewEnabled || isAutoInferenceEnabled {
+            ensureCameraRunning()
+        } else {
+            cameraService.stop()
+        }
+    }
+
+    private func ensureCameraRunning() {
+        startupTask?.cancel()
+        startupTask = Task { [weak self] in
+            guard let self else { return }
+            await self.cameraService.requestAccessAndStart()
+        }
     }
 
     func performInference() async -> Bool {

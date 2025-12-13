@@ -129,7 +129,7 @@ final class HUDViewModelTests: XCTestCase {
     // MARK: - Start/Stop Tests
     
     func testStart_startsServices() async {
-        await sut.start()
+        sut.start()
         
         // Wait a bit for async operations
         try? await Task.sleep(nanoseconds: 100_000_000)

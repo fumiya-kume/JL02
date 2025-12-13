@@ -13,7 +13,7 @@ struct HUDDebugMenu: View {
             }
 
             Button {
-                viewModel.isCameraPreviewEnabled.toggle()
+                viewModel.toggleCameraPreview()
             } label: {
                 Label(
                     viewModel.isCameraPreviewEnabled ? "Hide camera preview" : "Show camera preview",
