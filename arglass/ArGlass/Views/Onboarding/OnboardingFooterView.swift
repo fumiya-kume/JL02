@@ -19,6 +19,7 @@ struct OnboardingFooterView: View {
                     Text(NSLocalizedString("onboarding_skip", comment: ""))
                         .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(.white.opacity(0.6))
+                        .frame(minWidth: 140)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 20)
                         .background(.ultraThinMaterial, in: Capsule(style: .continuous))
@@ -38,6 +39,7 @@ struct OnboardingFooterView: View {
                             .font(.system(size: 14, weight: .semibold))
                     }
                     .foregroundStyle(buttonForeground)
+                    .frame(minWidth: 140)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 28)
                     .background(buttonBackground, in: Capsule(style: .continuous))
