@@ -12,6 +12,15 @@ struct HUDDebugMenu: View {
                 Label("Settings", systemImage: "gearshape")
             }
 
+            Button {
+                viewModel.isCameraPreviewEnabled.toggle()
+            } label: {
+                Label(
+                    viewModel.isCameraPreviewEnabled ? "Hide camera preview" : "Show camera preview",
+                    systemImage: viewModel.isCameraPreviewEnabled ? "video.slash.fill" : "video.fill"
+                )
+            }
+
             Divider()
 
             Button {

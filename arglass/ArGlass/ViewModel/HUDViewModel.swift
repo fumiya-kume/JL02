@@ -28,6 +28,7 @@ final class HUDViewModel: ObservableObject {
     @Published var apiRequestState: APIRequestState = .idle
     @Published var captureState: CaptureState = .idle
     @Published var errorMessage: String = ""
+    @Published var isCameraPreviewEnabled: Bool = true
 
     let cameraService = CameraService()
 
@@ -44,6 +45,7 @@ final class HUDViewModel: ObservableObject {
         startupTask = Task { [weak self] in
             guard let self else { return }
             await self.cameraService.requestAccessAndStart()
+            self.startAutoInference()
         }
     }
 
@@ -100,7 +102,10 @@ final class HUDViewModel: ObservableObject {
             captureState = .captured(imageSizeKB: sizeKB)
         }
 
-        recognitionState = .searching
+        // 初回のみsearchingに設定（ロック中は状態を維持）
+        if case .searching = recognitionState {
+            // すでにsearchingなのでそのまま
+        }
         apiRequestState = .requesting
 
         let startTime = Date()
@@ -110,17 +115,12 @@ final class HUDViewModel: ObservableObject {
             let elapsed = Date().timeIntervalSince(startTime)
             apiRequestState = .success(responseTime: elapsed)
             let confidence = 0.88 + Double.random(in: 0.0...0.10)
+            // 新しいランドマークで更新（ロック状態を維持したまま次の結果に切り替え）
             recognitionState = .locked(target: landmark, confidence: min(confidence, 0.99))
-
-            // Return to searching state after displaying the result
-            try? await Task.sleep(for: .seconds(5))
-            if case .locked = recognitionState {
-                recognitionState = .searching
-            }
             return true
         } catch {
             apiRequestState = .error(message: error.localizedDescription)
-            recognitionState = .searching
+            // エラー時は現在の状態を維持（searchingに戻さない）
             errorMessage = error.localizedDescription
             print(errorMessage)
             return false

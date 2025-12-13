@@ -44,8 +44,13 @@ struct HUDRootView: View {
         }
     }
 
+    @ViewBuilder
     private var background: some View {
-        Color.black
+        if viewModel.isCameraPreviewEnabled {
+            CameraPreviewView(session: viewModel.cameraService.session)
+        } else {
+            Color.black
+        }
     }
 
     private func overlay(safeAreaTop: CGFloat) -> some View {
