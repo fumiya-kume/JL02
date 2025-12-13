@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(find:*)",
+      "WebFetch(domain:4ba4c00615c6.ngrok-free.app)",
+      "Bash(grep:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(git checkout:*)",
+      "Bash(xcodegen generate:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:ungravitative-unsedately-vanetta.ngrok-free.dev)",
+      "Bash(xargs:*)",
+      "Bash(tree:*)",
+      "Bash(gh run:*)",
+      "Bash(gh pr view:*)"
+    ]
+  }
+}

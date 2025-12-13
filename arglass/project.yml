@@ -26,16 +26,37 @@ targets:
         TARGETED_DEVICE_FAMILY: 1
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: R5YS6ZB47G
+
+  ArGlassTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ArGlassTests
+    dependencies:
+      - target: ArGlass
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fumiya-kume.arglass.tests
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: R5YS6ZB47G
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ArGlass.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ArGlass"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        GENERATE_INFOPLIST_FILE: true
 
 schemes:
   ArGlass:
     build:
       targets:
         ArGlass: all
+        ArGlassTests: [test]
     run:
       config: Debug
     test:
       config: Debug
+      targets:
+        - ArGlassTests
     profile:
       config: Release
     analyze:

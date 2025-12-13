@@ -2,16 +2,39 @@ import SwiftUI
 
 struct HUDDebugMenu: View {
     @ObservedObject var viewModel: HUDViewModel
+    @State private var showingSettings = false
 
     var body: some View {
         Menu {
             Button {
-                viewModel.playDemoSequence()
+                showingSettings = true
             } label: {
-                Label("Play demo sequence", systemImage: "play.fill")
+                Label("Settings", systemImage: "gearshape")
+            }
+
+            Button {
+                viewModel.isCameraPreviewEnabled.toggle()
+            } label: {
+                Label(
+                    viewModel.isCameraPreviewEnabled ? "Hide camera preview" : "Show camera preview",
+                    systemImage: viewModel.isCameraPreviewEnabled ? "video.slash.fill" : "video.fill"
+                )
             }
 
             Divider()
+
+            Button {
+                if viewModel.isAutoInferenceEnabled {
+                    viewModel.stopAutoInference()
+                } else {
+                    viewModel.startAutoInference()
+                }
+            } label: {
+                Label(
+                    viewModel.isAutoInferenceEnabled ? "Stop VLM inference" : "Start VLM inference",
+                    systemImage: viewModel.isAutoInferenceEnabled ? "stop.fill" : "camera.fill"
+                )
+            }
 
             Button {
                 viewModel.setSearching()
@@ -20,40 +43,49 @@ struct HUDDebugMenu: View {
             }
 
             Menu("State: scanning") {
-                ForEach(HUDViewModel.demoLandmarks) { landmark in
-                    Button {
-                        viewModel.setScanning(candidate: landmark, progress: 0.25)
-                    } label: {
-                        Text("\(landmark.name) • 25%")
-                    }
-
-                    Button {
-                        viewModel.setScanning(candidate: landmark, progress: 0.60)
-                    } label: {
-                        Text("\(landmark.name) • 60%")
-                    }
-
-                    Button {
-                        viewModel.setScanning(candidate: landmark, progress: 1.00)
-                    } label: {
-                        Text("\(landmark.name) • 100%")
-                    }
+                let testLandmark = Landmark(
+                    name: "Test Landmark",
+                    yearBuilt: "2020",
+                    subtitle: "A test landmark for debugging.",
+                    history: "This is a test landmark used for debugging purposes.",
+                    distanceMeters: 100,
+                    bearingDegrees: 45
+                )
+                Button {
+                    viewModel.setScanning(candidate: testLandmark, progress: 0.25)
+                } label: {
+                    Text("25%")
+                }
+                Button {
+                    viewModel.setScanning(candidate: testLandmark, progress: 0.60)
+                } label: {
+                    Text("60%")
+                }
+                Button {
+                    viewModel.setScanning(candidate: testLandmark, progress: 1.00)
+                } label: {
+                    Text("100%")
                 }
             }
 
             Menu("State: locked") {
-                ForEach(HUDViewModel.demoLandmarks) { landmark in
-                    Button {
-                        viewModel.setLocked(target: landmark, confidence: 0.85)
-                    } label: {
-                        Text("\(landmark.name) • 85%")
-                    }
-
-                    Button {
-                        viewModel.setLocked(target: landmark, confidence: 0.95)
-                    } label: {
-                        Text("\(landmark.name) • 95%")
-                    }
+                let testLandmark = Landmark(
+                    name: "Test Landmark",
+                    yearBuilt: "2020",
+                    subtitle: "A test landmark for debugging.",
+                    history: "This is a test landmark used for debugging purposes.",
+                    distanceMeters: 100,
+                    bearingDegrees: 45
+                )
+                Button {
+                    viewModel.setLocked(target: testLandmark, confidence: 0.85)
+                } label: {
+                    Text("85%")
+                }
+                Button {
+                    viewModel.setLocked(target: testLandmark, confidence: 0.95)
+                } label: {
+                    Text("95%")
                 }
             }
         } label: {
@@ -71,6 +103,9 @@ struct HUDDebugMenu: View {
                         )
                 }
                 .neonGlow(color: .accentColor, radius: 10, intensity: 0.14)
+        }
+        .fullScreenCover(isPresented: $showingSettings) {
+            SettingsView()
         }
     }
 }

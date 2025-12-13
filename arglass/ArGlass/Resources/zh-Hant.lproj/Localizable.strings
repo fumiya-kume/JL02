@@ -1,0 +1,64 @@
+/* Onboarding */
+"onboarding_title" = "你對什麼感興趣？";
+"onboarding_subtitle" = "選擇3-5個主題來個人化你的體驗";
+"onboarding_select_at_least" = "至少選擇%d個興趣";
+"onboarding_select_more" = "再選擇%d個";
+"onboarding_selected_count" = "已選擇%d個";
+"onboarding_maximum" = "最多%d個興趣";
+"onboarding_continue" = "繼續";
+"onboarding_skip" = "跳過";
+
+/* Interest Categories */
+"interest_history" = "歷史";
+"interest_finance" = "金融";
+"interest_technology" = "科技";
+"interest_science" = "科學";
+"interest_art" = "藝術";
+"interest_sports" = "體育";
+"interest_music" = "音樂";
+"interest_travel" = "旅行";
+"interest_food" = "美食";
+"interest_nature" = "自然";
+
+/* Settings */
+"settings_title" = "設定";
+"settings_interests" = "興趣";
+"settings_edit_interests" = "編輯興趣";
+"settings_done" = "完成";
+
+/* History */
+"history_title" = "歷史紀錄";
+"history_empty" = "尚未識別任何地標";
+"history_today" = "今天";
+"history_yesterday" = "昨天";
+"history_clear_all" = "清除全部";
+"history_delete" = "刪除";
+"history_close" = "關閉";
+"history_clear_confirm_title" = "清除歷史紀錄";
+"history_clear_confirm_message" = "確定要刪除所有歷史紀錄嗎？";
+"history_cancel" = "取消";
+
+/* HUD */
+"hud_guide_standby" = "導覽待機";
+"hud_guide_standby_description" = "自動識別進入視野的地標。";
+"hud_scanning_analyzing" = "正在分析輪廓和紋理...";
+"hud_year_built" = "建造年份";
+"hud_badge_scanning" = "掃描中";
+"hud_badge_locked" = "已鎖定";
+"hud_chip_history" = "歷史";
+"hud_searching_landmarks" = "正在搜尋地標...";
+"hud_status_online" = "線上";
+"hud_status_offline" = "離線";
+
+/* Compass Directions */
+"compass_n" = "北";
+"compass_ne" = "東北";
+"compass_e" = "東";
+"compass_se" = "東南";
+"compass_s" = "南";
+"compass_sw" = "西南";
+"compass_w" = "西";
+"compass_nw" = "西北";
+
+/* Settings Additional */
+"settings_close" = "關閉";

@@ -1,0 +1,45 @@
+name: iOS Build
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'arglass/**'
+  pull_request:
+    branches: [master, main]
+    paths:
+      - 'arglass/**'
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode Project
+        working-directory: arglass
+        run: xcodegen generate
+
+      - name: Build for Simulator
+        working-directory: arglass
+        run: |
+          xcodebuild build \
+            -project ArGlass.xcodeproj \
+            -scheme ArGlass \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Run Unit Tests
+        working-directory: arglass
+        run: |
+          xcodebuild test \
+            -project ArGlass.xcodeproj \
+            -scheme ArGlass \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO

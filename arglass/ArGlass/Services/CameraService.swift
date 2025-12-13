@@ -1,7 +1,7 @@
 import AVFoundation
 import Foundation
+import UIKit
 
-@MainActor
 final class CameraService: ObservableObject {
     enum CameraState: Equatable {
         case idle
@@ -13,7 +13,11 @@ final class CameraService: ObservableObject {
     let session = AVCaptureSession()
     @Published private(set) var state: CameraState = .idle
 
+    private let sessionQueue = DispatchQueue(label: "camera.session", qos: .userInitiated)
     private var isConfigured = false
+    private var isRunning = false
+    private var videoOutput: AVCaptureVideoDataOutput?
+    private let frameHandler = FrameHandler()
 
     func requestAccessAndStart() async {
         let status = AVCaptureDevice.authorizationStatus(for: .video)
@@ -29,23 +33,36 @@ final class CameraService: ObservableObject {
     }
 
     func start() {
-        guard state != .running else { return }
-        guard configureIfNeeded() else {
-            state = .failed
-            return
-        }
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+            guard !self.isRunning else { return }
+            guard self.configureIfNeeded() else {
+                self.setState(.failed)
+                return
+            }
 
-        session.startRunning()
-        state = .running
+            self.session.startRunning()
+            self.isRunning = true
+            self.setState(.running)
+        }
     }
 
     func stop() {
-        session.stopRunning()
-        state = .idle
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+            guard self.isRunning else {
+                self.setState(.idle)
+                return
+            }
+
+            self.session.stopRunning()
+            self.isRunning = false
+            self.setState(.idle)
+        }
     }
 
     private func setUnauthorized() {
-        state = .unauthorized
+        setState(.unauthorized)
     }
 
     private func configureIfNeeded() -> Bool {
@@ -63,9 +80,65 @@ final class CameraService: ObservableObject {
         }
 
         session.addInput(input)
+
+        let output = AVCaptureVideoDataOutput()
+        output.setSampleBufferDelegate(frameHandler, queue: DispatchQueue(label: "camera.frame"))
+        output.alwaysDiscardsLateVideoFrames = true
+
+        guard session.canAddOutput(output) else {
+            session.commitConfiguration()
+            return false
+        }
+
+        session.addOutput(output)
+        videoOutput = output
+
         session.commitConfiguration()
         isConfigured = true
         return true
     }
+
+    func captureCurrentFrame() -> UIImage? {
+        frameHandler.latestFrame
+    }
+
+    private func setState(_ newState: CameraState) {
+        if Thread.isMainThread {
+            state = newState
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                self?.state = newState
+            }
+        }
+    }
 }
 
+final class FrameHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+    private let lock = NSLock()
+    private let context = CIContext()
+    private var _latestFrame: UIImage?
+
+    var latestFrame: UIImage? {
+        lock.lock()
+        defer { lock.unlock() }
+        return _latestFrame
+    }
+
+    func captureOutput(
+        _ output: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from connection: AVCaptureConnection
+    ) {
+        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+
+        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+
+        let image = UIImage(cgImage: cgImage)
+
+        lock.lock()
+        _latestFrame = image
+        lock.unlock()
+    }
+}

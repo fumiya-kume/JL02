@@ -11,7 +11,7 @@ struct TargetMarkerView: View {
             case let .scanning(candidate, progress):
                 markerView(
                     title: candidate.name,
-                    subtitle: "SCANNING",
+                    subtitle: NSLocalizedString("hud_badge_scanning", comment: ""),
                     progress: progress,
                     distanceMeters: candidate.distanceMeters,
                     bearingDegrees: candidate.bearingDegrees,
@@ -20,7 +20,7 @@ struct TargetMarkerView: View {
             case let .locked(target, confidence):
                 markerView(
                     title: target.name,
-                    subtitle: String(format: "LOCKED • %.0f%%", confidence * 100),
+                    subtitle: String(format: "%@ • %.0f%%", NSLocalizedString("hud_badge_locked", comment: ""), confidence * 100),
                     progress: 1,
                     distanceMeters: target.distanceMeters,
                     bearingDegrees: target.bearingDegrees,
@@ -41,7 +41,7 @@ struct TargetMarkerView: View {
                 ProgressView()
                     .tint(Color.accentColor.opacity(0.85))
             }
-            Text("ランドマークを検索中…")
+            Text(NSLocalizedString("hud_searching_landmarks", comment: ""))
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.white.opacity(0.75))
         }
@@ -151,10 +151,18 @@ private struct ReticleCornersShape: Shape {
 }
 
 #Preview {
-    VStack(spacing: 30) {
+    let sampleLandmark = Landmark(
+        name: "Sample Building",
+        yearBuilt: "2020",
+        subtitle: "A sample landmark for preview.",
+        history: "This is a sample landmark for preview purposes.",
+        distanceMeters: 150,
+        bearingDegrees: 45
+    )
+    return VStack(spacing: 30) {
         TargetMarkerView(recognitionState: .searching)
-        TargetMarkerView(recognitionState: .scanning(candidate: HUDViewModel.demoLandmarks[0], progress: 0.42))
-        TargetMarkerView(recognitionState: .locked(target: HUDViewModel.demoLandmarks[1], confidence: 0.93))
+        TargetMarkerView(recognitionState: .scanning(candidate: sampleLandmark, progress: 0.42))
+        TargetMarkerView(recognitionState: .locked(target: sampleLandmark, confidence: 0.93))
     }
     .padding()
     .background(Color.black)

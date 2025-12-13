@@ -1,0 +1,64 @@
+/* Onboarding */
+"onboarding_title" = "你对什么感兴趣？";
+"onboarding_subtitle" = "选择3-5个主题来个性化你的体验";
+"onboarding_select_at_least" = "至少选择%d个兴趣";
+"onboarding_select_more" = "再选择%d个";
+"onboarding_selected_count" = "已选择%d个";
+"onboarding_maximum" = "最多%d个兴趣";
+"onboarding_continue" = "继续";
+"onboarding_skip" = "跳过";
+
+/* Interest Categories */
+"interest_history" = "历史";
+"interest_finance" = "金融";
+"interest_technology" = "科技";
+"interest_science" = "科学";
+"interest_art" = "艺术";
+"interest_sports" = "体育";
+"interest_music" = "音乐";
+"interest_travel" = "旅行";
+"interest_food" = "美食";
+"interest_nature" = "自然";
+
+/* Settings */
+"settings_title" = "设置";
+"settings_interests" = "兴趣";
+"settings_edit_interests" = "编辑兴趣";
+"settings_done" = "完成";
+
+/* History */
+"history_title" = "历史记录";
+"history_empty" = "尚未识别任何地标";
+"history_today" = "今天";
+"history_yesterday" = "昨天";
+"history_clear_all" = "清除全部";
+"history_delete" = "删除";
+"history_close" = "关闭";
+"history_clear_confirm_title" = "清除历史记录";
+"history_clear_confirm_message" = "确定要删除所有历史记录吗？";
+"history_cancel" = "取消";
+
+/* HUD */
+"hud_guide_standby" = "导览待机";
+"hud_guide_standby_description" = "自动识别进入视野的地标。";
+"hud_scanning_analyzing" = "正在分析轮廓和纹理...";
+"hud_year_built" = "建造年份";
+"hud_badge_scanning" = "扫描中";
+"hud_badge_locked" = "已锁定";
+"hud_chip_history" = "历史";
+"hud_searching_landmarks" = "正在搜索地标...";
+"hud_status_online" = "在线";
+"hud_status_offline" = "离线";
+
+/* Compass Directions */
+"compass_n" = "北";
+"compass_ne" = "东北";
+"compass_e" = "东";
+"compass_se" = "东南";
+"compass_s" = "南";
+"compass_sw" = "西南";
+"compass_w" = "西";
+"compass_nw" = "西北";
+
+/* Settings Additional */
+"settings_close" = "关闭";

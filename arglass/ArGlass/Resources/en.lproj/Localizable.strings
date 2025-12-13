@@ -1,0 +1,64 @@
+/* Onboarding */
+"onboarding_title" = "What interests you?";
+"onboarding_subtitle" = "Select 3-5 topics to personalize your experience";
+"onboarding_select_at_least" = "Select at least %d interests";
+"onboarding_select_more" = "Select %d more";
+"onboarding_selected_count" = "You've selected %d";
+"onboarding_maximum" = "Maximum %d interests";
+"onboarding_continue" = "Continue";
+"onboarding_skip" = "Skip";
+
+/* Interest Categories */
+"interest_history" = "History";
+"interest_finance" = "Finance";
+"interest_technology" = "Technology";
+"interest_science" = "Science";
+"interest_art" = "Art";
+"interest_sports" = "Sports";
+"interest_music" = "Music";
+"interest_travel" = "Travel";
+"interest_food" = "Food";
+"interest_nature" = "Nature";
+
+/* Settings */
+"settings_title" = "Settings";
+"settings_interests" = "Interests";
+"settings_edit_interests" = "Edit Interests";
+"settings_done" = "Done";
+
+/* History */
+"history_title" = "History";
+"history_empty" = "No landmarks identified yet";
+"history_today" = "Today";
+"history_yesterday" = "Yesterday";
+"history_clear_all" = "Clear All";
+"history_delete" = "Delete";
+"history_close" = "Close";
+"history_clear_confirm_title" = "Clear History";
+"history_clear_confirm_message" = "Are you sure you want to delete all history?";
+"history_cancel" = "Cancel";
+
+/* HUD */
+"hud_guide_standby" = "Guide Standby";
+"hud_guide_standby_description" = "Automatically recognizes landmarks that come into view.";
+"hud_scanning_analyzing" = "Analyzing outline and texture...";
+"hud_year_built" = "Year Built";
+"hud_badge_scanning" = "SCANNING";
+"hud_badge_locked" = "LOCKED";
+"hud_chip_history" = "HIST";
+"hud_searching_landmarks" = "Searching for landmarks...";
+"hud_status_online" = "ONLINE";
+"hud_status_offline" = "OFFLINE";
+
+/* Compass Directions */
+"compass_n" = "N";
+"compass_ne" = "NE";
+"compass_e" = "E";
+"compass_se" = "SE";
+"compass_s" = "S";
+"compass_sw" = "SW";
+"compass_w" = "W";
+"compass_nw" = "NW";
+
+/* Settings Additional */
+"settings_close" = "Close";

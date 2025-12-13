@@ -1,0 +1,39 @@
+/* Onboarding */
+"onboarding_title" = "Was interessiert dich?";
+"onboarding_subtitle" = "Wähle 3-5 Themen, um dein Erlebnis zu personalisieren";
+"onboarding_select_at_least" = "Wähle mindestens %d Interessen aus";
+"onboarding_select_more" = "Wähle noch %d weitere aus";
+"onboarding_selected_count" = "Du hast %d ausgewählt";
+"onboarding_maximum" = "Maximal %d Interessen";
+"onboarding_continue" = "Weiter";
+"onboarding_skip" = "Überspringen";
+
+/* Interest Categories */
+"interest_history" = "Geschichte";
+"interest_finance" = "Finanzen";
+"interest_technology" = "Technologie";
+"interest_science" = "Wissenschaft";
+"interest_art" = "Kunst";
+"interest_sports" = "Sport";
+"interest_music" = "Musik";
+"interest_travel" = "Reisen";
+"interest_food" = "Essen";
+"interest_nature" = "Natur";
+
+/* Settings */
+"settings_title" = "Einstellungen";
+"settings_interests" = "Interessen";
+"settings_edit_interests" = "Interessen bearbeiten";
+"settings_done" = "Fertig";
+
+/* History */
+"history_title" = "Verlauf";
+"history_empty" = "Noch keine Sehenswürdigkeiten erkannt";
+"history_today" = "Heute";
+"history_yesterday" = "Gestern";
+"history_clear_all" = "Alle löschen";
+"history_delete" = "Löschen";
+"history_close" = "Schließen";
+"history_clear_confirm_title" = "Verlauf löschen";
+"history_clear_confirm_message" = "Möchtest du wirklich den gesamten Verlauf löschen?";
+"history_cancel" = "Abbrechen";

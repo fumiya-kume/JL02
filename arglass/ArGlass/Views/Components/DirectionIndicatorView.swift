@@ -33,14 +33,14 @@ struct DirectionIndicatorView: View {
     private func compassLabel(for degrees: Double) -> String {
         let normalized = (degrees.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360)
         switch normalized {
-        case 337.5...360, 0..<22.5: return "N"
-        case 22.5..<67.5: return "NE"
-        case 67.5..<112.5: return "E"
-        case 112.5..<157.5: return "SE"
-        case 157.5..<202.5: return "S"
-        case 202.5..<247.5: return "SW"
-        case 247.5..<292.5: return "W"
-        default: return "NW"
+        case 337.5...360, 0..<22.5: return NSLocalizedString("compass_n", comment: "")
+        case 22.5..<67.5: return NSLocalizedString("compass_ne", comment: "")
+        case 67.5..<112.5: return NSLocalizedString("compass_e", comment: "")
+        case 112.5..<157.5: return NSLocalizedString("compass_se", comment: "")
+        case 157.5..<202.5: return NSLocalizedString("compass_s", comment: "")
+        case 202.5..<247.5: return NSLocalizedString("compass_sw", comment: "")
+        case 247.5..<292.5: return NSLocalizedString("compass_w", comment: "")
+        default: return NSLocalizedString("compass_nw", comment: "")
         }
     }
 }
