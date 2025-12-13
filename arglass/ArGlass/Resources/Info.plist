@@ -24,8 +24,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>ARグラス風UIのデモ表示のためカメラを使用します。</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>音声入力のためにマイクを使用します。</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>ランドマークまでの距離と方角の表示に位置情報を使用します。</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>音声入力を文字起こしするために音声認識を使用します。</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

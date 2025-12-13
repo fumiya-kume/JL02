@@ -88,16 +88,34 @@ actor VLMAPIClient: VLMAPIClientProtocol {
         self.session = URLSession(configuration: config)
     }
 
-    func inferLandmark(image: UIImage, locationInfo: LocationInfo? = nil, interests: Set<Interest> = [], preferences: UserPreferences = .default) async throws -> Landmark {
+    func inferLandmark(
+        image: UIImage,
+        locationInfo: LocationInfo? = nil,
+        interests: Set<Interest> = [],
+        preferences: UserPreferences = .default,
+        text: String? = nil
+    ) async throws -> Landmark {
         guard let jpegData = image.jpegData(compressionQuality: 0.8) else {
             print("[VLM] ❌ Failed to convert image to JPEG")
             throw VLMError.imageConversionFailed
         }
 
-        return try await inferLandmark(jpegData: jpegData, locationInfo: locationInfo, interests: interests, preferences: preferences)
+        return try await inferLandmark(
+            jpegData: jpegData,
+            locationInfo: locationInfo,
+            interests: interests,
+            preferences: preferences,
+            text: text
+        )
     }
 
-    func inferLandmark(jpegData: Data, locationInfo: LocationInfo? = nil, interests: Set<Interest> = [], preferences: UserPreferences = .default) async throws -> Landmark {
+    func inferLandmark(
+        jpegData: Data,
+        locationInfo: LocationInfo? = nil,
+        interests: Set<Interest> = [],
+        preferences: UserPreferences = .default,
+        text: String? = nil
+    ) async throws -> Landmark {
         let url = baseURL.appendingPathComponent("inference")
 
         print("[VLM] 🚀 Sending request to: \(url.absoluteString)")
@@ -117,6 +135,10 @@ actor VLMAPIClient: VLMAPIClientProtocol {
         body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
         body.append(jpegData)
         body.append("\r\n".data(using: .utf8)!)
+
+        if let text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            body.appendFormField(name: "text", value: text, boundary: boundary)
+        }
 
         let address = locationInfo?.formattedAddress ?? ""
         body.appendFormField(name: "address", value: address, boundary: boundary)

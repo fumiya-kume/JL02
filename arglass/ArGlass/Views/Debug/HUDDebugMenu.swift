@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HUDDebugMenu: View {
     @ObservedObject var viewModel: HUDViewModel
+    @Binding var isVoiceInputEnabled: Bool
     @State private var showingSettings = false
 
     var body: some View {
@@ -20,6 +21,7 @@ struct HUDDebugMenu: View {
                     systemImage: viewModel.isCameraPreviewEnabled ? "video.slash.fill" : "video.fill"
                 )
             }
+            .disabled(isVoiceInputEnabled)
 
             Divider()
 
@@ -33,6 +35,18 @@ struct HUDDebugMenu: View {
                 Label(
                     viewModel.isAutoInferenceEnabled ? "Stop VLM inference" : "Start VLM inference",
                     systemImage: viewModel.isAutoInferenceEnabled ? "stop.fill" : "camera.fill"
+                )
+            }
+            .disabled(isVoiceInputEnabled)
+
+            Divider()
+
+            Button {
+                isVoiceInputEnabled.toggle()
+            } label: {
+                Label(
+                    isVoiceInputEnabled ? "Stop voice input" : "Start voice input",
+                    systemImage: isVoiceInputEnabled ? "mic.slash.fill" : "mic.fill"
                 )
             }
         } label: {
@@ -50,6 +64,6 @@ struct HUDDebugMenu: View {
 #Preview {
     ZStack {
         Color.black
-        HUDDebugMenu(viewModel: HUDViewModel())
+        HUDDebugMenu(viewModel: HUDViewModel(), isVoiceInputEnabled: .constant(false))
     }
 }

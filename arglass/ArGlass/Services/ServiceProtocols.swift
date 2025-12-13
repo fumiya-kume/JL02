@@ -24,8 +24,8 @@ protocol LocationServiceProtocol: AnyObject {
 }
 
 protocol VLMAPIClientProtocol: Actor {
-    func inferLandmark(image: UIImage, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences) async throws -> Landmark
-    func inferLandmark(jpegData: Data, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences) async throws -> Landmark
+    func inferLandmark(image: UIImage, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences, text: String?) async throws -> Landmark
+    func inferLandmark(jpegData: Data, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences, text: String?) async throws -> Landmark
 }
 
 protocol HistoryServiceProtocol: Actor {

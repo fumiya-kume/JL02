@@ -63,10 +63,12 @@ actor MockVLMAPIClient: VLMAPIClientProtocol {
     var mockLandmark: Landmark?
     var inferenceCallCount = 0
     var lastPreferences: UserPreferences?
+    var lastText: String?
 
-    func inferLandmark(image: UIImage, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences) async throws -> Landmark {
+    func inferLandmark(image: UIImage, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences, text: String?) async throws -> Landmark {
         inferenceCallCount += 1
         lastPreferences = preferences
+        lastText = text
 
         if shouldFailInference {
             throw VLMError.apiError(message: "Mock error")
@@ -75,8 +77,8 @@ actor MockVLMAPIClient: VLMAPIClientProtocol {
         return mockLandmark ?? TestFixtures.makeLandmark(name: "Mock Landmark")
     }
 
-    func inferLandmark(jpegData: Data, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences) async throws -> Landmark {
-        return try await inferLandmark(image: UIImage(), locationInfo: locationInfo, interests: interests, preferences: preferences)
+    func inferLandmark(jpegData: Data, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences, text: String?) async throws -> Landmark {
+        return try await inferLandmark(image: UIImage(), locationInfo: locationInfo, interests: interests, preferences: preferences, text: text)
     }
 
     func setShouldFailInference(_ value: Bool) {

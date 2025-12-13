@@ -127,6 +127,10 @@ final class HUDViewModel: ObservableObject {
     }
 
     func performInference() async -> Bool {
+        await performInference(text: nil)
+    }
+
+    func performInference(text: String?) async -> Bool {
         let orientation = CaptureOrientation.current()
 
         guard let image = cameraService.captureCurrentFrame() else {
@@ -162,7 +166,8 @@ final class HUDViewModel: ObservableObject {
                 jpegData: jpegData,
                 locationInfo: locationService.currentLocation,
                 interests: interests,
-                preferences: preferences
+                preferences: preferences,
+                text: text
             )
             let elapsed = Date().timeIntervalSince(startTime)
             apiRequestState = .success(responseTime: elapsed)
