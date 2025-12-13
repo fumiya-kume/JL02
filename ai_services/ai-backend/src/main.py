@@ -274,8 +274,8 @@ async def vlm_inference(
 
     image_data = await image.read()
 
-    # もしtextが文字列型ではない場合は、補完する
-    text = text or "画像中のランドマークについて、3行程度で具体的に説明してください。"
+    # VLMの呼び出し用テキストを準備
+    vlm_prompt = text or "画像中のランドマークについて、3行程度で具体的に説明してください。"
 
     # Location DB から top-k の観光地を検索
     top_k_spots = []
@@ -285,25 +285,25 @@ async def vlm_inference(
         except Exception as e:
             print(f"Error looking up top-k spots: {e}")
 
-    # プロンプトを作成
+    # VLM用プロンプトを作成
     if top_k_spots:
         k_count = len(top_k_spots)
         spots_info = "\n".join(
             [f"  {i + 1}. {spot['name']}" for i, spot in enumerate(top_k_spots)]
         )
-        text = (
+        vlm_prompt = (
             f"あなたは今、{address}にいます。\n"
             f"最寄りの観光地 TOP-{k_count}:\n{spots_info}\n\n"
-            f"{text}"
+            f"{vlm_prompt}"
         )
     else:
-        text = f"あなたは今、{address}にいます。\n" + text
-    print("text=", text)
+        vlm_prompt = f"あなたは今、{address}にいます。\n" + vlm_prompt
+    print("VLM Prompt:", vlm_prompt)
 
     async with httpx.AsyncClient(timeout=300.0) as client:
         files = {"image": (image.filename, image_data, image.content_type)}
         data = {
-            "text": text,
+            "text": vlm_prompt,
             "temperature": temperature,
             "top_p": top_p,
             "max_new_tokens": max_new_tokens,
@@ -325,6 +325,14 @@ async def vlm_inference(
 
         vlm_result = response.json()
         vlm_caption = vlm_result.get("generated_text", "")
+
+        # ユーザーがカスタムテキスト指示を入力している場合はRAGをスキップ
+        if text is not None:
+            print("Custom text instruction provided, skipping RAG")
+            return VLMResponse(generated_text=vlm_caption, success=True)
+
+        # textがNoneの場合（デフォルトプロンプト）はRAG処理を実行
+        print("Using RAG for tourism guide generation")
 
         # RAGクエリプロンプトを構築
         rag_query = build_rag_query_prompt(
@@ -348,11 +356,6 @@ async def vlm_inference(
 
         if rag_response and "answer" in rag_response:
             guide_text = rag_response["answer"]
-
-            # user_languageに応じて言語を指定する場合は、別途プロンプトで翻訳を行う必要があるが
-            # RAG APIがすでに言語対応しているため、ここではそのまま返す
-            # 必要に応じて言語指定をRAGクエリに含める
-
             return VLMResponse(generated_text=guide_text, success=True)
         else:
             # RAGが失敗した場合はVLMの出力を返す
