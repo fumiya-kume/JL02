@@ -2,11 +2,12 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import httpx
 import uvicorn
 import sys
 from pathlib import Path
+from enum import Enum
 
 # Add src directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -21,6 +22,77 @@ try:
 except FileNotFoundError as e:
     print(f"Warning: {e}")
     location_db = None
+
+
+class AgeGroup(str, Enum):
+    TWENTIES = "20s"
+    THIRTIES_FORTIES = "30-40s"
+    FIFTIES_PLUS = "50s+"
+    FAMILY_WITH_KIDS = "family_with_kids"
+
+
+class BudgetLevel(str, Enum):
+    BUDGET = "budget"
+    MID_RANGE = "mid-range"
+    LUXURY = "luxury"
+
+
+class TravelStyle(str, Enum):
+    BACKPACKER = "backpacker"
+    GUIDED_TOUR = "guided_tour"
+    INDEPENDENT = "independent"
+    COMFORT = "comfort"
+
+
+class ActivityLevel(str, Enum):
+    ACTIVE = "active"
+    MODERATE = "moderate"
+    RELAXED = "relaxed"
+
+
+class Language(str, Enum):
+    JAPANESE = "japanese"
+    ENGLISH = "english"
+    CHINESE = "chinese"
+    KOREAN = "korean"
+    SPANISH = "spanish"
+    FRENCH = "french"
+    GERMAN = "german"
+    THAI = "thai"
+
+
+class PartyType(str, Enum):
+    SOLO = "solo"
+    COUPLE = "couple"
+    SMALL_GROUP = "small_group"
+    FAMILY = "family"
+    LARGE_GROUP = "large_group"
+
+
+class Interest(str, Enum):
+    HISTORY = "history"
+    NATURE = "nature"
+    ART = "art"
+    FOOD = "food"
+    ARCHITECTURE = "architecture"
+    SHOPPING = "shopping"
+    NIGHTLIFE = "nightlife"
+
+
+class CuisinePreference(str, Enum):
+    LOCAL = "local"
+    FUSION = "fusion"
+    VEGETARIAN = "vegetarian"
+    STREET_FOOD = "street_food"
+    FINE_DINING = "fine_dining"
+
+
+class AccommodationPreference(str, Enum):
+    HOTEL = "hotel"
+    HOSTEL = "hostel"
+    AIRBNB = "airbnb"
+    RYOKAN = "ryokan"
+    RESORT = "resort"
 
 
 @app.get("/")
@@ -42,7 +114,26 @@ class VLMResponse(BaseModel):
 @app.post("/inference", response_model=VLMResponse)
 async def vlm_inference(
     image: UploadFile = File(..., description="Image file (PNG, JPG, etc.)"),
-    personal_info: Optional[str] = Form(None, description='personal information for the image description'),
+    user_age_group: Optional[AgeGroup] = Form(
+        None,
+        description="Traveler's age group for marketing segmentation. Options: 20s, 30-40s, 50s+, family_with_kids",
+    ),
+    user_budget_level: Optional[BudgetLevel] = Form(
+        None,
+        description="Travel budget level affecting facility recommendations. Options: budget, mid-range, luxury",
+    ),
+    user_interests: Optional[list[Interest]] = Form(
+        None,
+        description="Categories of interest (multiple selection allowed) for attractions. Options: history, nature, art, food, architecture, shopping, nightlife",
+    ),
+    user_activity_level: Optional[ActivityLevel] = Form(
+        None,
+        description="Physical activity level for recommended activities. Options: active, moderate, relaxed",
+    ),
+    user_language: Language = Form(
+        Language.JAPANESE,
+        description="User's preferred language for guide content. Options: japanese, english, chinese, korean, spanish, french, german, thai",
+    ),
     address: str = Form(
         ..., description="Address of the location where the image was taken"
     ),
@@ -86,10 +177,7 @@ async def vlm_inference(
     if top_k_spots:
         k_count = len(top_k_spots)
         spots_info = "\n".join(
-            [
-                f"  {i + 1}. {spot['name']}"
-                for i, spot in enumerate(top_k_spots)
-            ]
+            [f"  {i + 1}. {spot['name']}" for i, spot in enumerate(top_k_spots)]
         )
         text = (
             f"あなたは今、{address}にいます。\n"
@@ -98,7 +186,7 @@ async def vlm_inference(
         )
     else:
         text = f"あなたは今、{address}にいます。\n" + text
-    print('text=',text)
+    print("text=", text)
     async with httpx.AsyncClient(timeout=300.0) as client:
         files = {"image": (image.filename, image_data, image.content_type)}
         data = {
