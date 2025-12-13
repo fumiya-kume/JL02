@@ -47,6 +47,7 @@
 		AE02902C074A19D5C4267D77 /* HUDViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676D7CF0A999D258749F7F90 /* HUDViewModel.swift */; };
 		B4BF66CD8C3B00D5064DD63C /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFC5D680C6D9AA6B6AADD6D /* HistoryViewModel.swift */; };
 		B7D5E0A620DD1BE351F98703 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47807367C880E75989B562E5 /* GlassCard.swift */; };
+		C8A2B3D4E5F607189A0B1C2D /* HUDTopCapsuleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F607189A0B1C2E /* HUDTopCapsuleStyle.swift */; };
 		BEACFC7497F4E51761AF62EA /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E3562E083B6AB8C1EAC5E05 /* LocationService.swift */; };
 		BF8A95CC6BD4CE1BB9E528E1 /* NeonGlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD46F61570CC01DF7BFE2D3 /* NeonGlow.swift */; };
 		C709C933107199747910655A /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA950AEDE0F13FE4B4CC6DC4 /* HistoryService.swift */; };
@@ -108,6 +109,7 @@
 		855690BED08F2CC626DAF79B /* HUDStatusBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDStatusBarView.swift; sourceTree = "<group>"; };
 		904D008AC06564BF48C25EFB /* Landmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Landmark.swift; sourceTree = "<group>"; };
 		92851E7418F764B61DF6E4AC /* HUDDebugMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDDebugMenu.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F607189A0B1C2E /* HUDTopCapsuleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDTopCapsuleStyle.swift; sourceTree = "<group>"; };
 		9D5028A996EEED34387FFBB0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9E3562E083B6AB8C1EAC5E05 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		A6E814D3B12CF45905313E1B /* FloatingBubblesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingBubblesContainer.swift; sourceTree = "<group>"; };
@@ -318,6 +320,7 @@
 				537366B94581A64A173B2494 /* DirectionIndicatorView.swift */,
 				47807367C880E75989B562E5 /* GlassCard.swift */,
 				F1E2D3C4B5A69788796A5B4C /* HUDSafeArea.swift */,
+				A1B2C3D4E5F607189A0B1C2E /* HUDTopCapsuleStyle.swift */,
 				5D824C050A27BE5ED754730C /* TypingText.swift */,
 			);
 			path = Components;
@@ -457,6 +460,7 @@
 				17B0C3C851C3AB0BFB216852 /* GlitchOverlay.swift in Sources */,
 				8493D7824EB5F0AA6864E976 /* HUDDebugMenu.swift in Sources */,
 				54200B4FD06D326EFA5F45D2 /* HUDRootView.swift in Sources */,
+				C8A2B3D4E5F607189A0B1C2D /* HUDTopCapsuleStyle.swift in Sources */,
 				F7D4F0518FE742CCF4368FDF /* HUDStatusBarView.swift in Sources */,
 				AE02902C074A19D5C4267D77 /* HUDViewModel.swift in Sources */,
 				2CF287C6091B992398DDFB27 /* HistoryEntry.swift in Sources */,
