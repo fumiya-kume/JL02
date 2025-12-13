@@ -25,6 +25,28 @@ struct LandmarkAPIResponse: Codable {
         case subtitle
         case history
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        name = Self.decodeString(from: container, key: .name) ?? "不明"
+        yearBuilt = Self.decodeString(from: container, key: .yearBuilt) ?? "不明"
+        subtitle = Self.decodeString(from: container, key: .subtitle) ?? ""
+        history = Self.decodeString(from: container, key: .history) ?? ""
+    }
+
+    private static func decodeString(from container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) -> String? {
+        if let value = try? container.decode(String.self, forKey: key) {
+            return value
+        }
+        if let value = try? container.decode(Int.self, forKey: key) {
+            return String(value)
+        }
+        if let value = try? container.decode(Double.self, forKey: key) {
+            return String(Int(value))
+        }
+        return nil
+    }
 }
 
 actor VLMAPIClient {
