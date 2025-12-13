@@ -15,7 +15,7 @@ struct SettingsView: View {
                 VStack(spacing: 0) {
                     // Header
                     headerSection
-                        .padding(.top, max(geometry.safeAreaInsets.top, 20) + 40)
+                        .padding(.top, geometry.safeAreaInsets.top + 16)
 
                     // Settings list
                     settingsList
