@@ -8,6 +8,7 @@ import uvicorn
 import sys
 from pathlib import Path
 from enum import Enum
+import json
 
 # Add src directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -105,6 +106,112 @@ def health():
     return {"status": "ok"}
 
 
+def build_rag_query_prompt(
+    caption: str,
+    address: str,
+    user_age_group: Optional[str],
+    user_budget_level: Optional[str],
+    user_interests: Optional[list[str]],
+    user_activity_level: Optional[str],
+    user_language: Optional[str] = None,
+) -> str:
+    """
+    Build a RAG query prompt based on VLM caption and user attributes.
+    The query should be designed to retrieve relevant tourism guide information.
+    """
+    prompt = f"写真の場所: {address}\n"
+    prompt += f"写真の説明: {caption}\n\n"
+
+    # Build user profile context
+    profile_parts = []
+    if user_age_group:
+        profile_parts.append(f"年齢層: {user_age_group}")
+    if user_budget_level:
+        profile_parts.append(f"予算: {user_budget_level}")
+    if user_interests:
+        interests_str = ", ".join(user_interests)
+        profile_parts.append(f"興味: {interests_str}")
+    if user_activity_level:
+        profile_parts.append(f"活動レベル: {user_activity_level}")
+
+    if profile_parts:
+        prompt += "ユーザー属性:\n"
+        for part in profile_parts:
+            prompt += f"  - {part}\n"
+        prompt += "\n"
+
+    prompt += (
+        "上記の場所について、ユーザーの属性にパーソナライズした3行程度の説明を生成してください。"
+    )
+
+    # Add language instruction if specified
+    if user_language and user_language != "japanese":
+        language_map = {
+            "english": "English",
+            "chinese": "Chinese",
+            "korean": "Korean",
+            "spanish": "Spanish",
+            "french": "French",
+            "german": "German",
+            "thai": "Thai",
+        }
+        lang_name = language_map.get(user_language, user_language)
+        prompt += f"\n\n回答は{lang_name}で提供してください。"
+
+    return prompt
+
+
+async def query_rag(
+    api_token: str,
+    query: str,
+    top_k: int = 3,
+    threshold: float = 0.3,
+) -> Optional[dict]:
+    """
+    Query the Sakura AI Engine RAG API.
+
+    Args:
+        api_token: API token for authentication
+        query: Query string
+        top_k: Number of top results to retrieve
+        threshold: Similarity threshold for filtering results
+
+    Returns:
+        Response JSON containing answer and sources, or None if error
+    """
+    url = "https://api.ai.sakura.ad.jp/v1/documents/chat/"
+
+    payload = {
+        "model": "multilingual-e5-large",
+        "chat_model": "gpt-oss-120b",
+        "query": query,
+        "top_k": top_k,
+        "threshold": threshold,
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(
+                url,
+                json=payload,
+                headers={
+                    "Authorization": f"Bearer {api_token}",
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+            )
+
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(f"RAG API error: Status {response.status_code}")
+                print(f"Response: {response.text}")
+                return None
+    except Exception as e:
+        print(f"Error querying RAG: {e}")
+        return None
+
+
 class VLMResponse(BaseModel):
     generated_text: str
     success: bool
@@ -160,6 +267,12 @@ async def vlm_inference(
             status_code=500, detail="NGROK_DOMAIN environment variable not set"
         )
 
+    sakura_token = os.getenv("SAKURA_OPENAI_API_TOKEN")
+    if not sakura_token:
+        raise HTTPException(
+            status_code=500, detail="SAKURA_OPENAI_API_TOKEN environment variable not set"
+        )
+
     image_data = await image.read()
 
     # もしtextが文字列型ではない場合は、補完する
@@ -187,6 +300,7 @@ async def vlm_inference(
     else:
         text = f"あなたは今、{address}にいます。\n" + text
     print("text=", text)
+
     async with httpx.AsyncClient(timeout=300.0) as client:
         files = {"image": (image.filename, image_data, image.content_type)}
         data = {
@@ -197,6 +311,7 @@ async def vlm_inference(
             "repetition_penalty": repetition_penalty,
         }
 
+        # VLM APIの呼び出し
         response = await client.post(
             f"https://{ngrok_domain}/inference",
             files=files,
@@ -209,7 +324,38 @@ async def vlm_inference(
                 detail="External inference service error",
             )
 
-        result = response.json()
-        return VLMResponse(
-            generated_text=result.get("generated_text", ""), success=True
+        vlm_result = response.json()
+        vlm_caption = vlm_result.get("generated_text", "")
+
+        # RAGクエリプロンプトを構築
+        rag_query = build_rag_query_prompt(
+            caption=vlm_caption,
+            address=address,
+            user_age_group=user_age_group.value if user_age_group else None,
+            user_budget_level=user_budget_level.value if user_budget_level else None,
+            user_interests=[interest.value for interest in user_interests] if user_interests else None,
+            user_activity_level=user_activity_level.value if user_activity_level else None,
+            user_language=user_language.value if user_language else None,
         )
+
+        print("RAG Query:", rag_query)
+
+        # RAG APIを呼び出し
+        rag_response = await query_rag(sakura_token, rag_query)
+
+        if rag_response and "answer" in rag_response:
+            guide_text = rag_response["answer"]
+
+            # user_languageに応じて言語を指定する場合は、別途プロンプトで翻訳を行う必要があるが
+            # RAG APIがすでに言語対応しているため、ここではそのまま返す
+            # 必要に応じて言語指定をRAGクエリに含める
+
+            return VLMResponse(
+                generated_text=guide_text, success=True
+            )
+        else:
+            # RAGが失敗した場合はVLMの出力を返す
+            print("RAG query failed, returning VLM output")
+            return VLMResponse(
+                generated_text=vlm_caption, success=True
+            )
