@@ -117,6 +117,12 @@ final class HUDViewModel: ObservableObject {
             let confidence = 0.88 + Double.random(in: 0.0...0.10)
             // 新しいランドマークで更新（ロック状態を維持したまま次の結果に切り替え）
             recognitionState = .locked(target: landmark, confidence: min(confidence, 0.99))
+
+            Task {
+                let entry = HistoryEntry(landmark: landmark)
+                await HistoryService.shared.addEntry(entry, image: image)
+            }
+
             return true
         } catch {
             apiRequestState = .error(message: error.localizedDescription)

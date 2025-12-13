@@ -9,9 +9,12 @@
 /* Begin PBXBuildFile section */
 		09B119EC0E29BDEC7F70B7D5 /* BatteryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CE59B81C0E3175923BF91C /* BatteryMonitor.swift */; };
 		0A7D0F819D66A3A772452939 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6057C3B3B620935FF3CF602 /* OnboardingViewModel.swift */; };
+		10C9477D410579F68304AC69 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB133D92EBF30D4044D9B03 /* HistoryView.swift */; };
 		17B0C3C851C3AB0BFB216852 /* GlitchOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E24AB32DC028887C50C86DE /* GlitchOverlay.swift */; };
 		1E6CB667E140BEF1C5C1A8A2 /* HologramPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C0814B3286B9FDBC56DA56 /* HologramPanelView.swift */; };
 		21EDE6293BE38B70ADA14FF1 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274A021C55EEE5BE79AD36EF /* OnboardingView.swift */; };
+		2CF287C6091B992398DDFB27 /* HistoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C298C4DE4834DC2D199E46 /* HistoryEntry.swift */; };
+		30F42B12627C41ABAC20E776 /* HistoryEntryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB5FB9A9B660D585D0B3A0D0 /* HistoryEntryRow.swift */; };
 		42D6F5158DF459DCA922CBCB /* FloatingBubblesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6E814D3B12CF45905313E1B /* FloatingBubblesContainer.swift */; };
 		52315392BC1B8E7C35BB7E53 /* OnboardingFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8493151C7707C09AA6B3CD /* OnboardingFooterView.swift */; };
 		54200B4FD06D326EFA5F45D2 /* HUDRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F5B32DD9E3ADBCAF62B4E39 /* HUDRootView.swift */; };
@@ -30,8 +33,10 @@
 		9D985C1AF2905FCBBBD2579D /* Landmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 904D008AC06564BF48C25EFB /* Landmark.swift */; };
 		A1F79A81CEE0FE98C498E4C9 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E02C80854248FE12D01EB1A2 /* Localizable.strings */; };
 		AE02902C074A19D5C4267D77 /* HUDViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676D7CF0A999D258749F7F90 /* HUDViewModel.swift */; };
+		B4BF66CD8C3B00D5064DD63C /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFC5D680C6D9AA6B6AADD6D /* HistoryViewModel.swift */; };
 		B7D5E0A620DD1BE351F98703 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47807367C880E75989B562E5 /* GlassCard.swift */; };
 		BF8A95CC6BD4CE1BB9E528E1 /* NeonGlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD46F61570CC01DF7BFE2D3 /* NeonGlow.swift */; };
+		C709C933107199747910655A /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA950AEDE0F13FE4B4CC6DC4 /* HistoryService.swift */; };
 		CA3C1BC8B62C7E262FCBDB2A /* VLMAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D41D59D968A43BCACD976A9 /* VLMAPIClient.swift */; };
 		D1BB2C72B58B50A3FF23CB8A /* InterestBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B5A53B05FC31F622E3681F /* InterestBubbleView.swift */; };
 		D8A8E2FA3978E62F9CA98F34 /* TypingText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D824C050A27BE5ED754730C /* TypingText.swift */; };
@@ -41,9 +46,11 @@
 
 /* Begin PBXFileReference section */
 		1A95D440BA713A360F1331C3 /* ArGlassApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArGlassApp.swift; sourceTree = "<group>"; };
+		1AFC5D680C6D9AA6B6AADD6D /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		274A021C55EEE5BE79AD36EF /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		277DA690D3EC86068A43C90E /* DebugStatusOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugStatusOverlay.swift; sourceTree = "<group>"; };
 		2C4F789337D07D0324E673EB /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		2CB133D92EBF30D4044D9B03 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		47807367C880E75989B562E5 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
 		48B5A53B05FC31F622E3681F /* InterestBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestBubbleView.swift; sourceTree = "<group>"; };
 		4956450FC7469FD43468C055 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -69,8 +76,11 @@
 		A9032FF0BC4FA5878253DD30 /* TargetMarkerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetMarkerView.swift; sourceTree = "<group>"; };
 		B6057C3B3B620935FF3CF602 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		C9BA6C8C4569D324869652FF /* Interest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interest.swift; sourceTree = "<group>"; };
+		CA950AEDE0F13FE4B4CC6DC4 /* HistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryService.swift; sourceTree = "<group>"; };
+		CB5FB9A9B660D585D0B3A0D0 /* HistoryEntryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryEntryRow.swift; sourceTree = "<group>"; };
 		CCBAFE95F655D004080003ED /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		E1810F3A7A3F87EF213D7CB5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E6C298C4DE4834DC2D199E46 /* HistoryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryEntry.swift; sourceTree = "<group>"; };
 		EEC62CD9232C079A42D3ED50 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7C0814B3286B9FDBC56DA56 /* HologramPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HologramPanelView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -82,6 +92,7 @@
 				49CE59B81C0E3175923BF91C /* BatteryMonitor.swift */,
 				CCBAFE95F655D004080003ED /* CameraPreviewView.swift */,
 				2C4F789337D07D0324E673EB /* CameraService.swift */,
+				CA950AEDE0F13FE4B4CC6DC4 /* HistoryService.swift */,
 				6D41D59D968A43BCACD976A9 /* VLMAPIClient.swift */,
 			);
 			path = Services;
@@ -109,10 +120,20 @@
 		3A656CAA4234205F34F1367A /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				1AFC5D680C6D9AA6B6AADD6D /* HistoryViewModel.swift */,
 				676D7CF0A999D258749F7F90 /* HUDViewModel.swift */,
 				B6057C3B3B620935FF3CF602 /* OnboardingViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		47A5880E68A2337FC925E084 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				CB5FB9A9B660D585D0B3A0D0 /* HistoryEntryRow.swift */,
+				2CB133D92EBF30D4044D9B03 /* HistoryView.swift */,
+			);
+			path = History;
 			sourceTree = "<group>";
 		};
 		723A46D3DAF4AF06337B20F6 = {
@@ -138,6 +159,7 @@
 				E6006AF3D71AA72E2AC522BA /* Components */,
 				9D740FF71FC6E400DCDCD70A /* Debug */,
 				88F8551D980CE782E530CF16 /* Effects */,
+				47A5880E68A2337FC925E084 /* History */,
 				093B0A561FAB8FCFA40E05A1 /* HUD */,
 				DA7CCB038791F69D319E7CB1 /* Onboarding */,
 				73E06F088CD1A46863C59811 /* Settings */,
@@ -202,6 +224,7 @@
 		EB9790473072FD7D11FD06FD /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E6C298C4DE4834DC2D199E46 /* HistoryEntry.swift */,
 				C9BA6C8C4569D324869652FF /* Interest.swift */,
 				904D008AC06564BF48C25EFB /* Landmark.swift */,
 			);
@@ -305,6 +328,11 @@
 				54200B4FD06D326EFA5F45D2 /* HUDRootView.swift in Sources */,
 				F7D4F0518FE742CCF4368FDF /* HUDStatusBarView.swift in Sources */,
 				AE02902C074A19D5C4267D77 /* HUDViewModel.swift in Sources */,
+				2CF287C6091B992398DDFB27 /* HistoryEntry.swift in Sources */,
+				30F42B12627C41ABAC20E776 /* HistoryEntryRow.swift in Sources */,
+				C709C933107199747910655A /* HistoryService.swift in Sources */,
+				10C9477D410579F68304AC69 /* HistoryView.swift in Sources */,
+				B4BF66CD8C3B00D5064DD63C /* HistoryViewModel.swift in Sources */,
 				1E6CB667E140BEF1C5C1A8A2 /* HologramPanelView.swift in Sources */,
 				6A44A1565E9AED72ACDAC966 /* Interest.swift in Sources */,
 				D1BB2C72B58B50A3FF23CB8A /* InterestBubbleView.swift in Sources */,

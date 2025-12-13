@@ -4,6 +4,7 @@ struct HUDRootView: View {
     @ObservedObject var viewModel: HUDViewModel
 
     @State private var glitchIntensity: CGFloat = 0
+    @State private var showingHistory = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -31,6 +32,9 @@ struct HUDRootView: View {
         .onDisappear {
             viewModel.stop()
         }
+        .fullScreenCover(isPresented: $showingHistory) {
+            HistoryView()
+        }
     }
 
     private var phaseKey: Int {
@@ -53,28 +57,51 @@ struct HUDRootView: View {
         }
     }
 
+    private var historyButton: some View {
+        Button(action: { showingHistory = true }) {
+            Image(systemName: "clock.arrow.circlepath")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Color.accentColor.opacity(0.90))
+                .padding(.vertical, 12)
+                .padding(.horizontal, 14)
+                .background(.ultraThinMaterial, in: Capsule(style: .continuous))
+                .overlay {
+                    Capsule(style: .continuous)
+                        .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
+                }
+                .neonGlow(color: .accentColor, radius: 10, intensity: 0.14)
+        }
+        .contentShape(Capsule())
+    }
+
     private func overlay(safeAreaTop: CGFloat) -> some View {
         VStack(spacing: 0) {
-#if DEBUG
             HStack(spacing: 10) {
+                historyButton
+
+#if DEBUG
                 DebugStatusOverlay(viewModel: viewModel)
-                Spacer(minLength: 0)
-                HUDDebugMenu(viewModel: viewModel)
-            }
-            .padding(.top, safeAreaTop + 10)
-            .padding(.horizontal, 12)
 #endif
+
+                Spacer(minLength: 0)
+
+#if DEBUG
+                HUDDebugMenu(viewModel: viewModel)
+#endif
+            }
+            .padding(.top, safeAreaTop + 16)
+            .padding(.horizontal, 20)
 
             Spacer()
 
             TargetMarkerView(recognitionState: viewModel.recognitionState)
-                .padding(.horizontal, 22)
+                .padding(.horizontal, 20)
 
             Spacer()
 
             HologramPanelView(recognitionState: viewModel.recognitionState)
-                .padding(.horizontal, 12)
-                .padding(.bottom, 14)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 24)
         }
         .animation(.easeInOut(duration: 0.25), value: phaseKey)
     }

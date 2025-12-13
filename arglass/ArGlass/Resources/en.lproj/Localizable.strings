@@ -25,3 +25,15 @@
 "settings_interests" = "Interests";
 "settings_edit_interests" = "Edit Interests";
 "settings_done" = "Done";
+
+/* History */
+"history_title" = "History";
+"history_empty" = "No landmarks identified yet";
+"history_today" = "Today";
+"history_yesterday" = "Yesterday";
+"history_clear_all" = "Clear All";
+"history_delete" = "Delete";
+"history_close" = "Close";
+"history_clear_confirm_title" = "Clear History";
+"history_clear_confirm_message" = "Are you sure you want to delete all history?";
+"history_cancel" = "Cancel";
