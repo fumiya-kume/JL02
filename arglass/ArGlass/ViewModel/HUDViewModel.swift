@@ -36,6 +36,8 @@ final class HUDViewModel: ObservableObject {
     private var inferenceTask: Task<Void, Never>?
 
     private let inferenceInterval: TimeInterval = 4.0
+    private var consecutiveErrorCount: Int = 0
+    private let maxRetries: Int = 3
 
     func start() {
         startupTask?.cancel()
@@ -62,8 +64,19 @@ final class HUDViewModel: ObservableObject {
         inferenceTask = Task { [weak self] in
             while !Task.isCancelled {
                 guard let self else { return }
-                await self.performInference()
-                try? await Task.sleep(for: .seconds(self.inferenceInterval))
+                let success = await self.performInference()
+                if success {
+                    self.consecutiveErrorCount = 0
+                    try? await Task.sleep(for: .seconds(self.inferenceInterval))
+                } else {
+                    self.consecutiveErrorCount += 1
+                    if self.consecutiveErrorCount >= self.maxRetries {
+                        self.consecutiveErrorCount = 0
+                        print("[VLM] Max retries (\(self.maxRetries)) reached, waiting before next attempt")
+                        try? await Task.sleep(for: .seconds(self.inferenceInterval))
+                    }
+                    // else: continue immediately without sleep
+                }
             }
         }
     }
@@ -74,12 +87,12 @@ final class HUDViewModel: ObservableObject {
         inferenceTask = nil
     }
 
-    private func performInference() async {
+    private func performInference() async -> Bool {
         guard let image = cameraService.captureCurrentFrame() else {
             captureState = .failed
             errorMessage = "カメラからの画像取得に失敗しました"
             print(errorMessage)
-            return
+            return false
         }
 
         if let imageData = image.jpegData(compressionQuality: 0.8) {
@@ -104,11 +117,13 @@ final class HUDViewModel: ObservableObject {
             if case .locked = recognitionState {
                 recognitionState = .searching
             }
+            return true
         } catch {
             apiRequestState = .error(message: error.localizedDescription)
             recognitionState = .searching
             errorMessage = error.localizedDescription
             print(errorMessage)
+            return false
         }
     }
 
