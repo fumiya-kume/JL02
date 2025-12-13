@@ -13,7 +13,10 @@
       "Bash(xcodegen generate:*)",
       "Bash(cat:*)",
       "WebFetch(domain:ungravitative-unsedately-vanetta.ngrok-free.dev)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(tree:*)",
+      "Bash(gh run:*)",
+      "Bash(gh pr view:*)"
     ]
   }
 }
