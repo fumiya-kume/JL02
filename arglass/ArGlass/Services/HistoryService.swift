@@ -80,7 +80,8 @@ actor HistoryService: HistoryServiceProtocol {
                     distanceMeters: entry.distanceMeters,
                     bearingDegrees: entry.bearingDegrees,
                     timestamp: entry.timestamp,
-                    imageFileName: imageFileName
+                    imageFileName: imageFileName,
+                    captureOrientation: entry.captureOrientation
                 )
             }
         }

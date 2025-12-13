@@ -41,7 +41,11 @@ struct HUDRootView: View {
             HistoryView()
         }
         .fullScreenCover(isPresented: $showingImageViewer) {
-            ImageViewerView(image: viewModel.lastCapturedImage, subtitle: currentSubtitle)
+            ImageViewerView(
+                image: viewModel.lastCapturedImage,
+                subtitle: currentSubtitle,
+                captureOrientation: viewModel.lastCaptureOrientation
+            )
         }
     }
 
@@ -110,6 +114,7 @@ struct HUDRootView: View {
             HologramPanelView(
                 recognitionState: viewModel.recognitionState,
                 capturedImage: viewModel.lastCapturedImage,
+                captureOrientation: viewModel.lastCaptureOrientation,
                 onImageTap: { showingImageViewer = true }
             )
             .hudHorizontalPadding(safeAreaInsets)

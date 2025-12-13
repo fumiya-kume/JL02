@@ -30,6 +30,7 @@ final class HUDViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     @Published var isCameraPreviewEnabled: Bool = true
     @Published var lastCapturedImage: UIImage?
+    @Published var lastCaptureOrientation: CaptureOrientation?
 
     let cameraService: CameraServiceProtocol
     let locationService: LocationServiceProtocol
@@ -126,6 +127,8 @@ final class HUDViewModel: ObservableObject {
     }
 
     func performInference() async -> Bool {
+        let orientation = CaptureOrientation.current()
+
         guard let image = cameraService.captureCurrentFrame() else {
             captureState = .failed
             errorMessage = "カメラからの画像取得に失敗しました"
@@ -164,9 +167,10 @@ final class HUDViewModel: ObservableObject {
             let confidence = 0.88 + Double.random(in: 0.0...0.10)
             recognitionState = .locked(target: landmark, confidence: min(confidence, 0.99))
             lastCapturedImage = image
+            lastCaptureOrientation = orientation
 
             Task {
-                let entry = HistoryEntry(landmark: landmark)
+                let entry = HistoryEntry(landmark: landmark, captureOrientation: orientation)
                 await historyService.addEntry(entry, image: image)
             }
 

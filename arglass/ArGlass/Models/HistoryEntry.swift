@@ -10,6 +10,7 @@ struct HistoryEntry: Identifiable, Codable, Equatable {
     let bearingDegrees: Double
     let timestamp: Date
     let imageFileName: String?
+    let captureOrientation: CaptureOrientation?
 
     init(
         id: UUID = UUID(),
@@ -20,7 +21,8 @@ struct HistoryEntry: Identifiable, Codable, Equatable {
         distanceMeters: Double,
         bearingDegrees: Double,
         timestamp: Date = Date(),
-        imageFileName: String? = nil
+        imageFileName: String? = nil,
+        captureOrientation: CaptureOrientation? = nil
     ) {
         self.id = id
         self.name = name
@@ -31,9 +33,10 @@ struct HistoryEntry: Identifiable, Codable, Equatable {
         self.bearingDegrees = bearingDegrees
         self.timestamp = timestamp
         self.imageFileName = imageFileName
+        self.captureOrientation = captureOrientation
     }
 
-    init(landmark: Landmark, imageFileName: String? = nil, timestamp: Date = Date()) {
+    init(landmark: Landmark, imageFileName: String? = nil, timestamp: Date = Date(), captureOrientation: CaptureOrientation? = nil) {
         self.id = UUID()
         self.name = landmark.name
         self.yearBuilt = landmark.yearBuilt
@@ -43,5 +46,6 @@ struct HistoryEntry: Identifiable, Codable, Equatable {
         self.bearingDegrees = landmark.bearingDegrees
         self.timestamp = timestamp
         self.imageFileName = imageFileName
+        self.captureOrientation = captureOrientation
     }
 }

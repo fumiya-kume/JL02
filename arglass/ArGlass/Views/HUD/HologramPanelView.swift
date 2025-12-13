@@ -3,6 +3,7 @@ import SwiftUI
 struct HologramPanelView: View {
     let recognitionState: HUDViewModel.RecognitionState
     var capturedImage: UIImage?
+    var captureOrientation: CaptureOrientation?
     var onImageTap: (() -> Void)?
 
     var body: some View {
@@ -96,6 +97,7 @@ struct HologramPanelView: View {
                             Image(uiImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
+                                .rotationEffect(.degrees(captureOrientation?.displayRotationDegrees ?? 0))
                                 .frame(width: 72, height: 72)
                                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .overlay {

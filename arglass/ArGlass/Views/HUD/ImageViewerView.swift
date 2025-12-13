@@ -3,6 +3,7 @@ import SwiftUI
 struct ImageViewerView: View {
     let image: UIImage?
     let subtitle: String?
+    let captureOrientation: CaptureOrientation?
     @Environment(\.dismiss) private var dismiss
     @State private var showingExplanation = true
 
@@ -18,6 +19,7 @@ struct ImageViewerView: View {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
+                        .rotationEffect(.degrees(captureOrientation?.displayRotationDegrees ?? 0))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding(.vertical, 20)
                         .hudHorizontalPadding(geometry.safeAreaInsets)
@@ -124,5 +126,5 @@ struct ImageViewerView: View {
 }
 
 #Preview {
-    ImageViewerView(image: nil, subtitle: "銀座四丁目交差点に建つ時計塔。")
+    ImageViewerView(image: nil, subtitle: "銀座四丁目交差点に建つ時計塔。", captureOrientation: nil)
 }
