@@ -29,9 +29,12 @@ final class BatteryMonitor: ObservableObject {
     }
 
     @objc private func refresh() {
-        let currentLevel = UIDevice.current.batteryLevel
-        level = currentLevel < 0 ? nil : currentLevel
-        state = UIDevice.current.batteryState
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let currentLevel = UIDevice.current.batteryLevel
+            self.level = currentLevel < 0 ? nil : currentLevel
+            self.state = UIDevice.current.batteryState
+        }
     }
 }
 
