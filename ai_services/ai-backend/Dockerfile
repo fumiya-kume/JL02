@@ -2,10 +2,16 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Copy and install requirements
+COPY ai_services/ai-backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy application code
+COPY ai_services/ai-backend/src ./src
+
+# Copy GinzaDB database into container for location lookup
+# This makes the database accessible to LocationDBLookup at runtime
+COPY GinzaDB ./GinzaDB
 
 # AppRun will inject PORT environment variable
 EXPOSE 8080

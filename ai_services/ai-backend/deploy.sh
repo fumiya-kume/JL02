@@ -2,6 +2,17 @@
 
 # さくらのクラウド AppRun デプロイスクリプト
 
+# スクリプトのディレクトリを取得
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+
+# プロジェクトルートに移動
+cd "${PROJECT_ROOT}"
+
+echo "Project root: ${PROJECT_ROOT}"
+echo "Backend directory: ${SCRIPT_DIR}"
+echo ""
+
 # 環境変数チェック
 if [ -z "$REGISTRY_HOST" ]; then
     echo "❌ Error: REGISTRY_HOST environment variable is not set"
@@ -15,6 +26,20 @@ if [ -z "$AIBE_IMAGE_NAME" ]; then
     exit 1
 fi
 
+# 必要なファイルの確認
+echo "=== Checking required files ==="
+if [ ! -f "${PROJECT_ROOT}/GinzaDB/ginzaDB.json" ]; then
+    echo "❌ Error: GinzaDB/ginzaDB.json not found"
+    exit 1
+fi
+echo "✅ GinzaDB/ginzaDB.json found"
+
+if [ ! -d "${SCRIPT_DIR}/src" ]; then
+    echo "❌ Error: src directory not found at ${SCRIPT_DIR}/src"
+    exit 1
+fi
+echo "✅ src directory found"
+
 # コンテナレジストリ情報
 TAG="${1:-latest}"
 
@@ -23,6 +48,7 @@ FULL_IMAGE_NAME="${REGISTRY_HOST}/${AIBE_IMAGE_NAME}:${TAG}"
 
 echo "=== Generating requirements.txt from uv dependencies ==="
 # uvの依存関係からrequirements.txtを生成
+cd "${SCRIPT_DIR}"
 uv export --format requirements.txt --output-file requirements.txt --no-dev
 
 if [ $? -ne 0 ]; then
@@ -40,7 +66,15 @@ echo "✅ requirements.txt generated successfully"
 echo ""
 
 echo "=== Building Docker image for AppRun (linux/amd64) ==="
-docker build --platform linux/amd64 -t ${AIBE_IMAGE_NAME} .
+echo "Building from: ${PROJECT_ROOT}"
+echo "Using Dockerfile: ${SCRIPT_DIR}/Dockerfile"
+echo ""
+
+# プロジェクトルートからビルド（COPYコマンドが正しく機能するため）
+docker build --platform linux/amd64 \
+    -f "${SCRIPT_DIR}/Dockerfile" \
+    -t ${AIBE_IMAGE_NAME} \
+    "${PROJECT_ROOT}"
 
 if [ $? -ne 0 ]; then
     echo "❌ Build failed"
