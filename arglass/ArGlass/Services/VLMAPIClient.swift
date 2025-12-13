@@ -63,17 +63,17 @@ actor VLMAPIClient {
         self.session = URLSession(configuration: config)
     }
 
-    func inferLandmark(image: UIImage, locationInfo: LocationInfo? = nil) async throws -> Landmark {
+    func inferLandmark(image: UIImage, locationInfo: LocationInfo? = nil, interests: Set<Interest> = []) async throws -> Landmark {
         guard let jpegData = image.jpegData(compressionQuality: 0.8) else {
             print("[VLM] ❌ Failed to convert image to JPEG")
             throw VLMError.imageConversionFailed
         }
 
-        return try await inferLandmark(jpegData: jpegData, locationInfo: locationInfo)
+        return try await inferLandmark(jpegData: jpegData, locationInfo: locationInfo, interests: interests)
     }
 
-    func inferLandmark(jpegData: Data, locationInfo: LocationInfo? = nil) async throws -> Landmark {
-        let prompt = buildPrompt(locationInfo: locationInfo)
+    func inferLandmark(jpegData: Data, locationInfo: LocationInfo? = nil, interests: Set<Interest> = []) async throws -> Landmark {
+        let prompt = buildPrompt(locationInfo: locationInfo, interests: interests)
 
         let url = baseURL.appendingPathComponent("inference")
 
@@ -174,7 +174,7 @@ actor VLMAPIClient {
         return try JSONDecoder().decode(LandmarkAPIResponse.self, from: jsonData)
     }
 
-    private func buildPrompt(locationInfo: LocationInfo?) -> String {
+    private func buildPrompt(locationInfo: LocationInfo?, interests: Set<Interest>) -> String {
         var contextParts: [String] = []
 
         if let location = locationInfo {
@@ -188,8 +188,21 @@ actor VLMAPIClient {
             ? ""
             : "【位置情報】\n\(contextParts.joined(separator: "\n"))\n\n"
 
+        let interestsSection: String
+        if interests.isEmpty {
+            interestsSection = ""
+        } else {
+            let interestNames = interests.map { $0.localizedName }.joined(separator: ", ")
+            interestsSection = "【ユーザーの興味】\n\(interestNames)\n\n"
+        }
+
+        let tailorInstruction = interests.isEmpty
+            ? ""
+            : "ユーザーの興味に合わせて説明を作成してください。"
+
         return """
-        \(contextSection)この画像のランドマークをJSON形式で回答してください: {"name": "名前", "year_built": "建設年", "subtitle": "説明", "history": "歴史"}
+        \(contextSection)\(interestsSection)この画像のランドマークをJSON形式で回答してください。\(tailorInstruction)
+        {"name": "名前", "year_built": "建設年", "subtitle": "説明", "history": "歴史"}
         """
     }
 }
