@@ -73,25 +73,22 @@ struct HologramPanelView: View {
                     trailing: String(format: "%.0f%%", confidence * 100)
                 )
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("建築年 • \(target.yearBuilt)")
-                        .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(.white.opacity(0.75))
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("建築年 • \(target.yearBuilt)")
+                            .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.75))
 
-                    TypingText(text: target.subtitle, characterDelay: .milliseconds(18))
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.9))
+                        TypingText(text: target.subtitle, characterDelay: .milliseconds(18))
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.9))
 
-                    Text(target.history)
-                        .font(.system(size: 12))
-                        .foregroundStyle(.white.opacity(0.72))
-                        .lineSpacing(2)
-                }
+                        Text(target.history)
+                            .font(.system(size: 12))
+                            .foregroundStyle(.white.opacity(0.72))
+                            .lineSpacing(2)
+                    }
 
-                HStack(spacing: 10) {
-                    ChipView(label: formatDistance(target.distanceMeters), systemImage: "ruler")
-                    ChipView(label: formatBearing(target.bearingDegrees), systemImage: "location.north.line")
-                    ChipView(label: "HIST", systemImage: "book")
                     Spacer()
 
                     if let image = capturedImage {
@@ -99,7 +96,7 @@ struct HologramPanelView: View {
                             Image(uiImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
-                                .frame(width: 56, height: 56)
+                                .frame(width: 72, height: 72)
                                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -108,6 +105,13 @@ struct HologramPanelView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                }
+
+                HStack(spacing: 10) {
+                    ChipView(label: formatDistance(target.distanceMeters), systemImage: "ruler")
+                    ChipView(label: formatBearing(target.bearingDegrees), systemImage: "location.north.line")
+                    ChipView(label: "HIST", systemImage: "book")
+                    Spacer()
                 }
             }
         }
