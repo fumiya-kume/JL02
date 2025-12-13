@@ -37,7 +37,7 @@ struct HUDRootView: View {
             HistoryView()
         }
         .fullScreenCover(isPresented: $showingImageViewer) {
-            ImageViewerView(image: viewModel.lastCapturedImage)
+            ImageViewerView(image: viewModel.lastCapturedImage, subtitle: currentSubtitle)
         }
     }
 
@@ -50,6 +50,13 @@ struct HUDRootView: View {
         case .locked:
             2
         }
+    }
+
+    private var currentSubtitle: String? {
+        if case .locked(let landmark, _) = viewModel.recognitionState {
+            return landmark.subtitle
+        }
+        return nil
     }
 
     @ViewBuilder
