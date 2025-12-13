@@ -59,6 +59,8 @@
 		47807367C880E75989B562E5 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
 		48B5A53B05FC31F622E3681F /* InterestBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestBubbleView.swift; sourceTree = "<group>"; };
 		4956450FC7469FD43468C055 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		5A3C8D1E2B4F6A9C7E0D1B3A /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		6B4D9E2F3C5A7B8D9E1F2C4B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		49CE59B81C0E3175923BF91C /* BatteryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryMonitor.swift; sourceTree = "<group>"; };
 		4AD462DF9C3672D3E9061FA3 /* ScanlinesOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanlinesOverlay.swift; sourceTree = "<group>"; };
 		4C8493151C7707C09AA6B3CD /* OnboardingFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFooterView.swift; sourceTree = "<group>"; };
@@ -297,6 +299,8 @@
 				Base,
 				en,
 				ja,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 723A46D3DAF4AF06337B20F6;
 			minimizedProjectReferenceProxies = 1;
@@ -374,6 +378,8 @@
 			children = (
 				EEC62CD9232C079A42D3ED50 /* en */,
 				4956450FC7469FD43468C055 /* ja */,
+				5A3C8D1E2B4F6A9C7E0D1B3A /* zh-Hans */,
+				6B4D9E2F3C5A7B8D9E1F2C4B /* zh-Hant */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
