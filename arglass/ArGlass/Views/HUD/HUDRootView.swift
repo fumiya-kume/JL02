@@ -25,11 +25,6 @@ struct HUDRootView: View {
                 triggerGlitch()
             }
         }
-        .alert("Inference Failed", isPresented: $viewModel.showErrorAlert) {
-            Button("OK") { }
-        } message: {
-            Text(viewModel.errorMessage)
-        }
         .onAppear {
             viewModel.start()
         }
