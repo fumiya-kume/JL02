@@ -178,17 +178,4 @@ final class HUDViewModel: ObservableObject {
             return false
         }
     }
-
-    func setSearching() {
-        recognitionState = .searching
-        lastCapturedImage = nil
-    }
-
-    func setScanning(candidate: Landmark, progress: Double) {
-        recognitionState = .scanning(candidate: candidate, progress: max(0, min(progress, 1)))
-    }
-
-    func setLocked(target: Landmark, confidence: Double) {
-        recognitionState = .locked(target: target, confidence: max(0, min(confidence, 0.99)))
-    }
 }
