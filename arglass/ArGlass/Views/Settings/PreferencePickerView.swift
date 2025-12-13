@@ -80,6 +80,7 @@ struct PreferencePickerView<T: PreferenceOption>: View {
             }
             .padding(.vertical, 16)
             .padding(.horizontal, 18)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 selection == option
                     ? Color.accentColor.opacity(0.15)
@@ -181,6 +182,7 @@ struct LanguagePickerView: View {
             }
             .padding(.vertical, 16)
             .padding(.horizontal, 18)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 selection == option
                     ? Color.accentColor.opacity(0.15)

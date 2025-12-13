@@ -154,6 +154,7 @@ struct SettingsView: View {
             }
             .padding(.vertical, 16)
             .padding(.horizontal, 18)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
