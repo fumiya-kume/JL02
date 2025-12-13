@@ -26,7 +26,7 @@ struct SettingsView: View {
 
                     // Close button
                     closeButton
-                        .padding(.horizontal, 20)
+                        .frame(width: geometry.size.width * 0.5)
                         .padding(.bottom, max(geometry.safeAreaInsets.bottom, 40))
                 }
             }
