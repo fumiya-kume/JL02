@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 import UIKit
 
-final class CameraService: ObservableObject {
+final class CameraService: ObservableObject, CameraServiceProtocol {
     enum CameraState: Equatable {
         case idle
         case running

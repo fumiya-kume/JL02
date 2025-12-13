@@ -2,7 +2,7 @@ import CoreLocation
 import Foundation
 
 @MainActor
-final class LocationService: NSObject, ObservableObject {
+final class LocationService: NSObject, ObservableObject, LocationServiceProtocol {
     enum LocationState: Equatable {
         case idle
         case authorized
