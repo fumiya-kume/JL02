@@ -5,16 +5,27 @@ struct FloatingBubblesContainer: View {
     @State private var rotation: Double = 0
     @State private var lastDragValue: CGFloat = 0
 
-    private let radiusX: CGFloat = 260  // Max horizontal radius (designed for landscape)
-    private let radiusY: CGFloat = 50   // Max vertical radius (flat to avoid overlap)
+    // Base sizes (designed for iPhone ~390pt width)
+    private let baseRadiusX: CGFloat = 260
+    private let baseRadiusY: CGFloat = 50
+    private let baseBubbleHalfWidth: CGFloat = 55
+    private let baseBubbleHalfHeight: CGFloat = 80
+    private let baseWidth: CGFloat = 390
 
     var body: some View {
         GeometryReader { geometry in
+            // Calculate scale factor based on screen width (1.0 to 1.8)
+            let scaleFactor = min(1.8, max(1.0, geometry.size.width / baseWidth))
+
+            // Scaled sizes
+            let radiusX = baseRadiusX * scaleFactor
+            let radiusY = baseRadiusY * scaleFactor
+            let bubbleHalfWidth = baseBubbleHalfWidth * scaleFactor
+            let bubbleHalfHeight = baseBubbleHalfHeight * scaleFactor
+
             // Keep interactive bubbles inside safe area to avoid the notch / Dynamic Island cutout in landscape.
             let safeRect = geometry.safeAreaInsets.safeRect(in: geometry.size)
             let center = CGPoint(x: safeRect.midX, y: safeRect.midY)
-            let bubbleHalfWidth: CGFloat = 55
-            let bubbleHalfHeight: CGFloat = 80
             let horizontalMargin: CGFloat = 12
             let verticalMargin: CGFloat = 12
             let maxRadiusX = max(0, safeRect.width / 2 - bubbleHalfWidth - horizontalMargin)
@@ -39,6 +50,7 @@ struct FloatingBubblesContainer: View {
                         interest: interest,
                         isSelected: viewModel.isSelected(interest),
                         canSelect: viewModel.canSelectMore || viewModel.isSelected(interest),
+                        scaleFactor: scaleFactor,
                         onTap: { viewModel.toggleInterest(interest) }
                     )
                     .scaleEffect(scale)

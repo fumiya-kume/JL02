@@ -37,7 +37,9 @@ struct SettingsView: View {
         .ignoresSafeArea()
         .statusBarHidden(true)
         .fullScreenCover(isPresented: $showingInterestSettings) {
-            InterestSettingsView()
+            OnboardingView(isEditing: true) {
+                showingInterestSettings = false
+            }
         }
     }
 

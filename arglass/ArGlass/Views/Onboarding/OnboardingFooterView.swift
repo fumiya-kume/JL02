@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OnboardingFooterView: View {
     @ObservedObject var viewModel: OnboardingViewModel
+    let isEditing: Bool
     let onContinue: () -> Void
     let onSkip: () -> Void
 
@@ -16,7 +17,7 @@ struct OnboardingFooterView: View {
             HStack(spacing: 14) {
                 // Skip button
                 Button(action: onSkip) {
-                    Text(NSLocalizedString("onboarding_skip", comment: ""))
+                    Text(NSLocalizedString(isEditing ? "settings_cancel" : "onboarding_skip", comment: ""))
                         .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(.white.opacity(0.6))
                         .frame(minWidth: 140)
@@ -32,11 +33,13 @@ struct OnboardingFooterView: View {
                 // Continue button
                 Button(action: handleContinue) {
                     HStack(spacing: 8) {
-                        Text(NSLocalizedString("onboarding_continue", comment: ""))
+                        Text(NSLocalizedString(isEditing ? "settings_save" : "onboarding_continue", comment: ""))
                             .font(.system(size: 15, weight: .semibold))
 
-                        Image(systemName: "arrow.right")
-                            .font(.system(size: 14, weight: .semibold))
+                        if !isEditing {
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
                     }
                     .foregroundStyle(buttonForeground)
                     .frame(minWidth: 140)
@@ -93,6 +96,7 @@ struct OnboardingFooterView: View {
             Spacer()
             OnboardingFooterView(
                 viewModel: OnboardingViewModel(),
+                isEditing: false,
                 onContinue: {},
                 onSkip: {}
             )

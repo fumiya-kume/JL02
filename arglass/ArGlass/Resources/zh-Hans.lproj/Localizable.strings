@@ -24,7 +24,10 @@
 "settings_title" = "设置";
 "settings_interests" = "兴趣";
 "settings_edit_interests" = "编辑兴趣";
+"settings_edit_interests_subtitle" = "更改您的兴趣以自定义您的体验";
 "settings_done" = "完成";
+"settings_save" = "保存";
+"settings_cancel" = "取消";
 
 /* History */
 "history_title" = "历史记录";

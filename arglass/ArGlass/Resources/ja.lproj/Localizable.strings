@@ -24,7 +24,10 @@
 "settings_title" = "設定";
 "settings_interests" = "興味";
 "settings_edit_interests" = "興味を編集";
+"settings_edit_interests_subtitle" = "興味を変更して体験をカスタマイズ";
 "settings_done" = "完了";
+"settings_save" = "保存";
+"settings_cancel" = "キャンセル";
 
 /* History */
 "history_title" = "履歴";
