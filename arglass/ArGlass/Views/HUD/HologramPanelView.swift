@@ -177,10 +177,18 @@ private struct ChipView: View {
 }
 
 #Preview {
-    VStack(spacing: 16) {
+    let sampleLandmark = Landmark(
+        name: "Sample Building",
+        yearBuilt: "2020",
+        subtitle: "A sample landmark for preview.",
+        history: "This is a sample landmark for preview purposes.",
+        distanceMeters: 150,
+        bearingDegrees: 45
+    )
+    return VStack(spacing: 16) {
         HologramPanelView(recognitionState: .searching)
-        HologramPanelView(recognitionState: .scanning(candidate: HUDViewModel.demoLandmarks[0], progress: 0.62))
-        HologramPanelView(recognitionState: .locked(target: HUDViewModel.demoLandmarks[1], confidence: 0.93))
+        HologramPanelView(recognitionState: .scanning(candidate: sampleLandmark, progress: 0.62))
+        HologramPanelView(recognitionState: .locked(target: sampleLandmark, confidence: 0.93))
     }
     .padding()
     .background(Color.black)
