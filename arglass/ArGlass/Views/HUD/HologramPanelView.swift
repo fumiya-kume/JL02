@@ -2,6 +2,8 @@ import SwiftUI
 
 struct HologramPanelView: View {
     let recognitionState: HUDViewModel.RecognitionState
+    var capturedImage: UIImage?
+    var onImageTap: (() -> Void)?
 
     var body: some View {
         switch recognitionState {
@@ -71,19 +73,38 @@ struct HologramPanelView: View {
                     trailing: String(format: "%.0f%%", confidence * 100)
                 )
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("建築年 • \(target.yearBuilt)")
-                        .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(.white.opacity(0.75))
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("建築年 • \(target.yearBuilt)")
+                            .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.75))
 
-                    TypingText(text: target.subtitle, characterDelay: .milliseconds(18))
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.9))
+                        TypingText(text: target.subtitle, characterDelay: .milliseconds(18))
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.9))
 
-                    Text(target.history)
-                        .font(.system(size: 12))
-                        .foregroundStyle(.white.opacity(0.72))
-                        .lineSpacing(2)
+                        Text(target.history)
+                            .font(.system(size: 12))
+                            .foregroundStyle(.white.opacity(0.72))
+                            .lineSpacing(2)
+                    }
+
+                    Spacer()
+
+                    if let image = capturedImage {
+                        Button(action: { onImageTap?() }) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 72, height: 72)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                }
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
 
                 HStack(spacing: 10) {
