@@ -30,6 +30,16 @@ jobs:
           xcodebuild build \
             -project ArGlass.xcodeproj \
             -scheme ArGlass \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Run Unit Tests
+        working-directory: arglass
+        run: |
+          xcodebuild test \
+            -project ArGlass.xcodeproj \
+            -scheme ArGlass \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO
