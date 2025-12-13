@@ -4,7 +4,7 @@ struct ImageViewerView: View {
     let image: UIImage?
     let subtitle: String?
     @Environment(\.dismiss) private var dismiss
-    @State private var showingExplanation = false
+    @State private var showingExplanation = true
 
     var body: some View {
         GeometryReader { geometry in
