@@ -5,8 +5,22 @@ from typing import Optional
 from pydantic import BaseModel
 import httpx
 import uvicorn
+import sys
+from pathlib import Path
+
+# Add src directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+
+from location_db_lookup import LocationDBLookup
 
 app = FastAPI()
+
+# Initialize Location DB lookup
+try:
+    location_db = LocationDBLookup()
+except FileNotFoundError as e:
+    print(f"Warning: {e}")
+    location_db = None
 
 
 @app.get("/")
@@ -28,6 +42,7 @@ class VLMResponse(BaseModel):
 @app.post("/inference", response_model=VLMResponse)
 async def vlm_inference(
     image: UploadFile = File(..., description="Image file (PNG, JPG, etc.)"),
+    personal_info: Optional[str] = Form(None, description='personal information for the image description'),
     address: str = Form(
         ..., description="Address of the location where the image was taken"
     ),
@@ -59,7 +74,31 @@ async def vlm_inference(
     # もしtextが文字列型ではない場合は、補完する
     text = text or "画像中のランドマークについて、3行程度で具体的に説明してください。"
 
-    text = f"あなたは今、{address}にいます。\n" + text
+    # Location DB から top-k の観光地を検索
+    top_k_spots = []
+    if location_db:
+        try:
+            top_k_spots = location_db.find_top_k(latitude, longitude)
+        except Exception as e:
+            print(f"Error looking up top-k spots: {e}")
+
+    # プロンプトを作成
+    if top_k_spots:
+        k_count = len(top_k_spots)
+        spots_info = "\n".join(
+            [
+                f"  {i + 1}. {spot['name']}"
+                for i, spot in enumerate(top_k_spots)
+            ]
+        )
+        text = (
+            f"あなたは今、{address}にいます。\n"
+            f"最寄りの観光地 TOP-{k_count}:\n{spots_info}\n\n"
+            f"{text}"
+        )
+    else:
+        text = f"あなたは今、{address}にいます。\n" + text
+    print('text=',text)
     async with httpx.AsyncClient(timeout=300.0) as client:
         files = {"image": (image.filename, image_data, image.content_type)}
         data = {
