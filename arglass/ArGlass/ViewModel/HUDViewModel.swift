@@ -17,10 +17,6 @@ final class HUDViewModel: ObservableObject {
     private var startupTask: Task<Void, Never>?
     private var simulationTask: Task<Void, Never>?
 
-    init() {
-        start()
-    }
-
     func start() {
         startupTask?.cancel()
         startupTask = Task { [weak self] in

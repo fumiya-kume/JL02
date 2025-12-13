@@ -37,42 +37,7 @@ struct HUDRootView: View {
     }
 
     private var background: some View {
-        ZStack {
-            switch viewModel.cameraService.state {
-            case .running:
-                CameraPreviewView(session: viewModel.cameraService.session)
-                    .overlay {
-                        LinearGradient(
-                            colors: [
-                                Color.black.opacity(0.25),
-                                Color.black.opacity(0.70)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    }
-            default:
-                LinearGradient(
-                    colors: [
-                        Color(white: 0.08),
-                        Color(white: 0.02)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .overlay {
-                    RadialGradient(
-                        colors: [
-                            Color.accentColor.opacity(0.10),
-                            Color.clear
-                        ],
-                        center: .top,
-                        startRadius: 50,
-                        endRadius: 500
-                    )
-                }
-            }
-        }
+        Color.black
     }
 
     private var overlay: some View {
