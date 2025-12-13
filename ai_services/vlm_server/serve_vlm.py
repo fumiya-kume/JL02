@@ -95,7 +95,7 @@ def resize_image_to_target_pixels(image: Image.Image, target_pixels: int = 26214
 
     Args:
         image: PIL Image object to resize
-        target_pixels: Target number of pixels (default: 240,000)
+        target_pixels: Target number of pixels (default: 262144)
 
     Returns:
         Resized PIL Image object
@@ -136,9 +136,6 @@ def generate_vlm_response(image: Image.Image, text: str, temperature: float,
     if model is None or processor is None:
         raise HTTPException(status_code=500, detail="Model not loaded")
 
-    try:
-        # Set random seed for reproducibility
-        set_seed(42)
 
         # Prepare message format for chat template
         message = [
@@ -173,19 +170,18 @@ def generate_vlm_response(image: Image.Image, text: str, temperature: float,
         # Generate response
         print("Starting generation...")
         with torch.inference_mode():
-            with torch.no_grad():
-                output_ids = model.generate(
-                    **inputs,
-                    max_new_tokens=max_new_tokens,
-                    temperature=temperature,
-                    top_p=top_p,
-                    repetition_penalty=repetition_penalty,
-                    do_sample=True,
-                )
+            output_ids = model.generate(
+                **inputs,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+                top_p=top_p,
+                repetition_penalty=repetition_penalty,
+                do_sample=True,
+            )
 
         # Decode generated text
         generated_ids = [
-            output_ids[len(input_ids):] for input_ids, output_ids in zip(inputs.input_ids, output_ids)
+            output_ids[len(input_ids):] for input_ids, output_ids in zip(inputs.input_ids, output_ids, strict=True)
         ]
 
         output_text = processor.batch_decode(
@@ -228,7 +224,7 @@ async def vlm_inference(
     """
     VLM inference endpoint
 
-    The image will be automatically resized to approximately 240,000 pixels (maintaining aspect ratio)
+    The image will be automatically resized to approximately 262,144 pixels (maintaining aspect ratio)
     for optimal VLM processing performance and memory usage.
 
     - **image**: Image file (binary data - PNG, JPG, etc.)
@@ -269,11 +265,21 @@ async def vlm_inference(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except (ValueError, IOError, RuntimeError) as e:
+        # Expected errors from image processing or model inference
         return VLMResponse(
             generated_text="",
             success=False,
             error_message=str(e)
+        )
+    except Exception as e:
+        # Unexpected errors - log for debugging
+        import traceback
+        traceback.print_exc()
+        return VLMResponse(
+            generated_text="",
+            success=False,
+            error_message=f"Unexpected error: {str(e)}"
         )
 
 def setup_ngrok():
