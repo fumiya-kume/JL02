@@ -55,17 +55,23 @@ final class HUDViewModel: ObservableObject {
             let target = candidate ?? Self.demoLandmarks.randomElement()
             guard let target else { return }
 
-            self.recognitionState = .searching
-            try? await Task.sleep(for: .seconds(0.6))
+            do {
+                self.recognitionState = .searching
+                try await Task.sleep(for: .seconds(0.6))
 
-            for i in 0...16 {
-                let progress = Double(i) / 16.0
-                self.recognitionState = .scanning(candidate: target, progress: progress)
-                try? await Task.sleep(for: .milliseconds(70))
+                for i in 0...16 {
+                    try Task.checkCancellation()
+                    let progress = Double(i) / 16.0
+                    self.recognitionState = .scanning(candidate: target, progress: progress)
+                    try await Task.sleep(for: .milliseconds(70))
+                }
+
+                try Task.checkCancellation()
+                let confidence = 0.88 + Double.random(in: 0.0...0.10)
+                self.recognitionState = .locked(target: target, confidence: min(confidence, 0.99))
+            } catch {
+                return
             }
-
-            let confidence = 0.88 + Double.random(in: 0.0...0.10)
-            self.recognitionState = .locked(target: target, confidence: min(confidence, 0.99))
         }
     }
 
