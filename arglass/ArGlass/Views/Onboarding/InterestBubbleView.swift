@@ -30,43 +30,87 @@ struct InterestBubbleView: View {
     }
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 1.0 / 15.0)) { context in
-            let time = context.date.timeIntervalSinceReferenceDate
-            let yOffset = sin(time * frequencyY * .pi * 2 + phaseOffset) * amplitude
-            let xOffset = cos(time * frequencyX * .pi * 2 + phaseOffset) * (amplitude * 0.4)
-
-            bubbleContent
-                .scaleEffect(bounceScale)
-                .offset(x: xOffset, y: yOffset)
-        }
-        .onTapGesture {
-            handleTap()
-        }
-        .onAppear {
-            hapticFeedback.prepare()
-        }
+        bubbleContent
+            .scaleEffect(bounceScale)
+            .onTapGesture {
+                handleTap()
+            }
+            .onAppear {
+                hapticFeedback.prepare()
+            }
     }
 
     private var bubbleContent: some View {
-        VStack(spacing: 6) {
-            Image(systemName: interest.icon)
-                .font(.system(size: 22, weight: .semibold))
-                .symbolEffect(.pulse, isActive: isSelected)
+        VStack(spacing: 12) {
+            ZStack {
+                // Outer glow circle
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color.white.opacity(0.05),
+                                Color.clear
+                            ],
+                            center: .center,
+                            startRadius: 50,
+                            endRadius: 60
+                        )
+                    )
+                    .frame(width: 120, height: 120)
+
+                // Main circle with glass effect
+                Circle()
+                    .fill(.ultraThinMaterial)
+
+                // Inner highlight for depth
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color.white.opacity(0.2),
+                                Color.white.opacity(0.05),
+                                Color.clear
+                            ],
+                            center: .top,
+                            startRadius: 0,
+                            endRadius: 55
+                        )
+                    )
+
+                // Multiple border layers for depth
+                Circle()
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.6),
+                                Color.white.opacity(0.1)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+
+                Circle()
+                    .stroke(borderGradient, lineWidth: isSelected ? 3 : 2)
+
+                Image(systemName: interest.icon)
+                    .font(.system(size: 32, weight: .semibold))
+                    .foregroundStyle(foregroundColor)
+                    .symbolEffect(.pulse, isActive: isSelected)
+            }
+            .frame(width: 110, height: 110)
+            .neonGlow(color: glowColor, radius: glowRadius, intensity: glowIntensity)
+            .shadow(color: Color.black.opacity(0.3), radius: 8, y: 4)
+            .shadow(color: isSelected ? Color.accentColor.opacity(0.5) : .clear, radius: 20, y: 8)
 
             Text(interest.localizedName)
-                .font(.system(size: 11, weight: .bold))
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(foregroundColor)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
+                .frame(width: 110)
         }
-        .foregroundStyle(foregroundColor)
-        .frame(width: 80, height: 80)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(borderGradient, lineWidth: isSelected ? 2 : 1.2)
-        }
-        .neonGlow(color: glowColor, radius: glowRadius, intensity: glowIntensity)
-        .shadow(color: isSelected ? Color.accentColor.opacity(0.3) : .clear, radius: 12, y: 4)
         .animation(.easeInOut(duration: 0.25), value: isSelected)
     }
 
