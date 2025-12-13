@@ -1,0 +1,18 @@
+[project]
+name = "ai-backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.124.4",
+    "numpy>=2.3.5",
+    "openai>=2.11.0",
+    "openai-agents>=0.6.3",
+    "uvicorn[standard]>=0.38.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.9",
+]

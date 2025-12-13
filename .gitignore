@@ -217,3 +217,4 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+ai_services/ai-backend/.python-version

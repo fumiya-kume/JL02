@@ -21,6 +21,24 @@ TAG="${1:-latest}"
 # フルイメージ名
 FULL_IMAGE_NAME="${REGISTRY_HOST}/${AIBE_IMAGE_NAME}:${TAG}"
 
+echo "=== Generating requirements.txt from uv dependencies ==="
+# uvの依存関係からrequirements.txtを生成
+uv export --format requirements.txt --output-file requirements.txt --no-dev
+
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to generate requirements.txt from uv dependencies"
+    exit 1
+fi
+
+# requirements.txtが生成されたことを確認
+if [ ! -f "requirements.txt" ]; then
+    echo "❌ requirements.txt was not generated"
+    exit 1
+fi
+
+echo "✅ requirements.txt generated successfully"
+echo ""
+
 echo "=== Building Docker image for AppRun (linux/amd64) ==="
 docker build --platform linux/amd64 -t ${AIBE_IMAGE_NAME} .
 
