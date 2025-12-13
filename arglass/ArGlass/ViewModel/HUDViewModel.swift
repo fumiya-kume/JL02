@@ -98,6 +98,12 @@ final class HUDViewModel: ObservableObject {
             apiRequestState = .success(responseTime: elapsed)
             let confidence = 0.88 + Double.random(in: 0.0...0.10)
             recognitionState = .locked(target: landmark, confidence: min(confidence, 0.99))
+
+            // Return to searching state after displaying the result
+            try? await Task.sleep(for: .seconds(5))
+            if case .locked = recognitionState {
+                recognitionState = .searching
+            }
         } catch {
             apiRequestState = .error(message: error.localizedDescription)
             recognitionState = .searching
