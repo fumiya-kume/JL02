@@ -22,9 +22,17 @@ ai-backend/
 
 - Docker がインストールされていること
 
-### 実行方法
+### 実行方法(ローカル)
 
 ```bash
+uv run uvicorn src.main:app --host 0.0.0.0
+```
+
+### 実行方法(コンテナ)
+
+```bash
+# requirements.txt を更新
+uv export --format requirements.txt --output-file requirements.txt --no-dev
 # イメージをビルド
 docker build  linux/amd64 -t ai-backend-apple .
 
