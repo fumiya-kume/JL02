@@ -25,6 +25,7 @@ struct OnboardingView: View {
                     // Bubbles container
                     FloatingBubblesContainer(viewModel: viewModel)
                         .frame(maxHeight: .infinity)
+                        .offset(y: -20)
 
                     // Footer
                     OnboardingFooterView(

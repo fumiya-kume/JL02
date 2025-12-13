@@ -19,12 +19,12 @@ struct InterestSettingsView: View {
 
                     // Bubbles container
                     FloatingBubblesContainer(viewModel: viewModel)
-                        .padding(.horizontal, 20)
+                        .frame(maxHeight: .infinity)
+                        .offset(y: -20)
 
                     // Footer
                     footerSection
                         .padding(.horizontal, 20)
-                        .padding(.bottom, max(geometry.safeAreaInsets.bottom, 40))
                 }
             }
         }
@@ -50,25 +50,29 @@ struct InterestSettingsView: View {
     }
 
     private var footerSection: some View {
-        Button(action: handleDone) {
-            Text(NSLocalizedString("settings_done", comment: ""))
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(buttonForeground)
-                .padding(.vertical, 16)
-                .frame(maxWidth: .infinity)
-                .background(buttonBackground, in: Capsule(style: .continuous))
-                .overlay {
-                    Capsule(style: .continuous)
-                        .stroke(buttonBorder, lineWidth: 1)
-                }
+        GeometryReader { geometry in
+            Button(action: handleDone) {
+                Text(NSLocalizedString("settings_done", comment: ""))
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(buttonForeground)
+                    .padding(.vertical, 16)
+                    .frame(width: geometry.size.width * 0.5)
+                    .background(buttonBackground, in: Capsule(style: .continuous))
+                    .overlay {
+                        Capsule(style: .continuous)
+                            .stroke(buttonBorder, lineWidth: 1)
+                    }
+            }
+            .disabled(!viewModel.isValidSelection && viewModel.selectionCount > 0)
+            .neonGlow(
+                color: .accentColor,
+                radius: canSave ? 16 : 0,
+                intensity: canSave ? 0.25 : 0
+            )
+            .animation(.easeInOut(duration: 0.25), value: canSave)
+            .frame(maxWidth: .infinity)
         }
-        .disabled(!viewModel.isValidSelection && viewModel.selectionCount > 0)
-        .neonGlow(
-            color: .accentColor,
-            radius: canSave ? 16 : 0,
-            intensity: canSave ? 0.25 : 0
-        )
-        .animation(.easeInOut(duration: 0.25), value: canSave)
+        .frame(height: 60)
     }
 
     private var canSave: Bool {
