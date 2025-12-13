@@ -81,7 +81,6 @@ final class HUDViewModel: ObservableObject {
                         print("[VLM] Max retries (\(self.maxRetries)) reached, waiting before next attempt")
                         try? await Task.sleep(for: .seconds(self.inferenceInterval))
                     }
-                    // else: continue immediately without sleep
                 }
             }
         }
@@ -116,11 +115,6 @@ final class HUDViewModel: ObservableObject {
 
         let sizeKB = Double(jpegData.count) / 1024.0
         captureState = .captured(imageSizeKB: sizeKB)
-
-        // 初回のみsearchingに設定（ロック中は状態を維持）
-        if case .searching = recognitionState {
-            // すでにsearchingなのでそのまま
-        }
         apiRequestState = .requesting
 
         let startTime = Date()
@@ -133,7 +127,6 @@ final class HUDViewModel: ObservableObject {
             let elapsed = Date().timeIntervalSince(startTime)
             apiRequestState = .success(responseTime: elapsed)
             let confidence = 0.88 + Double.random(in: 0.0...0.10)
-            // 新しいランドマークで更新（ロック状態を維持したまま次の結果に切り替え）
             recognitionState = .locked(target: landmark, confidence: min(confidence, 0.99))
             lastCapturedImage = image
 
@@ -145,7 +138,6 @@ final class HUDViewModel: ObservableObject {
             return true
         } catch {
             apiRequestState = .error(message: error.localizedDescription)
-            // エラー時は現在の状態を維持（searchingに戻さない）
             errorMessage = error.localizedDescription
             print(errorMessage)
             return false
