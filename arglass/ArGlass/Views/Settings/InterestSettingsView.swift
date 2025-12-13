@@ -15,7 +15,7 @@ struct InterestSettingsView: View {
                 VStack(spacing: 0) {
                     // Header
                     headerSection
-                        .padding(.top, max(geometry.safeAreaInsets.top, 20) + 20)
+                        .padding(.top, geometry.safeAreaInsets.top + 16)
 
                     // Bubbles container
                     FloatingBubblesContainer(viewModel: viewModel)
