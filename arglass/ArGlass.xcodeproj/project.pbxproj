@@ -560,12 +560,12 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.fumiya-kume.arglass";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 1;
+					PRODUCT_BUNDLE_IDENTIFIER = "com.fumiya-kume.arglass";
+					SDKROOT = iphoneos;
+					TARGETED_DEVICE_FAMILY = "1,2";
+				};
+				name = Release;
 			};
-			name = Release;
-		};
 		9C7FDE683FC58ABDA5F01E03 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -663,12 +663,12 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.fumiya-kume.arglass";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 1;
+					PRODUCT_BUNDLE_IDENTIFIER = "com.fumiya-kume.arglass";
+					SDKROOT = iphoneos;
+					TARGETED_DEVICE_FAMILY = "1,2";
+				};
+				name = Debug;
 			};
-			name = Debug;
-		};
 		ED74C6636E5D8F8934B04D85 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {

@@ -36,20 +36,10 @@ struct HUDDebugMenu: View {
                 )
             }
         } label: {
-            Image(systemName: "ellipsis.circle")
-                .font(.system(size: 17, weight: .semibold))
+            Image(systemName: "ellipsis")
+                .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(Color.accentColor.opacity(0.90))
-                .padding(.vertical, 10)
-                .padding(.horizontal, 12)
-                .background(.ultraThinMaterial, in: Capsule(style: .continuous))
-                .overlay {
-                    Capsule(style: .continuous)
-                        .stroke(
-                            Color.accentColor.opacity(0.25),
-                            lineWidth: 1
-                        )
-                }
-                .neonGlow(color: .accentColor, radius: 10, intensity: 0.14)
+                .hudTopCapsuleStyle()
         }
         .fullScreenCover(isPresented: $showingSettings) {
             SettingsView()

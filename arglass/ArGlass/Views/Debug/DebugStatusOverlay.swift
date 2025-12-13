@@ -10,14 +10,7 @@ struct DebugStatusOverlay: View {
             apiStatusView
         }
         .font(.system(size: 10, weight: .medium, design: .monospaced))
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(.ultraThinMaterial, in: Capsule(style: .continuous))
-        .overlay {
-            Capsule(style: .continuous)
-                .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
-        }
-        .neonGlow(color: .accentColor, radius: 10, intensity: 0.14)
+        .hudTopCapsuleStyle()
     }
 
     private var cameraStateView: some View {
