@@ -11,6 +11,24 @@ struct InterestBubbleView: View {
 
     private let hapticFeedback = UIImpactFeedbackGenerator(style: .light)
 
+    // Animation parameters for floating effect - derived from interest id for stability
+    private var amplitude: CGFloat {
+        let hash = abs(interest.id.hashValue)
+        return CGFloat(4 + (hash % 5))
+    }
+    private var frequencyY: Double {
+        let hash = abs(interest.id.hashValue)
+        return 0.15 + Double(hash % 100) / 1000.0
+    }
+    private var frequencyX: Double {
+        let hash = abs(interest.id.hashValue >> 8)
+        return 0.1 + Double(hash % 100) / 1000.0
+    }
+    private var phaseOffset: Double {
+        let hash = abs(interest.id.hashValue >> 16)
+        return Double(hash % 628) / 100.0
+    }
+
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1.0 / 15.0)) { context in
             let time = context.date.timeIntervalSinceReferenceDate
