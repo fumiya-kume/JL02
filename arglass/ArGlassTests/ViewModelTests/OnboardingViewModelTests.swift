@@ -144,5 +144,7 @@ final class OnboardingViewModelTests: XCTestCase {
 
         XCTAssertEqual(retrieved.count, 3)
         XCTAssertTrue(retrieved.contains(interest1))
+        XCTAssertTrue(retrieved.contains(interest2))
+        XCTAssertTrue(retrieved.contains(interest3))
     }
 }
