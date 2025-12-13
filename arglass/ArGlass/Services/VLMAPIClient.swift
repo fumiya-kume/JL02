@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import UIKit
 
@@ -62,10 +63,17 @@ actor VLMAPIClient {
         self.session = URLSession(configuration: config)
     }
 
-    func inferLandmark(image: UIImage) async throws -> Landmark {
-        let prompt = """
-        この画像のランドマークをJSON形式で回答してください: {"name": "名前", "year_built": "建設年", "subtitle": "説明", "history": "歴史"}
-        """
+    func inferLandmark(image: UIImage, locationInfo: LocationInfo? = nil) async throws -> Landmark {
+        guard let jpegData = image.jpegData(compressionQuality: 0.8) else {
+            print("[VLM] ❌ Failed to convert image to JPEG")
+            throw VLMError.imageConversionFailed
+        }
+
+        return try await inferLandmark(jpegData: jpegData, locationInfo: locationInfo)
+    }
+
+    func inferLandmark(jpegData: Data, locationInfo: LocationInfo? = nil) async throws -> Landmark {
+        let prompt = buildPrompt(locationInfo: locationInfo)
 
         let url = baseURL.appendingPathComponent("inference")
 
@@ -78,19 +86,14 @@ actor VLMAPIClient {
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            print("[VLM] ❌ Failed to convert image to JPEG")
-            throw VLMError.imageConversionFailed
-        }
-
-        print("[VLM] 🖼️ Image size: \(imageData.count) bytes (\(String(format: "%.2f", Double(imageData.count) / 1024.0)) KB)")
+        print("[VLM] 🖼️ Image size: \(jpegData.count) bytes (\(String(format: "%.2f", Double(jpegData.count) / 1024.0)) KB)")
 
         var body = Data()
 
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"image\"; filename=\"image.jpg\"\r\n".data(using: .utf8)!)
         body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        body.append(imageData)
+        body.append(jpegData)
         body.append("\r\n".data(using: .utf8)!)
 
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
@@ -161,6 +164,25 @@ actor VLMAPIClient {
         }
 
         return try JSONDecoder().decode(LandmarkAPIResponse.self, from: jsonData)
+    }
+
+    private func buildPrompt(locationInfo: LocationInfo?) -> String {
+        var contextParts: [String] = []
+
+        if let location = locationInfo {
+            contextParts.append("現在地: \(location.coordinateString)")
+            if !location.formattedAddress.isEmpty {
+                contextParts.append("住所: \(location.formattedAddress)")
+            }
+        }
+
+        let contextSection = contextParts.isEmpty
+            ? ""
+            : "【位置情報】\n\(contextParts.joined(separator: "\n"))\n\n"
+
+        return """
+        \(contextSection)この画像のランドマークをJSON形式で回答してください: {"name": "名前", "year_built": "建設年", "subtitle": "説明", "history": "歴史"}
+        """
     }
 }
 

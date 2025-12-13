@@ -32,6 +32,7 @@ final class HUDViewModel: ObservableObject {
     @Published var lastCapturedImage: UIImage?
 
     let cameraService = CameraService()
+    let locationService = LocationService()
 
     private var startupTask: Task<Void, Never>?
     private var simulationTask: Task<Void, Never>?
@@ -46,6 +47,7 @@ final class HUDViewModel: ObservableObject {
         startupTask = Task { [weak self] in
             guard let self else { return }
             await self.cameraService.requestAccessAndStart()
+            self.locationService.requestAuthorization()
             self.startAutoInference()
         }
     }
@@ -58,6 +60,7 @@ final class HUDViewModel: ObservableObject {
         simulationTask = nil
         inferenceTask = nil
         cameraService.stop()
+        locationService.stopUpdating()
     }
 
     func startAutoInference() {
@@ -98,10 +101,21 @@ final class HUDViewModel: ObservableObject {
             return false
         }
 
-        if let imageData = image.jpegData(compressionQuality: 0.8) {
-            let sizeKB = Double(imageData.count) / 1024.0
-            captureState = .captured(imageSizeKB: sizeKB)
+        let jpegData = await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                continuation.resume(returning: image.jpegData(compressionQuality: 0.8))
+            }
         }
+
+        guard let jpegData else {
+            captureState = .failed
+            errorMessage = "画像のJPEG変換に失敗しました"
+            print(errorMessage)
+            return false
+        }
+
+        let sizeKB = Double(jpegData.count) / 1024.0
+        captureState = .captured(imageSizeKB: sizeKB)
 
         // 初回のみsearchingに設定（ロック中は状態を維持）
         if case .searching = recognitionState {
@@ -112,7 +126,10 @@ final class HUDViewModel: ObservableObject {
         let startTime = Date()
 
         do {
-            let landmark = try await VLMAPIClient.shared.inferLandmark(image: image)
+            let landmark = try await VLMAPIClient.shared.inferLandmark(
+                jpegData: jpegData,
+                locationInfo: locationService.currentLocation
+            )
             let elapsed = Date().timeIntervalSince(startTime)
             apiRequestState = .success(responseTime: elapsed)
             let confidence = 0.88 + Double.random(in: 0.0...0.10)

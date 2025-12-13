@@ -2,7 +2,6 @@ import AVFoundation
 import Foundation
 import UIKit
 
-@MainActor
 final class CameraService: ObservableObject {
     enum CameraState: Equatable {
         case idle
@@ -14,7 +13,9 @@ final class CameraService: ObservableObject {
     let session = AVCaptureSession()
     @Published private(set) var state: CameraState = .idle
 
+    private let sessionQueue = DispatchQueue(label: "camera.session", qos: .userInitiated)
     private var isConfigured = false
+    private var isRunning = false
     private var videoOutput: AVCaptureVideoDataOutput?
     private let frameHandler = FrameHandler()
 
@@ -32,23 +33,36 @@ final class CameraService: ObservableObject {
     }
 
     func start() {
-        guard state != .running else { return }
-        guard configureIfNeeded() else {
-            state = .failed
-            return
-        }
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+            guard !self.isRunning else { return }
+            guard self.configureIfNeeded() else {
+                self.setState(.failed)
+                return
+            }
 
-        session.startRunning()
-        state = .running
+            self.session.startRunning()
+            self.isRunning = true
+            self.setState(.running)
+        }
     }
 
     func stop() {
-        session.stopRunning()
-        state = .idle
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+            guard self.isRunning else {
+                self.setState(.idle)
+                return
+            }
+
+            self.session.stopRunning()
+            self.isRunning = false
+            self.setState(.idle)
+        }
     }
 
     private func setUnauthorized() {
-        state = .unauthorized
+        setState(.unauthorized)
     }
 
     private func configureIfNeeded() -> Bool {
@@ -87,6 +101,16 @@ final class CameraService: ObservableObject {
     func captureCurrentFrame() -> UIImage? {
         frameHandler.latestFrame
     }
+
+    private func setState(_ newState: CameraState) {
+        if Thread.isMainThread {
+            state = newState
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                self?.state = newState
+            }
+        }
+    }
 }
 
 final class FrameHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -118,4 +142,3 @@ final class FrameHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         lock.unlock()
     }
 }
-

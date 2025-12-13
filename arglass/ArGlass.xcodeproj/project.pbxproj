@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		09B119EC0E29BDEC7F70B7D5 /* BatteryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CE59B81C0E3175923BF91C /* BatteryMonitor.swift */; };
+		A1B2C3D4E5F60718901234AB /* LocationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6071890123456AC /* LocationInfo.swift */; };
+		C3D4E5F607189012345678AD /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F60718901234567890AE /* LocationService.swift */; };
 		0A7D0F819D66A3A772452939 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6057C3B3B620935FF3CF602 /* OnboardingViewModel.swift */; };
 		10C9477D410579F68304AC69 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB133D92EBF30D4044D9B03 /* HistoryView.swift */; };
 		11773F0BA75B3989811089DD /* ImageViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9927FF3C40F665C21A778D4 /* ImageViewerView.swift */; };
@@ -47,6 +49,8 @@
 
 /* Begin PBXFileReference section */
 		1A95D440BA713A360F1331C3 /* ArGlassApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArGlassApp.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6071890123456AC /* LocationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInfo.swift; sourceTree = "<group>"; };
+		D4E5F60718901234567890AE /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		1AFC5D680C6D9AA6B6AADD6D /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		274A021C55EEE5BE79AD36EF /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		277DA690D3EC86068A43C90E /* DebugStatusOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugStatusOverlay.swift; sourceTree = "<group>"; };
@@ -95,6 +99,7 @@
 				CCBAFE95F655D004080003ED /* CameraPreviewView.swift */,
 				2C4F789337D07D0324E673EB /* CameraService.swift */,
 				CA950AEDE0F13FE4B4CC6DC4 /* HistoryService.swift */,
+				D4E5F60718901234567890AE /* LocationService.swift */,
 				6D41D59D968A43BCACD976A9 /* VLMAPIClient.swift */,
 			);
 			path = Services;
@@ -230,6 +235,7 @@
 				E6C298C4DE4834DC2D199E46 /* HistoryEntry.swift */,
 				C9BA6C8C4569D324869652FF /* Interest.swift */,
 				904D008AC06564BF48C25EFB /* Landmark.swift */,
+				B2C3D4E5F6071890123456AC /* LocationInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -342,6 +348,8 @@
 				D1BB2C72B58B50A3FF23CB8A /* InterestBubbleView.swift in Sources */,
 				646C35F7F72F309D8058E2C3 /* InterestSettingsView.swift in Sources */,
 				9D985C1AF2905FCBBBD2579D /* Landmark.swift in Sources */,
+				A1B2C3D4E5F60718901234AB /* LocationInfo.swift in Sources */,
+				C3D4E5F607189012345678AD /* LocationService.swift in Sources */,
 				BF8A95CC6BD4CE1BB9E528E1 /* NeonGlow.swift in Sources */,
 				52315392BC1B8E7C35BB7E53 /* OnboardingFooterView.swift in Sources */,
 				21EDE6293BE38B70ADA14FF1 /* OnboardingView.swift in Sources */,
