@@ -2,6 +2,8 @@ import SwiftUI
 
 struct HologramPanelView: View {
     let recognitionState: HUDViewModel.RecognitionState
+    var capturedImage: UIImage?
+    var onImageTap: (() -> Void)?
 
     var body: some View {
         switch recognitionState {
@@ -91,6 +93,21 @@ struct HologramPanelView: View {
                     ChipView(label: formatBearing(target.bearingDegrees), systemImage: "location.north.line")
                     ChipView(label: "HIST", systemImage: "book")
                     Spacer()
+
+                    if let image = capturedImage {
+                        Button(action: { onImageTap?() }) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 56, height: 56)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                }
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
             }
         }

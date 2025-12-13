@@ -5,6 +5,7 @@ struct HUDRootView: View {
 
     @State private var glitchIntensity: CGFloat = 0
     @State private var showingHistory = false
+    @State private var showingImageViewer = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -34,6 +35,9 @@ struct HUDRootView: View {
         }
         .fullScreenCover(isPresented: $showingHistory) {
             HistoryView()
+        }
+        .fullScreenCover(isPresented: $showingImageViewer) {
+            ImageViewerView(image: viewModel.lastCapturedImage)
         }
     }
 
@@ -99,9 +103,13 @@ struct HUDRootView: View {
 
             Spacer()
 
-            HologramPanelView(recognitionState: viewModel.recognitionState)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 24)
+            HologramPanelView(
+                recognitionState: viewModel.recognitionState,
+                capturedImage: viewModel.lastCapturedImage,
+                onImageTap: { showingImageViewer = true }
+            )
+            .padding(.horizontal, 20)
+            .padding(.bottom, 24)
         }
         .animation(.easeInOut(duration: 0.25), value: phaseKey)
     }

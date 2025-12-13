@@ -29,6 +29,7 @@ final class HUDViewModel: ObservableObject {
     @Published var captureState: CaptureState = .idle
     @Published var errorMessage: String = ""
     @Published var isCameraPreviewEnabled: Bool = true
+    @Published var lastCapturedImage: UIImage?
 
     let cameraService = CameraService()
 
@@ -117,6 +118,7 @@ final class HUDViewModel: ObservableObject {
             let confidence = 0.88 + Double.random(in: 0.0...0.10)
             // 新しいランドマークで更新（ロック状態を維持したまま次の結果に切り替え）
             recognitionState = .locked(target: landmark, confidence: min(confidence, 0.99))
+            lastCapturedImage = image
 
             Task {
                 let entry = HistoryEntry(landmark: landmark)
@@ -136,6 +138,7 @@ final class HUDViewModel: ObservableObject {
     func setSearching() {
         cancelSimulation()
         recognitionState = .searching
+        lastCapturedImage = nil
     }
 
     func setScanning(candidate: Landmark, progress: Double) {
