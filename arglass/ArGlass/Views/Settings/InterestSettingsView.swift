@@ -16,6 +16,7 @@ struct InterestSettingsView: View {
                     // Header
                     headerSection
                         .padding(.top, geometry.safeAreaInsets.top + 16)
+                        .hudHorizontalPadding(geometry.safeAreaInsets)
 
                     // Bubbles container
                     FloatingBubblesContainer(viewModel: viewModel)
@@ -24,7 +25,8 @@ struct InterestSettingsView: View {
 
                     // Footer
                     footerSection
-                        .padding(.horizontal, 20)
+                        .hudHorizontalPadding(geometry.safeAreaInsets)
+                        .padding(.bottom, max(geometry.safeAreaInsets.bottom, 40))
                 }
             }
         }

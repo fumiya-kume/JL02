@@ -17,10 +17,10 @@ struct HistoryView: View {
 
                 VStack(spacing: 0) {
                     if viewModel.isEmpty {
-                        headerSection(safeAreaTop: geometry.safeAreaInsets.top)
+                        headerSection(safeAreaInsets: geometry.safeAreaInsets)
                         emptyState
                     } else {
-                        historyListWithHeader(safeAreaTop: geometry.safeAreaInsets.top)
+                        historyListWithHeader(safeAreaInsets: geometry.safeAreaInsets)
                     }
                 }
             }
@@ -45,7 +45,7 @@ struct HistoryView: View {
         }
     }
 
-    private func headerSection(safeAreaTop: CGFloat) -> some View {
+    private func headerSection(safeAreaInsets: EdgeInsets) -> some View {
         VStack(spacing: 0) {
             HStack {
                 Text(NSLocalizedString("history_title", comment: ""))
@@ -64,8 +64,8 @@ struct HistoryView: View {
 
                 closeButton
             }
-            .padding(.horizontal, 20)
-            .padding(.top, max(safeAreaTop, 20) + 20)
+            .padding(.top, max(safeAreaInsets.top, 20) + 20)
+            .hudHorizontalPadding(safeAreaInsets)
             .padding(.bottom, 16)
             .background(
                 LinearGradient(
@@ -77,12 +77,12 @@ struct HistoryView: View {
         }
     }
 
-    private func historyListWithHeader(safeAreaTop: CGFloat) -> some View {
+    private func historyListWithHeader(safeAreaInsets: EdgeInsets) -> some View {
         ZStack(alignment: .top) {
             ScrollView {
                 LazyVStack(spacing: 12, pinnedViews: [.sectionHeaders]) {
                     Color.clear
-                        .frame(height: 80 + max(safeAreaTop, 20))
+                        .frame(height: 80 + max(safeAreaInsets.top, 20))
 
                     ForEach(viewModel.sortedDates, id: \.self) { date in
                         Section {
@@ -101,7 +101,7 @@ struct HistoryView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 20)
+                .hudHorizontalPadding(safeAreaInsets)
                 .padding(.bottom, 40)
                 .background(
                     GeometryReader { proxy in
@@ -128,7 +128,7 @@ struct HistoryView: View {
                 }
             }
 
-            headerSection(safeAreaTop: safeAreaTop)
+            headerSection(safeAreaInsets: safeAreaInsets)
                 .opacity(isHeaderVisible ? 1 : 0)
                 .offset(y: isHeaderVisible ? 0 : -100)
         }

@@ -21,6 +21,7 @@ struct OnboardingView: View {
                     // Header
                     headerSection
                         .padding(.top, max(geometry.safeAreaInsets.top, 20) + 20)
+                        .hudHorizontalPadding(geometry.safeAreaInsets)
 
                     // Bubbles container
                     FloatingBubblesContainer(viewModel: viewModel)
@@ -41,7 +42,7 @@ struct OnboardingView: View {
                             }
                         }
                     )
-                    .padding(.horizontal, 20)
+                    .hudHorizontalPadding(geometry.safeAreaInsets)
                     .padding(.bottom, max(geometry.safeAreaInsets.bottom, 20))
                 }
             }

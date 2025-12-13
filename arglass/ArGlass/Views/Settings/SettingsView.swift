@@ -6,6 +6,8 @@ struct SettingsView: View {
 
     var body: some View {
         GeometryReader { geometry in
+            let safeRect = geometry.safeAreaInsets.safeRect(in: geometry.size)
+
             ZStack {
                 Color.black
 
@@ -16,17 +18,18 @@ struct SettingsView: View {
                     // Header
                     headerSection
                         .padding(.top, geometry.safeAreaInsets.top + 16)
+                        .hudHorizontalPadding(geometry.safeAreaInsets)
 
                     // Settings list
                     settingsList
-                        .padding(.horizontal, 20)
+                        .hudHorizontalPadding(geometry.safeAreaInsets)
                         .padding(.top, 30)
 
                     Spacer()
 
                     // Close button
                     closeButton
-                        .frame(width: geometry.size.width * 0.5)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.bottom, max(geometry.safeAreaInsets.bottom, 40))
                 }
             }

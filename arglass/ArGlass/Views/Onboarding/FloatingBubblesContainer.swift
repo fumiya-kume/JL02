@@ -5,15 +5,32 @@ struct FloatingBubblesContainer: View {
     @State private var rotation: Double = 0
     @State private var lastDragValue: CGFloat = 0
 
-    private let radiusX: CGFloat = 260  // Horizontal radius (wider for landscape)
-    private let radiusY: CGFloat = 50   // Vertical radius (very flat for landscape to avoid overlap)
+    private let radiusX: CGFloat = 260  // Max horizontal radius (designed for landscape)
+    private let radiusY: CGFloat = 50   // Max vertical radius (flat to avoid overlap)
 
     var body: some View {
         GeometryReader { geometry in
+            // Keep interactive bubbles inside safe area to avoid the notch / Dynamic Island cutout in landscape.
+            let safeRect = geometry.safeAreaInsets.safeRect(in: geometry.size)
+            let center = CGPoint(x: safeRect.midX, y: safeRect.midY)
+            let bubbleHalfWidth: CGFloat = 55
+            let bubbleHalfHeight: CGFloat = 80
+            let horizontalMargin: CGFloat = 12
+            let verticalMargin: CGFloat = 12
+            let maxRadiusX = max(0, safeRect.width / 2 - bubbleHalfWidth - horizontalMargin)
+            let maxRadiusY = max(0, safeRect.height / 2 - bubbleHalfHeight - verticalMargin)
+            let effectiveRadiusX = min(radiusX, maxRadiusX)
+            let effectiveRadiusY = min(radiusY, maxRadiusY)
+
             ZStack {
                 ForEach(Array(Interest.allInterests.enumerated()), id: \.element.id) { index, interest in
                     let angle = angleForIndex(index, total: Interest.allInterests.count) + rotation
-                    let position = positionOnEllipse(angle: angle, radiusX: radiusX, radiusY: radiusY, center: geometry.size)
+                    let position = positionOnEllipse(
+                        angle: angle,
+                        radiusX: effectiveRadiusX,
+                        radiusY: effectiveRadiusY,
+                        center: center
+                    )
                     let depth = depthForAngle(angle)
                     let scale = scaleForDepth(depth)
                     let opacity = opacityForDepth(depth)
@@ -69,10 +86,10 @@ struct FloatingBubblesContainer: View {
         return Double(index) * angleStep // Start from right (0 degrees)
     }
 
-    private func positionOnEllipse(angle: Double, radiusX: CGFloat, radiusY: CGFloat, center: CGSize) -> CGPoint {
+    private func positionOnEllipse(angle: Double, radiusX: CGFloat, radiusY: CGFloat, center: CGPoint) -> CGPoint {
         let radians = angle * .pi / 180
-        let x = center.width / 2 + radiusX * cos(radians)
-        let y = center.height / 2 + radiusY * sin(radians)
+        let x = center.x + radiusX * cos(radians)
+        let y = center.y + radiusY * sin(radians)
         return CGPoint(x: x, y: y)
     }
 }

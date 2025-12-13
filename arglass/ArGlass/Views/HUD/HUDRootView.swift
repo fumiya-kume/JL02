@@ -20,7 +20,7 @@ struct HUDRootView: View {
 
                 CaptureFlashOverlay(intensity: captureFlashIntensity)
 
-                overlay(safeAreaTop: geometry.safeAreaInsets.top)
+                overlay(safeAreaInsets: geometry.safeAreaInsets)
             }
         }
         .ignoresSafeArea()
@@ -89,7 +89,7 @@ struct HUDRootView: View {
         .contentShape(Capsule())
     }
 
-    private func overlay(safeAreaTop: CGFloat) -> some View {
+    private func overlay(safeAreaInsets: EdgeInsets) -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 10) {
                 historyButton
@@ -104,13 +104,13 @@ struct HUDRootView: View {
                 HUDDebugMenu(viewModel: viewModel)
 #endif
             }
-            .padding(.top, safeAreaTop + 16)
-            .padding(.horizontal, 20)
+            .padding(.top, safeAreaInsets.top + 16)
+            .hudHorizontalPadding(safeAreaInsets)
 
             Spacer()
 
             TargetMarkerView(recognitionState: viewModel.recognitionState)
-                .padding(.horizontal, 20)
+                .hudHorizontalPadding(safeAreaInsets)
 
             Spacer()
 
@@ -119,8 +119,8 @@ struct HUDRootView: View {
                 capturedImage: viewModel.lastCapturedImage,
                 onImageTap: { showingImageViewer = true }
             )
-            .padding(.horizontal, 20)
-            .padding(.bottom, 24)
+            .hudHorizontalPadding(safeAreaInsets)
+            .padding(.bottom, safeAreaInsets.bottom + 24)
         }
         .animation(.easeInOut(duration: 0.25), value: phaseKey)
     }
