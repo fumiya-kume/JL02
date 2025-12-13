@@ -72,6 +72,7 @@ def load_model():
             device_map="cuda" if torch.cuda.is_available() else "cpu",
             torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
             trust_remote_code=True,
+            attn_implementation='sdpa'
         )
 
         print("Model loaded successfully!")
@@ -163,7 +164,6 @@ def generate_vlm_response(image: Image.Image, text: str, temperature: float,
         inputs = processor(
             text=[text_prompt],
             images=[image],
-            padding=True,
             return_tensors="pt",
         )
 
@@ -172,15 +172,16 @@ def generate_vlm_response(image: Image.Image, text: str, temperature: float,
 
         # Generate response
         print("Starting generation...")
-        with torch.no_grad():
-            output_ids = model.generate(
-                **inputs,
-                max_new_tokens=max_new_tokens,
-                temperature=temperature,
-                top_p=top_p,
-                repetition_penalty=repetition_penalty,
-                do_sample=True,
-            )
+        with torch.inference_mode():
+            with torch.no_grad():
+                output_ids = model.generate(
+                    **inputs,
+                    max_new_tokens=max_new_tokens,
+                    temperature=temperature,
+                    top_p=top_p,
+                    repetition_penalty=repetition_penalty,
+                    do_sample=True,
+                )
 
         # Decode generated text
         generated_ids = [
