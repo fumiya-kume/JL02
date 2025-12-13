@@ -34,13 +34,16 @@ class VLMResponse(BaseModel):
 @app.post("/inference", response_model=VLMResponse)
 async def vlm_inference(
     image: UploadFile = File(..., description="Image file (PNG, JPG, etc.)"),
-    text: str = Form(..., description="Text prompt for the image"),
+    address: str = File(..., description="Adress of the location"),
+    latitude: float = File(...),
+    longitude: float = File(...),
+    text: Optional[str] = Form(None, description="Text prompt for the image"),
     temperature: Optional[float] = Form(0.7, description="Temperature for generation"),
-    top_p: Optional[float] = Form(0.95, description="Top-p value for generation"),
+    top_p: Optional[float] = Form(0.99, description="Top-p value for generation"),
     max_new_tokens: Optional[int] = Form(
-        512, description="Maximum number of new tokens"
+        128, description="Maximum number of new tokens"
     ),
-    repetition_penalty: Optional[float] = Form(1.2, description="Repetition penalty"),
+    repetition_penalty: Optional[float] = Form(1.05, description="Repetition penalty"),
 ):
     ngrok_domain = os.getenv("NGROK_DOMAIN")
     if not ngrok_domain:
@@ -49,6 +52,10 @@ async def vlm_inference(
         )
 
     image_data = await image.read()
+
+    # もしtextが文字列型ではない場合は、補完する
+    if not isinstance(text, str):
+        text = "画像中のランドマークについて、3行程度で具体的に説明してください。"
 
     async with httpx.AsyncClient(timeout=300.0) as client:
         files = {"image": (image.filename, image_data, image.content_type)}
