@@ -25,7 +25,7 @@ ai-backend/
 ### 実行方法(ローカル)
 
 ```bash
-uv run uvicorn src.main:app --host 0.0.0.0
+uv run uvicorn src.main:app --host 0.0.0.0 --reload
 ```
 
 ### 実行方法(コンテナ)
