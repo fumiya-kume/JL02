@@ -6,7 +6,7 @@ struct GlitchOverlay: View {
     var body: some View {
         Group {
             if intensity > 0.01 {
-                TimelineView(.animation) { context in
+                TimelineView(.periodic(from: .now, by: 1.0 / 15.0)) { context in
                     Canvas { canvasContext, size in
                         let t = context.date.timeIntervalSinceReferenceDate
                         for i in 0..<14 {

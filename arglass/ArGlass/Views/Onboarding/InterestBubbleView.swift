@@ -30,7 +30,7 @@ struct InterestBubbleView: View {
     }
 
     var body: some View {
-        TimelineView(.animation) { context in
+        TimelineView(.periodic(from: .now, by: 1.0 / 15.0)) { context in
             let time = context.date.timeIntervalSinceReferenceDate
             let yOffset = sin(time * frequencyY * .pi * 2 + phaseOffset) * amplitude
             let xOffset = cos(time * frequencyX * .pi * 2 + phaseOffset) * (amplitude * 0.4)

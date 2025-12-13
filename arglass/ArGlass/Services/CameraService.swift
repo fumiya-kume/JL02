@@ -115,6 +115,7 @@ final class CameraService: ObservableObject {
 
 final class FrameHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let lock = NSLock()
+    private let context = CIContext()
     private var _latestFrame: UIImage?
 
     var latestFrame: UIImage? {
@@ -131,7 +132,6 @@ final class FrameHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
         let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-        let context = CIContext()
 
         guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
 
