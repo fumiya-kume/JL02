@@ -22,7 +22,7 @@ struct SettingsView: View {
 
                     // Settings list
                     settingsList
-                        .hudHorizontalPadding(geometry.safeAreaInsets)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.top, 30)
 
                     Spacer()
