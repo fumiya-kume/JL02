@@ -125,7 +125,6 @@ struct InterestBubbleView: View {
                     .foregroundStyle(iconColor)
                     .shadow(color: isSelected ? .accentColor.opacity(0.8) : .clear, radius: 8 * scaleFactor)
                     .shadow(color: isSelected ? .accentColor.opacity(0.5) : .clear, radius: 16 * scaleFactor)
-                    .symbolEffect(.pulse, isActive: isSelected)
             }
             .frame(width: bubbleSize, height: bubbleSize)
             .neonGlow(color: glowColor, radius: glowRadius * scaleFactor, intensity: glowIntensity)
