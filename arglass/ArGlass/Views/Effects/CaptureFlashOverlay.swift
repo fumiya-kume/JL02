@@ -6,7 +6,6 @@ struct CaptureFlashOverlay: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Primary edge glow
                 RoundedRectangle(cornerRadius: 0)
                     .stroke(
                         Color.accentColor.opacity(0.8 * intensity),
@@ -14,7 +13,6 @@ struct CaptureFlashOverlay: View {
                     )
                     .blur(radius: 30)
 
-                // Secondary inner glow
                 RoundedRectangle(cornerRadius: 0)
                     .stroke(
                         Color.accentColor.opacity(0.5 * intensity),
@@ -22,7 +20,6 @@ struct CaptureFlashOverlay: View {
                     )
                     .blur(radius: 15)
 
-                // Sharp edge highlight
                 RoundedRectangle(cornerRadius: 0)
                     .stroke(
                         Color.accentColor.opacity(0.4 * intensity),
