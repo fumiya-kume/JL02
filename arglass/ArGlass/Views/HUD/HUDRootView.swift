@@ -296,7 +296,12 @@ struct HUDRootView: View {
 
         speechSpeaker.speak(text: speakText, language: "ja-JP") { [isVoiceInputEnabled] in
             guard isVoiceInputEnabled else { return }
-            self.speechTranscriber.start(localeIdentifier: "ja-JP")
+            // TTS終了直後のレースコンディションを避けるため、短いディレイを入れてから再開
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(200))
+                guard isVoiceInputEnabled else { return }
+                self.speechTranscriber.resume(localeIdentifier: "ja-JP")
+            }
         }
     }
 }
@@ -315,6 +320,9 @@ private final class SpeechSpeaker: NSObject, ObservableObject, AVSpeechSynthesiz
     override init() {
         super.init()
         synthesizer.delegate = self
+        if #available(iOS 13.0, *) {
+            synthesizer.usesApplicationAudioSession = true
+        }
     }
 
     func speak(text: String, language: String, onFinish: @escaping () -> Void) {

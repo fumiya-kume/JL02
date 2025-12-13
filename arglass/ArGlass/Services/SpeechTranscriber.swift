@@ -36,15 +36,21 @@ final class SpeechTranscriber: ObservableObject {
     private var recognitionTask: SFSpeechRecognitionTask?
 
     private var shouldKeepRunning = false
+    private var isPaused = false
     private var smoothedAudioLevel: Double = 0
     private var restartTask: Task<Void, Never>?
+    private var interruptionObserver: NSObjectProtocol?
+    private var mediaServicesResetObserver: NSObjectProtocol?
 
     func start(localeIdentifier: String = "ja-JP") {
         guard !isRunning else { return }
         lastErrorMessage = nil
         shouldKeepRunning = true
+        isPaused = false
         restartTask?.cancel()
         restartTask = nil
+
+        setupAudioSessionObservers()
 
         Task {
             do {
@@ -61,6 +67,7 @@ final class SpeechTranscriber: ObservableObject {
 
     func stop() {
         shouldKeepRunning = false
+        isPaused = false
         restartTask?.cancel()
         restartTask = nil
         stopRecording()
@@ -68,6 +75,8 @@ final class SpeechTranscriber: ObservableObject {
         finalText = ""
         audioLevel = 0
         lastErrorMessage = nil
+
+        removeAudioSessionObservers()
 
         do {
             try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
@@ -85,9 +94,31 @@ final class SpeechTranscriber: ObservableObject {
 
     /// 音声入力モードは維持したまま、認識だけ一時停止する（読み上げ時など）
     func pause() {
+        isPaused = true
         restartTask?.cancel()
         restartTask = nil
         stopRecording()
+    }
+
+    /// pause()で停止した音声認識を再開する
+    func resume(localeIdentifier: String = "ja-JP") {
+        guard shouldKeepRunning else { return }
+        guard isPaused else { return }
+        
+        isPaused = false
+        restartTask?.cancel()
+        restartTask = nil
+        
+        Task {
+            do {
+                try configureAudioSession()
+                try startRecording(localeIdentifier: localeIdentifier)
+            } catch {
+                lastErrorMessage = error.localizedDescription
+                shouldKeepRunning = false
+                stopRecording()
+            }
+        }
     }
 
     private func preparePermissions() async throws {
@@ -208,12 +239,14 @@ final class SpeechTranscriber: ObservableObject {
 
     private func restartIfNeeded() {
         guard shouldKeepRunning else { return }
+        guard !isPaused else { return }
 
         restartTask?.cancel()
         restartTask = Task { @MainActor in
             stopRecording()
             try? await Task.sleep(for: .milliseconds(250))
             guard shouldKeepRunning else { return }
+            guard !isPaused else { return }
             do {
                 try startRecording(localeIdentifier: speechRecognizer?.locale.identifier ?? "ja-JP")
             } catch {
@@ -243,6 +276,95 @@ final class SpeechTranscriber: ObservableObject {
 
         DispatchQueue.main.async { [weak self] in
             self?.audioLevel = self?.smoothedAudioLevel ?? 0
+        }
+    }
+
+    private func setupAudioSessionObservers() {
+        removeAudioSessionObservers()
+
+        let notificationCenter = NotificationCenter.default
+
+        interruptionObserver = notificationCenter.addObserver(
+            forName: AVAudioSession.interruptionNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            self?.handleAudioSessionInterruption(notification)
+        }
+
+        mediaServicesResetObserver = notificationCenter.addObserver(
+            forName: AVAudioSession.mediaServicesWereResetNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleMediaServicesReset()
+        }
+    }
+
+    private func removeAudioSessionObservers() {
+        if let observer = interruptionObserver {
+            NotificationCenter.default.removeObserver(observer)
+            interruptionObserver = nil
+        }
+        if let observer = mediaServicesResetObserver {
+            NotificationCenter.default.removeObserver(observer)
+            mediaServicesResetObserver = nil
+        }
+    }
+
+    private func handleAudioSessionInterruption(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
+            return
+        }
+
+        switch type {
+        case .began:
+            // 割り込み開始時は何もしない（pause()が呼ばれている可能性がある）
+            break
+        case .ended:
+            // 割り込み終了時、復帰可能なら再開
+            guard let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt else {
+                return
+            }
+            let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
+            if options.contains(.shouldResume) {
+                Task { @MainActor in
+                    guard self.shouldKeepRunning else { return }
+                    guard !self.isPaused else { return }
+                    // 短いディレイを入れてから復帰
+                    try? await Task.sleep(for: .milliseconds(100))
+                    guard self.shouldKeepRunning else { return }
+                    guard !self.isPaused else { return }
+                    self.restartIfNeeded()
+                }
+            }
+        @unknown default:
+            break
+        }
+    }
+
+    private func handleMediaServicesReset() {
+        // メディアサービスリセット時は、実行中なら再初期化が必要
+        guard shouldKeepRunning else { return }
+        guard !isPaused else { return }
+
+        Task { @MainActor in
+            // 既存の録音を停止
+            stopRecording()
+            // 短いディレイ後に再開を試みる
+            try? await Task.sleep(for: .milliseconds(500))
+            guard shouldKeepRunning else { return }
+            guard !isPaused else { return }
+            do {
+                try configureAudioSession()
+                try startRecording(localeIdentifier: speechRecognizer?.locale.identifier ?? "ja-JP")
+            } catch {
+                lastErrorMessage = error.localizedDescription
+                shouldKeepRunning = false
+                stopRecording()
+            }
         }
     }
 }
