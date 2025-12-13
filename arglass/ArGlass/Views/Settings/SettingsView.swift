@@ -92,6 +92,7 @@ struct SettingsView: View {
                 .foregroundStyle(.white.opacity(0.6))
                 .padding(.vertical, 14)
                 .padding(.horizontal, 32)
+                .frame(maxWidth: .infinity)
                 .background(.ultraThinMaterial, in: Capsule(style: .continuous))
                 .overlay {
                     Capsule(style: .continuous)
