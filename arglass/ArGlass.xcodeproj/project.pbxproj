@@ -1,0 +1,441 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		09B119EC0E29BDEC7F70B7D5 /* BatteryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CE59B81C0E3175923BF91C /* BatteryMonitor.swift */; };
+		17B0C3C851C3AB0BFB216852 /* GlitchOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E24AB32DC028887C50C86DE /* GlitchOverlay.swift */; };
+		1E6CB667E140BEF1C5C1A8A2 /* HologramPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C0814B3286B9FDBC56DA56 /* HologramPanelView.swift */; };
+		54200B4FD06D326EFA5F45D2 /* HUDRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F5B32DD9E3ADBCAF62B4E39 /* HUDRootView.swift */; };
+		5754C2F41B1741DBA82F50E2 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBAFE95F655D004080003ED /* CameraPreviewView.swift */; };
+		66BC43F047C8AA0989B27180 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5028A996EEED34387FFBB0 /* ContentView.swift */; };
+		7CDA4B7259450334F00F3AB8 /* ScanlinesOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD462DF9C3672D3E9061FA3 /* ScanlinesOverlay.swift */; };
+		7F3DC9BAAC407D172712C149 /* ArGlassApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A95D440BA713A360F1331C3 /* ArGlassApp.swift */; };
+		8493D7824EB5F0AA6864E976 /* HUDDebugMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92851E7418F764B61DF6E4AC /* HUDDebugMenu.swift */; };
+		9137A688904813878BAB1255 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1810F3A7A3F87EF213D7CB5 /* Assets.xcassets */; };
+		928F699B686548453911ADA4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F789337D07D0324E673EB /* CameraService.swift */; };
+		9BC1933C22D8ABBBB9B2BFE0 /* DirectionIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537366B94581A64A173B2494 /* DirectionIndicatorView.swift */; };
+		9D985C1AF2905FCBBBD2579D /* Landmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 904D008AC06564BF48C25EFB /* Landmark.swift */; };
+		AE02902C074A19D5C4267D77 /* HUDViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676D7CF0A999D258749F7F90 /* HUDViewModel.swift */; };
+		B7D5E0A620DD1BE351F98703 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47807367C880E75989B562E5 /* GlassCard.swift */; };
+		BF8A95CC6BD4CE1BB9E528E1 /* NeonGlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD46F61570CC01DF7BFE2D3 /* NeonGlow.swift */; };
+		D8A8E2FA3978E62F9CA98F34 /* TypingText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D824C050A27BE5ED754730C /* TypingText.swift */; };
+		DF32E96BD6F46556753FE9AD /* TargetMarkerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9032FF0BC4FA5878253DD30 /* TargetMarkerView.swift */; };
+		F7D4F0518FE742CCF4368FDF /* HUDStatusBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855690BED08F2CC626DAF79B /* HUDStatusBarView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1A95D440BA713A360F1331C3 /* ArGlassApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArGlassApp.swift; sourceTree = "<group>"; };
+		2C4F789337D07D0324E673EB /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		47807367C880E75989B562E5 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
+		49CE59B81C0E3175923BF91C /* BatteryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryMonitor.swift; sourceTree = "<group>"; };
+		4AD462DF9C3672D3E9061FA3 /* ScanlinesOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanlinesOverlay.swift; sourceTree = "<group>"; };
+		537366B94581A64A173B2494 /* DirectionIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionIndicatorView.swift; sourceTree = "<group>"; };
+		5841004A60FDCD99DB77B6EF /* ArGlass.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ArGlass.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D824C050A27BE5ED754730C /* TypingText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingText.swift; sourceTree = "<group>"; };
+		5DD46F61570CC01DF7BFE2D3 /* NeonGlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeonGlow.swift; sourceTree = "<group>"; };
+		6272D153D37A09C9AFE2051E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		676D7CF0A999D258749F7F90 /* HUDViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDViewModel.swift; sourceTree = "<group>"; };
+		7E24AB32DC028887C50C86DE /* GlitchOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlitchOverlay.swift; sourceTree = "<group>"; };
+		7F5B32DD9E3ADBCAF62B4E39 /* HUDRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDRootView.swift; sourceTree = "<group>"; };
+		855690BED08F2CC626DAF79B /* HUDStatusBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDStatusBarView.swift; sourceTree = "<group>"; };
+		904D008AC06564BF48C25EFB /* Landmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Landmark.swift; sourceTree = "<group>"; };
+		92851E7418F764B61DF6E4AC /* HUDDebugMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDDebugMenu.swift; sourceTree = "<group>"; };
+		9D5028A996EEED34387FFBB0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A9032FF0BC4FA5878253DD30 /* TargetMarkerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetMarkerView.swift; sourceTree = "<group>"; };
+		CCBAFE95F655D004080003ED /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		E1810F3A7A3F87EF213D7CB5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F7C0814B3286B9FDBC56DA56 /* HologramPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HologramPanelView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		02EB35C5B26C20A8AC2C6993 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				49CE59B81C0E3175923BF91C /* BatteryMonitor.swift */,
+				CCBAFE95F655D004080003ED /* CameraPreviewView.swift */,
+				2C4F789337D07D0324E673EB /* CameraService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		093B0A561FAB8FCFA40E05A1 /* HUD */ = {
+			isa = PBXGroup;
+			children = (
+				F7C0814B3286B9FDBC56DA56 /* HologramPanelView.swift */,
+				7F5B32DD9E3ADBCAF62B4E39 /* HUDRootView.swift */,
+				855690BED08F2CC626DAF79B /* HUDStatusBarView.swift */,
+				A9032FF0BC4FA5878253DD30 /* TargetMarkerView.swift */,
+			);
+			path = HUD;
+			sourceTree = "<group>";
+		};
+		0E40BDA1B333BC8FEBA7D7EC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5841004A60FDCD99DB77B6EF /* ArGlass.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3A656CAA4234205F34F1367A /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				676D7CF0A999D258749F7F90 /* HUDViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		723A46D3DAF4AF06337B20F6 = {
+			isa = PBXGroup;
+			children = (
+				9C6BF98EF17F22F038269281 /* ArGlass */,
+				0E40BDA1B333BC8FEBA7D7EC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		780F27857B4797655BF648AE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E6006AF3D71AA72E2AC522BA /* Components */,
+				9D740FF71FC6E400DCDCD70A /* Debug */,
+				88F8551D980CE782E530CF16 /* Effects */,
+				093B0A561FAB8FCFA40E05A1 /* HUD */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		88F8551D980CE782E530CF16 /* Effects */ = {
+			isa = PBXGroup;
+			children = (
+				7E24AB32DC028887C50C86DE /* GlitchOverlay.swift */,
+				5DD46F61570CC01DF7BFE2D3 /* NeonGlow.swift */,
+				4AD462DF9C3672D3E9061FA3 /* ScanlinesOverlay.swift */,
+			);
+			path = Effects;
+			sourceTree = "<group>";
+		};
+		9C6BF98EF17F22F038269281 /* ArGlass */ = {
+			isa = PBXGroup;
+			children = (
+				1A95D440BA713A360F1331C3 /* ArGlassApp.swift */,
+				9D5028A996EEED34387FFBB0 /* ContentView.swift */,
+				EB9790473072FD7D11FD06FD /* Models */,
+				F1CD37FF517EDA32664BF81C /* Resources */,
+				02EB35C5B26C20A8AC2C6993 /* Services */,
+				3A656CAA4234205F34F1367A /* ViewModel */,
+				780F27857B4797655BF648AE /* Views */,
+			);
+			path = ArGlass;
+			sourceTree = "<group>";
+		};
+		9D740FF71FC6E400DCDCD70A /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				92851E7418F764B61DF6E4AC /* HUDDebugMenu.swift */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
+		E6006AF3D71AA72E2AC522BA /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				537366B94581A64A173B2494 /* DirectionIndicatorView.swift */,
+				47807367C880E75989B562E5 /* GlassCard.swift */,
+				5D824C050A27BE5ED754730C /* TypingText.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		EB9790473072FD7D11FD06FD /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				904D008AC06564BF48C25EFB /* Landmark.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F1CD37FF517EDA32664BF81C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E1810F3A7A3F87EF213D7CB5 /* Assets.xcassets */,
+				6272D153D37A09C9AFE2051E /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A3E2016DDCB494B3CE01D578 /* ArGlass */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E9F1F43E39D41EF598F8AAD5 /* Build configuration list for PBXNativeTarget "ArGlass" */;
+			buildPhases = (
+				175289992254083370732273 /* Sources */,
+				1938575A05389FB7D9E0B5E3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ArGlass;
+			packageProductDependencies = (
+			);
+			productName = ArGlass;
+			productReference = 5841004A60FDCD99DB77B6EF /* ArGlass.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FBC4074F63F8C57467B72CF6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = C0CFC0E74D9C6C4CE5BDB4F6 /* Build configuration list for PBXProject "ArGlass" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 723A46D3DAF4AF06337B20F6;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A3E2016DDCB494B3CE01D578 /* ArGlass */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1938575A05389FB7D9E0B5E3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9137A688904813878BAB1255 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		175289992254083370732273 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7F3DC9BAAC407D172712C149 /* ArGlassApp.swift in Sources */,
+				09B119EC0E29BDEC7F70B7D5 /* BatteryMonitor.swift in Sources */,
+				5754C2F41B1741DBA82F50E2 /* CameraPreviewView.swift in Sources */,
+				928F699B686548453911ADA4 /* CameraService.swift in Sources */,
+				66BC43F047C8AA0989B27180 /* ContentView.swift in Sources */,
+				9BC1933C22D8ABBBB9B2BFE0 /* DirectionIndicatorView.swift in Sources */,
+				B7D5E0A620DD1BE351F98703 /* GlassCard.swift in Sources */,
+				17B0C3C851C3AB0BFB216852 /* GlitchOverlay.swift in Sources */,
+				8493D7824EB5F0AA6864E976 /* HUDDebugMenu.swift in Sources */,
+				54200B4FD06D326EFA5F45D2 /* HUDRootView.swift in Sources */,
+				F7D4F0518FE742CCF4368FDF /* HUDStatusBarView.swift in Sources */,
+				AE02902C074A19D5C4267D77 /* HUDViewModel.swift in Sources */,
+				1E6CB667E140BEF1C5C1A8A2 /* HologramPanelView.swift in Sources */,
+				9D985C1AF2905FCBBBD2579D /* Landmark.swift in Sources */,
+				BF8A95CC6BD4CE1BB9E528E1 /* NeonGlow.swift in Sources */,
+				7CDA4B7259450334F00F3AB8 /* ScanlinesOverlay.swift in Sources */,
+				DF32E96BD6F46556753FE9AD /* TargetMarkerView.swift in Sources */,
+				D8A8E2FA3978E62F9CA98F34 /* TypingText.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		9617973AB885633EB7ECF2EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = ArGlass/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.fumiya-kume.arglass";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		A4EB93A3229DCA7F4FA298DD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D68B44E047627317C55800A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = ArGlass/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.fumiya-kume.arglass";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		ED74C6636E5D8F8934B04D85 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C0CFC0E74D9C6C4CE5BDB4F6 /* Build configuration list for PBXProject "ArGlass" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4EB93A3229DCA7F4FA298DD /* Debug */,
+				ED74C6636E5D8F8934B04D85 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E9F1F43E39D41EF598F8AAD5 /* Build configuration list for PBXNativeTarget "ArGlass" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D68B44E047627317C55800A4 /* Debug */,
+				9617973AB885633EB7ECF2EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FBC4074F63F8C57467B72CF6 /* Project object */;
+}
