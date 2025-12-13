@@ -1,0 +1,27 @@
+/* Onboarding */
+"onboarding_title" = "興味のあるトピックは？";
+"onboarding_subtitle" = "3〜5つのトピックを選んで体験をカスタマイズ";
+"onboarding_select_at_least" = "%d個以上選んでください";
+"onboarding_select_more" = "あと%d個選んでください";
+"onboarding_selected_count" = "%d個選択中";
+"onboarding_maximum" = "最大%d個まで";
+"onboarding_continue" = "続ける";
+"onboarding_skip" = "スキップ";
+
+/* Interest Categories */
+"interest_history" = "歴史";
+"interest_finance" = "金融";
+"interest_technology" = "テクノロジー";
+"interest_science" = "科学";
+"interest_art" = "アート";
+"interest_sports" = "スポーツ";
+"interest_music" = "音楽";
+"interest_travel" = "旅行";
+"interest_food" = "グルメ";
+"interest_nature" = "自然";
+
+/* Settings */
+"settings_title" = "設定";
+"settings_interests" = "興味";
+"settings_edit_interests" = "興味を編集";
+"settings_done" = "完了";

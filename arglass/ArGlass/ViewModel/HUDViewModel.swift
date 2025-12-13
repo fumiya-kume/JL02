@@ -9,13 +9,34 @@ final class HUDViewModel: ObservableObject {
         case locked(target: Landmark, confidence: Double)
     }
 
+    enum APIRequestState: Equatable {
+        case idle
+        case requesting
+        case success(responseTime: TimeInterval)
+        case error(message: String)
+    }
+
+    enum CaptureState: Equatable {
+        case idle
+        case captured(imageSizeKB: Double)
+        case failed
+    }
+
     @Published var recognitionState: RecognitionState = .searching
     @Published var isConnected: Bool = true
+    @Published var isAutoInferenceEnabled: Bool = false
+    @Published var apiRequestState: APIRequestState = .idle
+    @Published var captureState: CaptureState = .idle
+    @Published var showErrorAlert: Bool = false
+    @Published var errorMessage: String = ""
 
     let cameraService = CameraService()
 
     private var startupTask: Task<Void, Never>?
     private var simulationTask: Task<Void, Never>?
+    private var inferenceTask: Task<Void, Never>?
+
+    private let inferenceInterval: TimeInterval = 4.0
 
     func start() {
         startupTask?.cancel()
@@ -28,9 +49,62 @@ final class HUDViewModel: ObservableObject {
     func stop() {
         startupTask?.cancel()
         simulationTask?.cancel()
+        inferenceTask?.cancel()
         startupTask = nil
         simulationTask = nil
+        inferenceTask = nil
         cameraService.stop()
+    }
+
+    func startAutoInference() {
+        guard !isAutoInferenceEnabled else { return }
+        isAutoInferenceEnabled = true
+        inferenceTask?.cancel()
+        inferenceTask = Task { [weak self] in
+            while !Task.isCancelled {
+                guard let self else { return }
+                await self.performInference()
+                try? await Task.sleep(for: .seconds(self.inferenceInterval))
+            }
+        }
+    }
+
+    func stopAutoInference() {
+        isAutoInferenceEnabled = false
+        inferenceTask?.cancel()
+        inferenceTask = nil
+    }
+
+    private func performInference() async {
+        guard let image = cameraService.captureCurrentFrame() else {
+            captureState = .failed
+            errorMessage = "カメラからの画像取得に失敗しました"
+            showErrorAlert = true
+            return
+        }
+
+        if let imageData = image.jpegData(compressionQuality: 0.8) {
+            let sizeKB = Double(imageData.count) / 1024.0
+            captureState = .captured(imageSizeKB: sizeKB)
+        }
+
+        recognitionState = .searching
+        apiRequestState = .requesting
+
+        let startTime = Date()
+
+        do {
+            let landmark = try await VLMAPIClient.shared.inferLandmark(image: image)
+            let elapsed = Date().timeIntervalSince(startTime)
+            apiRequestState = .success(responseTime: elapsed)
+            let confidence = 0.88 + Double.random(in: 0.0...0.10)
+            recognitionState = .locked(target: landmark, confidence: min(confidence, 0.99))
+        } catch {
+            apiRequestState = .error(message: error.localizedDescription)
+            recognitionState = .searching
+            errorMessage = error.localizedDescription
+            showErrorAlert = true
+        }
     }
 
     func setSearching() {

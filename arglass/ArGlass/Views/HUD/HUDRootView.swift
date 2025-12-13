@@ -6,15 +6,17 @@ struct HUDRootView: View {
     @State private var glitchIntensity: CGFloat = 0
 
     var body: some View {
-        ZStack {
-            background
+        GeometryReader { geometry in
+            ZStack {
+                background
 
-            ScanlinesOverlay()
-                .opacity(0.20)
+                ScanlinesOverlay()
+                    .opacity(0.20)
 
-            GlitchOverlay(intensity: glitchIntensity)
+                GlitchOverlay(intensity: glitchIntensity)
 
-            overlay
+                overlay(safeAreaTop: geometry.safeAreaInsets.top)
+            }
         }
         .ignoresSafeArea()
         .statusBarHidden(true)
@@ -22,6 +24,17 @@ struct HUDRootView: View {
             if case .locked = newValue {
                 triggerGlitch()
             }
+        }
+        .alert("Inference Failed", isPresented: $viewModel.showErrorAlert) {
+            Button("OK") { }
+        } message: {
+            Text(viewModel.errorMessage)
+        }
+        .onAppear {
+            viewModel.start()
+        }
+        .onDisappear {
+            viewModel.stop()
         }
     }
 
@@ -40,14 +53,15 @@ struct HUDRootView: View {
         Color.black
     }
 
-    private var overlay: some View {
+    private func overlay(safeAreaTop: CGFloat) -> some View {
         VStack(spacing: 0) {
 #if DEBUG
             HStack(spacing: 10) {
+                DebugStatusOverlay(viewModel: viewModel)
                 Spacer(minLength: 0)
                 HUDDebugMenu(viewModel: viewModel)
             }
-            .padding(.top, 10)
+            .padding(.top, safeAreaTop + 10)
             .padding(.horizontal, 12)
 #endif
 

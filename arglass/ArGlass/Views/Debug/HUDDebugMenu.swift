@@ -2,9 +2,31 @@ import SwiftUI
 
 struct HUDDebugMenu: View {
     @ObservedObject var viewModel: HUDViewModel
+    @State private var showingSettings = false
 
     var body: some View {
         Menu {
+            Button {
+                showingSettings = true
+            } label: {
+                Label("Settings", systemImage: "gearshape")
+            }
+
+            Divider()
+
+            Button {
+                if viewModel.isAutoInferenceEnabled {
+                    viewModel.stopAutoInference()
+                } else {
+                    viewModel.startAutoInference()
+                }
+            } label: {
+                Label(
+                    viewModel.isAutoInferenceEnabled ? "Stop VLM inference" : "Start VLM inference",
+                    systemImage: viewModel.isAutoInferenceEnabled ? "stop.fill" : "camera.fill"
+                )
+            }
+
             Button {
                 viewModel.playDemoSequence()
             } label: {
@@ -71,6 +93,9 @@ struct HUDDebugMenu: View {
                         )
                 }
                 .neonGlow(color: .accentColor, radius: 10, intensity: 0.14)
+        }
+        .fullScreenCover(isPresented: $showingSettings) {
+            SettingsView()
         }
     }
 }

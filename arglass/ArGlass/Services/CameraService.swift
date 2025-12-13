@@ -1,5 +1,6 @@
 import AVFoundation
 import Foundation
+import UIKit
 
 @MainActor
 final class CameraService: ObservableObject {
@@ -14,6 +15,8 @@ final class CameraService: ObservableObject {
     @Published private(set) var state: CameraState = .idle
 
     private var isConfigured = false
+    private var videoOutput: AVCaptureVideoDataOutput?
+    private let frameHandler = FrameHandler()
 
     func requestAccessAndStart() async {
         let status = AVCaptureDevice.authorizationStatus(for: .video)
@@ -63,9 +66,56 @@ final class CameraService: ObservableObject {
         }
 
         session.addInput(input)
+
+        let output = AVCaptureVideoDataOutput()
+        output.setSampleBufferDelegate(frameHandler, queue: DispatchQueue(label: "camera.frame"))
+        output.alwaysDiscardsLateVideoFrames = true
+
+        guard session.canAddOutput(output) else {
+            session.commitConfiguration()
+            return false
+        }
+
+        session.addOutput(output)
+        videoOutput = output
+
         session.commitConfiguration()
         isConfigured = true
         return true
+    }
+
+    func captureCurrentFrame() -> UIImage? {
+        frameHandler.latestFrame
+    }
+}
+
+final class FrameHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+    private let lock = NSLock()
+    private var _latestFrame: UIImage?
+
+    var latestFrame: UIImage? {
+        lock.lock()
+        defer { lock.unlock() }
+        return _latestFrame
+    }
+
+    func captureOutput(
+        _ output: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from connection: AVCaptureConnection
+    ) {
+        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+
+        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+        let context = CIContext()
+
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+
+        let image = UIImage(cgImage: cgImage)
+
+        lock.lock()
+        _latestFrame = image
+        lock.unlock()
     }
 }
 

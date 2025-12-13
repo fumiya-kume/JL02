@@ -1,0 +1,27 @@
+/* Onboarding */
+"onboarding_title" = "What interests you?";
+"onboarding_subtitle" = "Select 3-5 topics to personalize your experience";
+"onboarding_select_at_least" = "Select at least %d interests";
+"onboarding_select_more" = "Select %d more";
+"onboarding_selected_count" = "You've selected %d";
+"onboarding_maximum" = "Maximum %d interests";
+"onboarding_continue" = "Continue";
+"onboarding_skip" = "Skip";
+
+/* Interest Categories */
+"interest_history" = "History";
+"interest_finance" = "Finance";
+"interest_technology" = "Technology";
+"interest_science" = "Science";
+"interest_art" = "Art";
+"interest_sports" = "Sports";
+"interest_music" = "Music";
+"interest_travel" = "Travel";
+"interest_food" = "Food";
+"interest_nature" = "Nature";
+
+/* Settings */
+"settings_title" = "Settings";
+"settings_interests" = "Interests";
+"settings_edit_interests" = "Edit Interests";
+"settings_done" = "Done";
