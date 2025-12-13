@@ -76,6 +76,20 @@ final class SpeechTranscriber: ObservableObject {
         }
     }
 
+    /// 現在のpartialTextをfinalTextとして確定させ、音声認識を再開する
+    func finalizeCurrentText() {
+        guard isRunning, !partialText.isEmpty else { return }
+        finalText = partialText
+        restartIfNeeded()
+    }
+
+    /// 音声入力モードは維持したまま、認識だけ一時停止する（読み上げ時など）
+    func pause() {
+        restartTask?.cancel()
+        restartTask = nil
+        stopRecording()
+    }
+
     private func preparePermissions() async throws {
         let speechStatus = await requestSpeechAuthorizationIfNeeded()
         guard speechStatus == .authorized else {
@@ -120,7 +134,8 @@ final class SpeechTranscriber: ObservableObject {
     private func configureAudioSession() throws {
         let audioSession = AVAudioSession.sharedInstance()
         do {
-            try audioSession.setCategory(.record, mode: .measurement, options: [.duckOthers])
+            // 読み上げ（再生）と音声認識（録音）を同居させるため playAndRecord を使用する
+            try audioSession.setCategory(.playAndRecord, mode: .measurement, options: [.duckOthers, .defaultToSpeaker, .allowBluetooth])
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         } catch {
             throw TranscriberError.audioSessionSetupFailed(error.localizedDescription)
