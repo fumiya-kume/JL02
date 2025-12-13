@@ -35,7 +35,7 @@ struct HUDStatusBarView: View {
         HStack(spacing: 6) {
             Image(systemName: isConnected ? "wifi" : "wifi.slash")
                 .font(.system(size: 12, weight: .semibold))
-            Text(isConnected ? "ONLINE" : "OFFLINE")
+            Text(isConnected ? NSLocalizedString("hud_status_online", comment: "") : NSLocalizedString("hud_status_offline", comment: ""))
                 .font(.system(size: 11, weight: .semibold, design: .monospaced))
         }
         .foregroundStyle(Color.accentColor.opacity(isConnected ? 0.90 : 0.55))

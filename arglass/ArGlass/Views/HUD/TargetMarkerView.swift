@@ -11,7 +11,7 @@ struct TargetMarkerView: View {
             case let .scanning(candidate, progress):
                 markerView(
                     title: candidate.name,
-                    subtitle: "SCANNING",
+                    subtitle: NSLocalizedString("hud_badge_scanning", comment: ""),
                     progress: progress,
                     distanceMeters: candidate.distanceMeters,
                     bearingDegrees: candidate.bearingDegrees,
@@ -20,7 +20,7 @@ struct TargetMarkerView: View {
             case let .locked(target, confidence):
                 markerView(
                     title: target.name,
-                    subtitle: String(format: "LOCKED • %.0f%%", confidence * 100),
+                    subtitle: String(format: "%@ • %.0f%%", NSLocalizedString("hud_badge_locked", comment: ""), confidence * 100),
                     progress: 1,
                     distanceMeters: target.distanceMeters,
                     bearingDegrees: target.bearingDegrees,
@@ -41,7 +41,7 @@ struct TargetMarkerView: View {
                 ProgressView()
                     .tint(Color.accentColor.opacity(0.85))
             }
-            Text("ランドマークを検索中…")
+            Text(NSLocalizedString("hud_searching_landmarks", comment: ""))
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.white.opacity(0.75))
         }

@@ -84,7 +84,7 @@ struct SettingsView: View {
 
     private var closeButton: some View {
         Button(action: { dismiss() }) {
-            Text("Close")
+            Text(NSLocalizedString("settings_close", comment: ""))
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(.white.opacity(0.6))
                 .padding(.vertical, 14)

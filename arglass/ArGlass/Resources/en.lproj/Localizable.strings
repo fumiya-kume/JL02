@@ -37,3 +37,28 @@
 "history_clear_confirm_title" = "Clear History";
 "history_clear_confirm_message" = "Are you sure you want to delete all history?";
 "history_cancel" = "Cancel";
+
+/* HUD */
+"hud_guide_standby" = "Guide Standby";
+"hud_guide_standby_description" = "Automatically recognizes landmarks that come into view.";
+"hud_scanning_analyzing" = "Analyzing outline and texture...";
+"hud_year_built" = "Year Built";
+"hud_badge_scanning" = "SCANNING";
+"hud_badge_locked" = "LOCKED";
+"hud_chip_history" = "HIST";
+"hud_searching_landmarks" = "Searching for landmarks...";
+"hud_status_online" = "ONLINE";
+"hud_status_offline" = "OFFLINE";
+
+/* Compass Directions */
+"compass_n" = "N";
+"compass_ne" = "NE";
+"compass_e" = "E";
+"compass_se" = "SE";
+"compass_s" = "S";
+"compass_sw" = "SW";
+"compass_w" = "W";
+"compass_nw" = "NW";
+
+/* Settings Additional */
+"settings_close" = "Close";
