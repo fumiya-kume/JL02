@@ -4,6 +4,7 @@ struct HUDRootView: View {
     @ObservedObject var viewModel: HUDViewModel
 
     @State private var glitchIntensity: CGFloat = 0
+    @State private var captureFlashIntensity: CGFloat = 0
     @State private var showingHistory = false
     @State private var showingImageViewer = false
 
@@ -17,6 +18,8 @@ struct HUDRootView: View {
 
                 GlitchOverlay(intensity: glitchIntensity)
 
+                CaptureFlashOverlay(intensity: captureFlashIntensity)
+
                 overlay(safeAreaTop: geometry.safeAreaInsets.top)
             }
         }
@@ -24,6 +27,7 @@ struct HUDRootView: View {
         .statusBarHidden(true)
         .onChange(of: viewModel.recognitionState) { _, newValue in
             if case .locked = newValue {
+                triggerCaptureFlash()
                 triggerGlitch()
             }
         }
@@ -37,7 +41,7 @@ struct HUDRootView: View {
             HistoryView()
         }
         .fullScreenCover(isPresented: $showingImageViewer) {
-            ImageViewerView(image: viewModel.lastCapturedImage)
+            ImageViewerView(image: viewModel.lastCapturedImage, subtitle: currentSubtitle)
         }
     }
 
@@ -50,6 +54,13 @@ struct HUDRootView: View {
         case .locked:
             2
         }
+    }
+
+    private var currentSubtitle: String? {
+        if case .locked(let landmark, _) = viewModel.recognitionState {
+            return landmark.subtitle
+        }
+        return nil
     }
 
     @ViewBuilder
@@ -118,6 +129,13 @@ struct HUDRootView: View {
         glitchIntensity = 1
         withAnimation(.easeOut(duration: 0.65)) {
             glitchIntensity = 0
+        }
+    }
+
+    private func triggerCaptureFlash() {
+        captureFlashIntensity = 1
+        withAnimation(.easeOut(duration: 0.4)) {
+            captureFlashIntensity = 0
         }
     }
 }

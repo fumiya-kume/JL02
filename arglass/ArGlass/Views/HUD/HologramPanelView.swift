@@ -28,10 +28,10 @@ struct HologramPanelView: View {
                     .neonGlow(color: .accentColor, radius: 10, intensity: 0.18)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("ガイド待機中")
+                    Text(NSLocalizedString("hud_guide_standby", comment: ""))
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(.white.opacity(0.9))
-                    Text("視界に入ったランドマークを自動認識します。")
+                    Text(NSLocalizedString("hud_guide_standby_description", comment: ""))
                         .font(.system(size: 12))
                         .foregroundStyle(.white.opacity(0.7))
                 }
@@ -47,13 +47,13 @@ struct HologramPanelView: View {
             VStack(alignment: .leading, spacing: 10) {
                 header(
                     title: candidate.name,
-                    badge: "SCANNING",
+                    badge: NSLocalizedString("hud_badge_scanning", comment: ""),
                     accent: .accentColor,
                     trailing: String(format: "%.0f%%", progress * 100)
                 )
 
                 TypingText(
-                    text: "輪郭・テクスチャを解析中…",
+                    text: NSLocalizedString("hud_scanning_analyzing", comment: ""),
                     characterDelay: .milliseconds(26)
                 )
                 .font(.system(size: 13, weight: .semibold))
@@ -68,14 +68,14 @@ struct HologramPanelView: View {
             VStack(alignment: .leading, spacing: 12) {
                 header(
                     title: target.name,
-                    badge: "LOCKED",
+                    badge: NSLocalizedString("hud_badge_locked", comment: ""),
                     accent: .accentColor,
                     trailing: String(format: "%.0f%%", confidence * 100)
                 )
 
                 HStack(alignment: .top, spacing: 12) {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("建築年 • \(target.yearBuilt)")
+                        Text("\(NSLocalizedString("hud_year_built", comment: "")) • \(target.yearBuilt)")
                             .font(.system(size: 12, weight: .semibold, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.75))
 
@@ -110,7 +110,7 @@ struct HologramPanelView: View {
                 HStack(spacing: 10) {
                     ChipView(label: formatDistance(target.distanceMeters), systemImage: "ruler")
                     ChipView(label: formatBearing(target.bearingDegrees), systemImage: "location.north.line")
-                    ChipView(label: "HIST", systemImage: "book")
+                    ChipView(label: NSLocalizedString("hud_chip_history", comment: ""), systemImage: "book")
                     Spacer()
                 }
             }

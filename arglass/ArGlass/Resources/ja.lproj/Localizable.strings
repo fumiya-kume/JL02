@@ -37,3 +37,28 @@
 "history_clear_confirm_title" = "履歴を削除";
 "history_clear_confirm_message" = "すべての履歴を削除してもよろしいですか？";
 "history_cancel" = "キャンセル";
+
+/* HUD */
+"hud_guide_standby" = "ガイド待機中";
+"hud_guide_standby_description" = "視界に入ったランドマークを自動認識します。";
+"hud_scanning_analyzing" = "輪郭・テクスチャを解析中…";
+"hud_year_built" = "建築年";
+"hud_badge_scanning" = "SCANNING";
+"hud_badge_locked" = "LOCKED";
+"hud_chip_history" = "HIST";
+"hud_searching_landmarks" = "ランドマークを検索中…";
+"hud_status_online" = "ONLINE";
+"hud_status_offline" = "OFFLINE";
+
+/* Compass Directions */
+"compass_n" = "北";
+"compass_ne" = "北東";
+"compass_e" = "東";
+"compass_se" = "南東";
+"compass_s" = "南";
+"compass_sw" = "南西";
+"compass_w" = "西";
+"compass_nw" = "北西";
+
+/* Settings Additional */
+"settings_close" = "閉じる";
