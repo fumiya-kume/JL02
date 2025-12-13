@@ -140,7 +140,7 @@ final class HUDViewModelTests: XCTestCase {
         XCTAssertTrue(sut.errorMessage.isEmpty)
         
         // Verify history was saved
-        await mockHistoryService.addEntry(HistoryEntry(name: "", yearBuilt: "", subtitle: "", history: "", distanceMeters: 0, bearingDegrees: 0), image: nil)
+        await mockHistoryService.addEntry(HistoryEntry(name: "", yearBuilt: "", subtitle: "", history: ""), image: nil)
         let callCount = await mockHistoryService.getAddEntryCallCount()
         XCTAssertEqual(callCount, 2) // One from performInference, one from our manual call
     }

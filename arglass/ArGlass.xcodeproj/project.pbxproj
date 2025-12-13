@@ -41,7 +41,6 @@
 		944461E997C379B5DFEE30DE /* DebugStatusOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277DA690D3EC86068A43C90E /* DebugStatusOverlay.swift */; };
 		96EF82EA8EA334877777AB14 /* LocationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD3EF08DBBC1511026933F7 /* LocationInfo.swift */; };
 		979F3BF80221430DC91D0A03 /* CaptureOrientationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBBCA1D24339A1E3E862AE5 /* CaptureOrientationTests.swift */; };
-		9BC1933C22D8ABBBB9B2BFE0 /* DirectionIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537366B94581A64A173B2494 /* DirectionIndicatorView.swift */; };
 		9D985C1AF2905FCBBBD2579D /* Landmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 904D008AC06564BF48C25EFB /* Landmark.swift */; };
 		A107E98986EC9059F75528EE /* CaptureFlashOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE1984BB44B4E67CC8CB7F /* CaptureFlashOverlay.swift */; };
 		A1F79A81CEE0FE98C498E4C9 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E02C80854248FE12D01EB1A2 /* Localizable.strings */; };
@@ -99,7 +98,6 @@
 		4C8493151C7707C09AA6B3CD /* OnboardingFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFooterView.swift; sourceTree = "<group>"; };
 		505AEA5A4EFBE071F1E67568 /* LocationInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInfoTests.swift; sourceTree = "<group>"; };
 		515B0F8F6991FA12316B4CB4 /* OnboardingViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModelTests.swift; sourceTree = "<group>"; };
-		537366B94581A64A173B2494 /* DirectionIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionIndicatorView.swift; sourceTree = "<group>"; };
 		5841004A60FDCD99DB77B6EF /* ArGlass.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ArGlass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D824C050A27BE5ED754730C /* TypingText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingText.swift; sourceTree = "<group>"; };
 		5DAE1984BB44B4E67CC8CB7F /* CaptureFlashOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureFlashOverlay.swift; sourceTree = "<group>"; };
@@ -327,7 +325,6 @@
 		E6006AF3D71AA72E2AC522BA /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				537366B94581A64A173B2494 /* DirectionIndicatorView.swift */,
 				47807367C880E75989B562E5 /* GlassCard.swift */,
 				26C0DF4C5287D8C3AAD42133 /* HUDSafeArea.swift */,
 				987B0DF5BD55C26F32A4BE3A /* HUDTopCapsuleStyle.swift */,
@@ -466,7 +463,6 @@
 				0992DE1D8CCEF529BE1BED21 /* CaptureOrientation.swift in Sources */,
 				66BC43F047C8AA0989B27180 /* ContentView.swift in Sources */,
 				944461E997C379B5DFEE30DE /* DebugStatusOverlay.swift in Sources */,
-				9BC1933C22D8ABBBB9B2BFE0 /* DirectionIndicatorView.swift in Sources */,
 				42D6F5158DF459DCA922CBCB /* FloatingBubblesContainer.swift in Sources */,
 				B7D5E0A620DD1BE351F98703 /* GlassCard.swift in Sources */,
 				17B0C3C851C3AB0BFB216852 /* GlitchOverlay.swift in Sources */,

@@ -6,8 +6,6 @@ struct HistoryEntry: Identifiable, Codable, Equatable {
     let yearBuilt: String
     let subtitle: String
     let history: String
-    let distanceMeters: Double
-    let bearingDegrees: Double
     let timestamp: Date
     let imageFileName: String?
     let captureOrientation: CaptureOrientation?
@@ -18,8 +16,6 @@ struct HistoryEntry: Identifiable, Codable, Equatable {
         yearBuilt: String,
         subtitle: String,
         history: String,
-        distanceMeters: Double,
-        bearingDegrees: Double,
         timestamp: Date = Date(),
         imageFileName: String? = nil,
         captureOrientation: CaptureOrientation? = nil
@@ -29,8 +25,6 @@ struct HistoryEntry: Identifiable, Codable, Equatable {
         self.yearBuilt = yearBuilt
         self.subtitle = subtitle
         self.history = history
-        self.distanceMeters = distanceMeters
-        self.bearingDegrees = bearingDegrees
         self.timestamp = timestamp
         self.imageFileName = imageFileName
         self.captureOrientation = captureOrientation
@@ -42,8 +36,6 @@ struct HistoryEntry: Identifiable, Codable, Equatable {
         self.yearBuilt = landmark.yearBuilt
         self.subtitle = landmark.subtitle
         self.history = landmark.history
-        self.distanceMeters = landmark.distanceMeters
-        self.bearingDegrees = landmark.bearingDegrees
         self.timestamp = timestamp
         self.imageFileName = imageFileName
         self.captureOrientation = captureOrientation

@@ -51,16 +51,6 @@
 "hud_status_offline" = "OFFLINE";
 "hud_area_info" = "周辺情報";
 
-/* Compass Directions */
-"compass_n" = "北";
-"compass_ne" = "北東";
-"compass_e" = "東";
-"compass_se" = "南東";
-"compass_s" = "南";
-"compass_sw" = "南西";
-"compass_w" = "西";
-"compass_nw" = "北西";
-
 /* Settings Additional */
 "settings_close" = "閉じる";
 

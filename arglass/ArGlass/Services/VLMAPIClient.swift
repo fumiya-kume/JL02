@@ -198,9 +198,7 @@ actor VLMAPIClient: VLMAPIClientProtocol {
             name: landmarkResponse.name,
             yearBuilt: landmarkResponse.yearBuilt,
             subtitle: landmarkResponse.subtitle,
-            history: landmarkResponse.history,
-            distanceMeters: 0,
-            bearingDegrees: 0
+            history: landmarkResponse.history
         )
     }
 

@@ -82,8 +82,6 @@ actor HistoryService: HistoryServiceProtocol {
                     yearBuilt: entry.yearBuilt,
                     subtitle: entry.subtitle,
                     history: entry.history,
-                    distanceMeters: entry.distanceMeters,
-                    bearingDegrees: entry.bearingDegrees,
                     timestamp: entry.timestamp,
                     imageFileName: imageFileName,
                     captureOrientation: entry.captureOrientation
