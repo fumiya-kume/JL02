@@ -96,7 +96,9 @@ struct InterestBubbleView: View {
 
                 Image(systemName: interest.icon)
                     .font(.system(size: 32, weight: .semibold))
-                    .foregroundStyle(foregroundColor)
+                    .foregroundStyle(iconColor)
+                    .shadow(color: isSelected ? .accentColor.opacity(0.8) : .clear, radius: 8)
+                    .shadow(color: isSelected ? .accentColor.opacity(0.5) : .clear, radius: 16)
                     .symbolEffect(.pulse, isActive: isSelected)
             }
             .frame(width: 110, height: 110)
@@ -119,6 +121,16 @@ struct InterestBubbleView: View {
     private var foregroundColor: Color {
         if isSelected {
             return .white.opacity(0.95)
+        } else if canSelect {
+            return .white.opacity(0.75)
+        } else {
+            return .white.opacity(0.4)
+        }
+    }
+
+    private var iconColor: Color {
+        if isSelected {
+            return .accentColor
         } else if canSelect {
             return .white.opacity(0.75)
         } else {
