@@ -1,6 +1,6 @@
 import Foundation
 
-struct Landmark: Identifiable, Equatable {
+struct Landmark: Identifiable, Equatable, Codable {
     let id: UUID
     let name: String
     let yearBuilt: String

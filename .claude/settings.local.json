@@ -16,7 +16,12 @@
       "Bash(xargs:*)",
       "Bash(tree:*)",
       "Bash(gh run:*)",
-      "Bash(gh pr view:*)"
+      "Bash(gh pr view:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 diff)",
+      "Bash(gh run watch:*)",
+      "Bash(gh pr list:*)"
     ]
   }
 }

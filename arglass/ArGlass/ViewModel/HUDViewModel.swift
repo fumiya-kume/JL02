@@ -31,8 +31,10 @@ final class HUDViewModel: ObservableObject {
     @Published var isCameraPreviewEnabled: Bool = true
     @Published var lastCapturedImage: UIImage?
 
-    let cameraService = CameraService()
-    let locationService = LocationService()
+    let cameraService: CameraServiceProtocol
+    let locationService: LocationServiceProtocol
+    private let vlmAPIClient: VLMAPIClientProtocol
+    private let historyService: HistoryServiceProtocol
 
     private var startupTask: Task<Void, Never>?
     private var inferenceTask: Task<Void, Never>?
@@ -40,6 +42,18 @@ final class HUDViewModel: ObservableObject {
     private let inferenceInterval: TimeInterval = 4.0
     private var consecutiveErrorCount: Int = 0
     private let maxRetries: Int = 3
+
+    init(
+        cameraService: CameraServiceProtocol? = nil,
+        locationService: LocationServiceProtocol? = nil,
+        vlmAPIClient: VLMAPIClientProtocol = VLMAPIClient.shared,
+        historyService: HistoryServiceProtocol = HistoryService.shared
+    ) {
+        self.cameraService = cameraService ?? CameraService()
+        self.locationService = locationService ?? LocationService()
+        self.vlmAPIClient = vlmAPIClient
+        self.historyService = historyService
+    }
 
     func start() {
         startupTask?.cancel()
@@ -52,10 +66,9 @@ final class HUDViewModel: ObservableObject {
     }
 
     func stop() {
+        stopAutoInference()
         startupTask?.cancel()
-        inferenceTask?.cancel()
         startupTask = nil
-        inferenceTask = nil
         cameraService.stop()
         locationService.stopUpdating()
     }
@@ -89,7 +102,7 @@ final class HUDViewModel: ObservableObject {
         inferenceTask = nil
     }
 
-    private func performInference() async -> Bool {
+    func performInference() async -> Bool {
         guard let image = cameraService.captureCurrentFrame() else {
             captureState = .failed
             errorMessage = "カメラからの画像取得に失敗しました"
@@ -118,7 +131,7 @@ final class HUDViewModel: ObservableObject {
 
         do {
             let interests = OnboardingViewModel.getSelectedInterests()
-            let landmark = try await VLMAPIClient.shared.inferLandmark(
+            let landmark = try await vlmAPIClient.inferLandmark(
                 jpegData: jpegData,
                 locationInfo: locationService.currentLocation,
                 interests: interests
@@ -131,7 +144,7 @@ final class HUDViewModel: ObservableObject {
 
             Task {
                 let entry = HistoryEntry(landmark: landmark)
-                await HistoryService.shared.addEntry(entry, image: image)
+                await historyService.addEntry(entry, image: image)
             }
 
             return true
