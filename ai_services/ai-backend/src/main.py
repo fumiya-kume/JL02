@@ -59,6 +59,7 @@ async def vlm_inference(
     # もしtextが文字列型ではない場合は、補完する
     text = text or "画像中のランドマークについて、3行程度で具体的に説明してください。"
 
+    text = f"あなたは今、{address}にいます。\n" + text
     async with httpx.AsyncClient(timeout=300.0) as client:
         files = {"image": (image.filename, image_data, image.content_type)}
         data = {
