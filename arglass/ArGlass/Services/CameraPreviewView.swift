@@ -1,4 +1,5 @@
 import AVFoundation
+import Combine
 import SwiftUI
 import UIKit
 
@@ -20,6 +21,8 @@ struct CameraPreviewView: UIViewRepresentable {
 final class PreviewView: UIView {
     override class var layerClass: AnyClass { AVCaptureVideoPreviewLayer.self }
 
+    private var cancellables = Set<AnyCancellable>()
+
     var videoPreviewLayer: AVCaptureVideoPreviewLayer {
         // swiftlint:disable:next force_cast
         layer as! AVCaptureVideoPreviewLayer
@@ -27,6 +30,16 @@ final class PreviewView: UIView {
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
+
+        // connection が設定されたら回転を更新
+        videoPreviewLayer.publisher(for: \.connection)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateVideoRotation()
+            }
+            .store(in: &cancellables)
+
+        // 既に connection がある場合は即座に更新
         updateVideoRotation()
 
         NotificationCenter.default.addObserver(
@@ -38,6 +51,7 @@ final class PreviewView: UIView {
     }
 
     override func removeFromSuperview() {
+        cancellables.removeAll()
         NotificationCenter.default.removeObserver(self)
         super.removeFromSuperview()
     }

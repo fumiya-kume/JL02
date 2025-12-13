@@ -158,7 +158,15 @@ actor VLMAPIClient {
             throw VLMError.parsingFailed
         }
 
-        let jsonString = String(text[jsonStart...jsonEnd])
+        var jsonString = String(text[jsonStart...jsonEnd])
+
+        // Strip JavaScript-style single-line comments (// ...)
+        jsonString = jsonString.replacingOccurrences(
+            of: "//[^\n]*",
+            with: "",
+            options: .regularExpression
+        )
+
         guard let jsonData = jsonString.data(using: .utf8) else {
             throw VLMError.parsingFailed
         }
