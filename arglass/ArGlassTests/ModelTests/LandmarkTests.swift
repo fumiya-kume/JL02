@@ -6,31 +6,23 @@ final class LandmarkTests: XCTestCase {
     func testLandmarkInitialization() {
         let landmark = Landmark(
             name: "Tokyo Tower",
-            yearBuilt: "1958",
-            subtitle: "Iconic communications tower",
-            history: "Built in 1958, it has become a symbol of Tokyo."
+            description: "Built in 1958, it has become a symbol of Tokyo."
         )
 
         XCTAssertEqual(landmark.name, "Tokyo Tower")
-        XCTAssertEqual(landmark.yearBuilt, "1958")
-        XCTAssertEqual(landmark.subtitle, "Iconic communications tower")
-        XCTAssertEqual(landmark.history, "Built in 1958, it has become a symbol of Tokyo.")
+        XCTAssertEqual(landmark.description, "Built in 1958, it has become a symbol of Tokyo.")
         XCTAssertNotNil(landmark.id)
     }
 
     func testLandmarkWithDefaultID() {
         let landmark1 = Landmark(
             name: "Test",
-            yearBuilt: "2020",
-            subtitle: "Test",
-            history: "Test"
+            description: "Test"
         )
 
         let landmark2 = Landmark(
             name: "Test",
-            yearBuilt: "2020",
-            subtitle: "Test",
-            history: "Test"
+            description: "Test"
         )
 
         XCTAssertNotEqual(landmark1.id, landmark2.id, "Default IDs should be unique")
@@ -42,25 +34,19 @@ final class LandmarkTests: XCTestCase {
         let landmark1 = Landmark(
             id: id,
             name: "Same Name",
-            yearBuilt: "2020",
-            subtitle: "Same Subtitle",
-            history: "Same History"
+            description: "Same Description"
         )
 
         let landmark2 = Landmark(
             id: id,
             name: "Same Name",
-            yearBuilt: "2020",
-            subtitle: "Same Subtitle",
-            history: "Same History"
+            description: "Same Description"
         )
 
         let landmark3 = Landmark(
             id: id,
-            name: "Different Name", // Different name
-            yearBuilt: "2020",
-            subtitle: "Same Subtitle",
-            history: "Same History"
+            name: "Different Name",
+            description: "Same Description"
         )
 
         XCTAssertEqual(landmark1, landmark2, "Landmarks with same properties should be equal")
@@ -70,9 +56,7 @@ final class LandmarkTests: XCTestCase {
     func testLandmarkIdentifiable() {
         let landmark = Landmark(
             name: "Test",
-            yearBuilt: "2020",
-            subtitle: "Test",
-            history: "Test"
+            description: "Test"
         )
 
         // Test that it conforms to Identifiable
@@ -83,9 +67,7 @@ final class LandmarkTests: XCTestCase {
     func testCodable() throws {
         let original = Landmark(
             name: "Test Landmark",
-            yearBuilt: "2023",
-            subtitle: "Test subtitle",
-            history: "Test history"
+            description: "Test description"
         )
 
         let encoder = JSONEncoder()
@@ -96,9 +78,7 @@ final class LandmarkTests: XCTestCase {
 
         XCTAssertEqual(original.id, decoded.id)
         XCTAssertEqual(original.name, decoded.name)
-        XCTAssertEqual(original.yearBuilt, decoded.yearBuilt)
-        XCTAssertEqual(original.subtitle, decoded.subtitle)
-        XCTAssertEqual(original.history, decoded.history)
+        XCTAssertEqual(original.description, decoded.description)
         XCTAssertEqual(original, decoded, "Decoded landmark should equal original")
     }
 }

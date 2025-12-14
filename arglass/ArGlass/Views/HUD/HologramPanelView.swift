@@ -76,17 +76,9 @@ struct HologramPanelView: View {
 
                 HStack(alignment: .top, spacing: 12) {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("\(NSLocalizedString("hud_year_built", comment: "")) • \(target.yearBuilt)")
-                            .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(.white.opacity(0.75))
-
-                        TypingText(text: target.subtitle, characterDelay: .milliseconds(18))
+                        TypingText(text: target.description, characterDelay: .milliseconds(18))
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(.white.opacity(0.9))
-
-                        Text(target.history)
-                            .font(.system(size: 12))
-                            .foregroundStyle(.white.opacity(0.72))
                             .lineSpacing(2)
                     }
 
@@ -167,9 +159,7 @@ private struct ChipView: View {
 #Preview {
     let sampleLandmark = Landmark(
         name: "Sample Building",
-        yearBuilt: "2020",
-        subtitle: "A sample landmark for preview.",
-        history: "This is a sample landmark for preview purposes."
+        description: "A sample landmark for preview. This is a sample landmark for preview purposes."
     )
     return VStack(spacing: 16) {
         HologramPanelView(recognitionState: .searching)

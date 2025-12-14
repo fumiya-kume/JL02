@@ -37,9 +37,9 @@ final class HistoryServiceTests: XCTestCase {
     }
     
     func testLoadHistory_whenFileExists_returnsEntries() async {
-        // Create test data with unique history content
-        let entry1 = TestFixtures.makeHistoryEntry(name: "Landmark 1", history: "History content 1")
-        let entry2 = TestFixtures.makeHistoryEntry(name: "Landmark 2", history: "History content 2")
+        // Create test data with unique description content
+        let entry1 = TestFixtures.makeHistoryEntry(name: "Landmark 1", description: "Description content 1")
+        let entry2 = TestFixtures.makeHistoryEntry(name: "Landmark 2", description: "Description content 2")
 
         // Save entries
         await historyService.addEntry(entry1, image: nil)
@@ -93,15 +93,15 @@ final class HistoryServiceTests: XCTestCase {
     }
     
     func testAddEntry_whenOlderThanThreshold_addsDuplicate() async {
-        // Same name and history but different timestamps beyond threshold
+        // Same name and description but different timestamps beyond threshold
         let entry1 = TestFixtures.makeHistoryEntry(
             name: "Test Landmark",
-            history: "Same history content",
+            description: "Same description content",
             timestamp: Date().addingTimeInterval(-400) // 400 seconds ago (beyond 300s threshold)
         )
         let entry2 = TestFixtures.makeHistoryEntry(
             name: "Test Landmark",
-            history: "Same history content",
+            description: "Same description content",
             timestamp: Date()
         )
 
@@ -113,9 +113,9 @@ final class HistoryServiceTests: XCTestCase {
     }
     
     func testAddEntry_whenExceedsMaxEntries_removesOldest() async {
-        // Add max entries + 1 with unique history content
+        // Add max entries + 1 with unique description content
         for i in 0..<51 {
-            let entry = TestFixtures.makeHistoryEntry(name: "Landmark \(i)", history: "Unique history content \(i)")
+            let entry = TestFixtures.makeHistoryEntry(name: "Landmark \(i)", description: "Unique description content \(i)")
             await historyService.addEntry(entry, image: nil)
         }
 
@@ -153,9 +153,9 @@ final class HistoryServiceTests: XCTestCase {
     // MARK: - Clear All Tests
     
     func testClearAll_removesAllEntriesAndImages() async {
-        // Add multiple entries with images and unique history content
+        // Add multiple entries with images and unique description content
         for i in 0..<5 {
-            let entry = TestFixtures.makeHistoryEntry(name: "Landmark \(i)", history: "Unique history content \(i)")
+            let entry = TestFixtures.makeHistoryEntry(name: "Landmark \(i)", description: "Unique description content \(i)")
             let testImage = UIImage(systemName: "camera")!
             await historyService.addEntry(entry, image: testImage)
         }

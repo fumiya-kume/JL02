@@ -5,24 +5,18 @@ enum TestFixtures {
 
     static func makeLandmark(
         name: String = "Test Landmark",
-        yearBuilt: String = "2020",
-        subtitle: String = "A test landmark",
-        history: String = "Test history description"
+        description: String = "Test description"
     ) -> Landmark {
         Landmark(
             name: name,
-            yearBuilt: yearBuilt,
-            subtitle: subtitle,
-            history: history
+            description: description
         )
     }
 
     static func makeHistoryEntry(
         id: UUID = UUID(),
         name: String = "Test Entry",
-        yearBuilt: String = "2020",
-        subtitle: String = "Test subtitle",
-        history: String = "Test history",
+        description: String = "Test description",
         timestamp: Date = Date(),
         imageFileName: String? = nil,
         captureOrientation: CaptureOrientation? = nil
@@ -30,9 +24,7 @@ enum TestFixtures {
         HistoryEntry(
             id: id,
             name: name,
-            yearBuilt: yearBuilt,
-            subtitle: subtitle,
-            history: history,
+            description: description,
             timestamp: timestamp,
             imageFileName: imageFileName,
             captureOrientation: captureOrientation

@@ -8,14 +8,11 @@ final class HistoryEntryTests: XCTestCase {
     func testInit_createsEntryWithCorrectValues() {
         let entry = HistoryEntry(
             name: "Tokyo Tower",
-            yearBuilt: "1958",
-            subtitle: "Communications tower",
-            history: "Built as a symbol of Japan's post-war rebirth"
+            description: "Built as a symbol of Japan's post-war rebirth"
         )
 
         XCTAssertEqual(entry.name, "Tokyo Tower")
-        XCTAssertEqual(entry.yearBuilt, "1958")
-        XCTAssertEqual(entry.subtitle, "Communications tower")
+        XCTAssertEqual(entry.description, "Built as a symbol of Japan's post-war rebirth")
         XCTAssertNil(entry.imageFileName)
         XCTAssertNil(entry.captureOrientation)
     }
@@ -23,9 +20,7 @@ final class HistoryEntryTests: XCTestCase {
     func testInit_withCaptureOrientation_storesValue() {
         let entry = HistoryEntry(
             name: "Test",
-            yearBuilt: "2020",
-            subtitle: "Test",
-            history: "Test",
+            description: "Test description",
             captureOrientation: .landscapeLeft
         )
 
@@ -35,25 +30,19 @@ final class HistoryEntryTests: XCTestCase {
     func testInit_fromLandmark_copiesAllValues() {
         let landmark = Landmark(
             name: "Test Landmark",
-            yearBuilt: "2000",
-            subtitle: "Test subtitle",
-            history: "Test history"
+            description: "Test description"
         )
 
         let entry = HistoryEntry(landmark: landmark)
 
         XCTAssertEqual(entry.name, landmark.name)
-        XCTAssertEqual(entry.yearBuilt, landmark.yearBuilt)
-        XCTAssertEqual(entry.subtitle, landmark.subtitle)
-        XCTAssertEqual(entry.history, landmark.history)
+        XCTAssertEqual(entry.description, landmark.description)
     }
 
     func testInit_fromLandmark_withCaptureOrientation() {
         let landmark = Landmark(
             name: "Test",
-            yearBuilt: "2020",
-            subtitle: "Test",
-            history: "Test"
+            description: "Test description"
         )
 
         let entry = HistoryEntry(landmark: landmark, captureOrientation: .landscapeRight)
@@ -73,9 +62,7 @@ final class HistoryEntryTests: XCTestCase {
     func testCodable_encodesAndDecodesCorrectly() throws {
         let originalEntry = HistoryEntry(
             name: "Test Building",
-            yearBuilt: "1990",
-            subtitle: "A test building",
-            history: "Built for testing purposes",
+            description: "Built for testing purposes",
             imageFileName: "test.jpg"
         )
 
@@ -89,18 +76,14 @@ final class HistoryEntryTests: XCTestCase {
 
         XCTAssertEqual(decodedEntry.id, originalEntry.id)
         XCTAssertEqual(decodedEntry.name, originalEntry.name)
-        XCTAssertEqual(decodedEntry.yearBuilt, originalEntry.yearBuilt)
-        XCTAssertEqual(decodedEntry.subtitle, originalEntry.subtitle)
-        XCTAssertEqual(decodedEntry.history, originalEntry.history)
+        XCTAssertEqual(decodedEntry.description, originalEntry.description)
         XCTAssertEqual(decodedEntry.imageFileName, originalEntry.imageFileName)
     }
 
     func testCodable_handlesNilImageFileName() throws {
         let entry = HistoryEntry(
             name: "No Image Entry",
-            yearBuilt: "2020",
-            subtitle: "Entry without image",
-            history: "Test"
+            description: "Entry without image"
         )
 
         let encoder = JSONEncoder()
@@ -117,9 +100,7 @@ final class HistoryEntryTests: XCTestCase {
     func testCodable_encodesAndDecodesCaptureOrientation() throws {
         let entry = HistoryEntry(
             name: "Test",
-            yearBuilt: "2020",
-            subtitle: "Test",
-            history: "Test",
+            description: "Test description",
             captureOrientation: .landscapeLeft
         )
 
@@ -140,9 +121,7 @@ final class HistoryEntryTests: XCTestCase {
         {
             "id": "550e8400-e29b-41d4-a716-446655440000",
             "name": "Legacy Entry",
-            "yearBuilt": "2020",
-            "subtitle": "Test",
-            "history": "Test",
+            "description": "Test description",
             "timestamp": "2024-01-01T00:00:00Z"
         }
         """
@@ -164,18 +143,14 @@ final class HistoryEntryTests: XCTestCase {
         let entry1 = HistoryEntry(
             id: id,
             name: "Test",
-            yearBuilt: "2020",
-            subtitle: "Sub",
-            history: "History",
+            description: "Description",
             timestamp: timestamp
         )
 
         let entry2 = HistoryEntry(
             id: id,
             name: "Test",
-            yearBuilt: "2020",
-            subtitle: "Sub",
-            history: "History",
+            description: "Description",
             timestamp: timestamp
         )
 

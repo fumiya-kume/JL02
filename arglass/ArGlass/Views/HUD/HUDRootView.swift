@@ -101,7 +101,7 @@ struct HUDRootView: View {
         .fullScreenCover(isPresented: $showingImageViewer) {
             ImageViewerView(
                 image: viewModel.lastCapturedImage,
-                subtitle: currentSubtitle,
+                description: currentDescription,
                 captureOrientation: viewModel.lastCaptureOrientation
             )
         }
@@ -118,9 +118,9 @@ struct HUDRootView: View {
         }
     }
 
-    private var currentSubtitle: String? {
+    private var currentDescription: String? {
         if case .locked(let landmark, _) = viewModel.recognitionState {
-            return landmark.subtitle
+            return landmark.description
         }
         return nil
     }
@@ -291,10 +291,10 @@ struct HUDRootView: View {
         speechTranscriber.pause()
 
         let speakText: String
-        if target.subtitle.isEmpty {
+        if target.description.isEmpty {
             speakText = target.name
         } else {
-            speakText = "\(target.name)。\(target.subtitle)"
+            speakText = "\(target.name)。\(target.description)"
         }
 
         speechSpeaker.speak(text: speakText, language: "ja-JP") { [isVoiceInputEnabled] in

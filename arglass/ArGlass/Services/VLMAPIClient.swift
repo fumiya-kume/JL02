@@ -3,75 +3,16 @@ import Foundation
 import UIKit
 
 struct VLMResponse: Codable {
-    let generatedText: String
+    let name: String
+    let facilityDescription: String
     let success: Bool
     let errorMessage: String?
 
     enum CodingKeys: String, CodingKey {
-        case generatedText = "generated_text"
+        case name
+        case facilityDescription = "facility_description"
         case success
         case errorMessage = "error_message"
-    }
-}
-
-struct LandmarkAPIResponse: Codable {
-    let name: String
-    let yearBuilt: String
-    let subtitle: String
-    let history: String
-
-    enum CodingKeys: String, CodingKey {
-        case name
-        case yearBuilt = "year_built"
-        case subtitle
-        case history
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        name = Self.decodeString(from: container, key: .name) ?? "不明"
-        yearBuilt = Self.decodeString(from: container, key: .yearBuilt) ?? "不明"
-        subtitle = Self.decodeString(from: container, key: .subtitle) ?? ""
-        history = Self.decodeString(from: container, key: .history) ?? ""
-    }
-
-    private static func decodeString(from container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) -> String? {
-        if let value = try? container.decode(String.self, forKey: key) {
-            return value
-        }
-        if let value = try? container.decode(Int.self, forKey: key) {
-            return String(value)
-        }
-        if let value = try? container.decode(Double.self, forKey: key) {
-            return String(Int(value))
-        }
-        return nil
-    }
-
-    init(plainText: String) {
-        self.name = Self.extractTitle(from: plainText)
-        self.yearBuilt = "—"
-        self.subtitle = ""
-        self.history = plainText
-    }
-
-    private static func extractTitle(from text: String) -> String {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        let sentences = trimmed.components(separatedBy: CharacterSet(charactersIn: "。."))
-        if let firstSentence = sentences.first, !firstSentence.isEmpty {
-            let sentence = firstSentence.trimmingCharacters(in: .whitespacesAndNewlines)
-            if sentence.count <= 60 {
-                return sentence
-            }
-            return String(sentence.prefix(57)) + "..."
-        }
-
-        if trimmed.count <= 60 {
-            return trimmed
-        }
-        return String(trimmed.prefix(57)) + "..."
     }
 }
 
@@ -202,30 +143,18 @@ actor VLMAPIClient: VLMAPIClientProtocol {
         print("[VLM] 📋 API Response:")
         print("[VLM]   - success: \(vlmResponse.success)")
         print("[VLM]   - error_message: \(vlmResponse.errorMessage ?? "nil")")
-        print("[VLM]   - generated_text: \(vlmResponse.generatedText)")
+        print("[VLM]   - name: \(vlmResponse.name)")
+        print("[VLM]   - facility_description: \(vlmResponse.facilityDescription.prefix(100))...")
 
         guard vlmResponse.success else {
             print("[VLM] ❌ API Error: \(vlmResponse.errorMessage ?? "Unknown error")")
             throw VLMError.apiError(message: vlmResponse.errorMessage ?? "Unknown error")
         }
 
-        let landmarkResponse = parseGeneratedText(vlmResponse.generatedText)
-
-        print("[VLM] 🏛️ Parsed result:")
-        print("[VLM]   - name: \(landmarkResponse.name)")
-        print("[VLM]   - yearBuilt: \(landmarkResponse.yearBuilt)")
-        print("[VLM]   - history: \(landmarkResponse.history.prefix(100))...")
-
         return Landmark(
-            name: landmarkResponse.name,
-            yearBuilt: landmarkResponse.yearBuilt,
-            subtitle: landmarkResponse.subtitle,
-            history: landmarkResponse.history
+            name: vlmResponse.name,
+            description: vlmResponse.facilityDescription
         )
-    }
-
-    private func parseGeneratedText(_ text: String) -> LandmarkAPIResponse {
-        return LandmarkAPIResponse(plainText: text)
     }
 
 }

@@ -62,7 +62,7 @@ actor HistoryService: HistoryServiceProtocol {
 
         let recentThreshold = Date().addingTimeInterval(-duplicateThresholdSeconds)
         let isDuplicate = entries.contains { existing in
-            let isSameContent = existing.history == entry.history
+            let isSameContent = existing.description == entry.description
             let isSameName = existing.name == entry.name
             return (isSameContent || isSameName) && existing.timestamp > recentThreshold
         }
@@ -79,9 +79,7 @@ actor HistoryService: HistoryServiceProtocol {
                 entryToSave = HistoryEntry(
                     id: entry.id,
                     name: entry.name,
-                    yearBuilt: entry.yearBuilt,
-                    subtitle: entry.subtitle,
-                    history: entry.history,
+                    description: entry.description,
                     timestamp: entry.timestamp,
                     imageFileName: imageFileName,
                     captureOrientation: entry.captureOrientation
