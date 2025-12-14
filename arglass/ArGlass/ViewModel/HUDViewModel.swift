@@ -157,10 +157,12 @@ final class HUDViewModel: ObservableObject {
 
         do {
             let interests = OnboardingViewModel.getSelectedInterests()
+            let preferences = UserPreferencesManager.shared.load()
             let landmark = try await vlmAPIClient.inferLandmark(
                 jpegData: jpegData,
                 locationInfo: locationService.currentLocation,
-                interests: interests
+                interests: interests,
+                preferences: preferences
             )
             let elapsed = Date().timeIntervalSince(startTime)
             apiRequestState = .success(responseTime: elapsed)

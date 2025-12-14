@@ -62,25 +62,27 @@ actor MockVLMAPIClient: VLMAPIClientProtocol {
     var shouldFailInference = false
     var mockLandmark: Landmark?
     var inferenceCallCount = 0
-    
-    func inferLandmark(image: UIImage, locationInfo: LocationInfo?, interests: Set<Interest>) async throws -> Landmark {
+    var lastPreferences: UserPreferences?
+
+    func inferLandmark(image: UIImage, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences) async throws -> Landmark {
         inferenceCallCount += 1
-        
+        lastPreferences = preferences
+
         if shouldFailInference {
             throw VLMError.apiError(message: "Mock error")
         }
-        
+
         return mockLandmark ?? TestFixtures.makeLandmark(name: "Mock Landmark")
     }
-    
-    func inferLandmark(jpegData: Data, locationInfo: LocationInfo?, interests: Set<Interest>) async throws -> Landmark {
-        return try await inferLandmark(image: UIImage(), locationInfo: locationInfo, interests: interests)
+
+    func inferLandmark(jpegData: Data, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences) async throws -> Landmark {
+        return try await inferLandmark(image: UIImage(), locationInfo: locationInfo, interests: interests, preferences: preferences)
     }
-    
+
     func setShouldFailInference(_ value: Bool) {
         shouldFailInference = value
     }
-    
+
     func setMockLandmark(_ landmark: Landmark?) {
         mockLandmark = landmark
     }
@@ -93,6 +95,10 @@ actor MockHistoryService: HistoryServiceProtocol {
     var addEntryCallCount = 0
     var lastAddedEntry: HistoryEntry?
     var lastAddedImage: UIImage?
+    var deleteEntryCallCount = 0
+    var clearAllCallCount = 0
+    var lastDeletedEntry: HistoryEntry?
+    var mockImageURLs: [UUID: URL] = [:]
     
     func loadHistory() -> [HistoryEntry] {
         return entries
@@ -106,18 +112,52 @@ actor MockHistoryService: HistoryServiceProtocol {
     }
     
     func deleteEntry(_ entry: HistoryEntry) async {
+        deleteEntryCallCount += 1
+        lastDeletedEntry = entry
         entries.removeAll { $0.id == entry.id }
     }
     
     func clearAll() async {
+        clearAllCallCount += 1
         entries.removeAll()
     }
     
     func imageURL(for entry: HistoryEntry) -> URL? {
-        return nil
+        return mockImageURLs[entry.id]
     }
     
     func getAddEntryCallCount() -> Int {
         return addEntryCallCount
+    }
+    
+    func setEntries(_ newEntries: [HistoryEntry]) {
+        entries = newEntries
+    }
+    
+    func setMockImageURL(_ url: URL?, for entryID: UUID) {
+        if let url = url {
+            mockImageURLs[entryID] = url
+        } else {
+            mockImageURLs.removeValue(forKey: entryID)
+        }
+    }
+    
+    func getDeleteEntryCallCount() -> Int {
+        return deleteEntryCallCount
+    }
+    
+    func getClearAllCallCount() -> Int {
+        return clearAllCallCount
+    }
+    
+    func reset() {
+        entries = []
+        addEntryCallCount = 0
+        deleteEntryCallCount = 0
+        clearAllCallCount = 0
+        lastAddedEntry = nil
+        lastAddedImage = nil
+        lastDeletedEntry = nil
+        mockImageURLs = [:]
     }
 }

@@ -21,7 +21,19 @@
       "Bash(gh run view:*)",
       "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 diff)",
       "Bash(gh run watch:*)",
-      "Bash(gh pr list:*)"
+      "Bash(gh pr list:*)",
+      "WebFetch(domain:app-54c362a6-dce4-4819-9c60-2ce0d0024e46.ingress.apprun.sakura.ne.jp)",
+      "SlashCommand(/commit-commands:commit)",
+      "Bash(wc:*)",
+      "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 diff master)",
+      "Bash(xcrun simctl:*)",
+      "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 show master:arglass/ArGlass/Services/VLMAPIClient.swift)",
+      "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 show master:arglass/ArGlass/Models/Interest.swift)",
+      "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 diff master -- '*.swift')",
+      "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 show master:arglass/ArGlass/Services/HistoryService.swift)",
+      "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 diff master -- '*Tests*.swift')",
+      "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 show master:arglass/ArGlassTests/ServiceTests/HistoryServiceTests.swift)",
+      "Bash(git -C /Users/kuu/ghq/github.com/fumiya-kume/JL02 diff master -- 'arglass/ArGlass/**/*.swift')"
     ]
   }
 }

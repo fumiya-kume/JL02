@@ -37,17 +37,17 @@ final class HistoryServiceTests: XCTestCase {
     }
     
     func testLoadHistory_whenFileExists_returnsEntries() async {
-        // Create test data
-        let entry1 = TestFixtures.makeHistoryEntry(name: "Landmark 1")
-        let entry2 = TestFixtures.makeHistoryEntry(name: "Landmark 2")
-        
+        // Create test data with unique history content
+        let entry1 = TestFixtures.makeHistoryEntry(name: "Landmark 1", history: "History content 1")
+        let entry2 = TestFixtures.makeHistoryEntry(name: "Landmark 2", history: "History content 2")
+
         // Save entries
         await historyService.addEntry(entry1, image: nil)
         await historyService.addEntry(entry2, image: nil)
-        
+
         // Load history
         let history = await historyService.loadHistory()
-        
+
         XCTAssertEqual(history.count, 2)
         XCTAssertEqual(history[0].name, entry2.name) // Should be in reverse order (newest first)
         XCTAssertEqual(history[1].name, entry1.name)
@@ -93,29 +93,32 @@ final class HistoryServiceTests: XCTestCase {
     }
     
     func testAddEntry_whenOlderThanThreshold_addsDuplicate() async {
+        // Same name and history but different timestamps beyond threshold
         let entry1 = TestFixtures.makeHistoryEntry(
             name: "Test Landmark",
+            history: "Same history content",
             timestamp: Date().addingTimeInterval(-400) // 400 seconds ago (beyond 300s threshold)
         )
         let entry2 = TestFixtures.makeHistoryEntry(
             name: "Test Landmark",
+            history: "Same history content",
             timestamp: Date()
         )
-        
+
         await historyService.addEntry(entry1, image: nil)
         await historyService.addEntry(entry2, image: nil)
-        
+
         let history = await historyService.loadHistory()
         XCTAssertEqual(history.count, 2, "Should add duplicate when older than threshold")
     }
     
     func testAddEntry_whenExceedsMaxEntries_removesOldest() async {
-        // Add max entries + 1
+        // Add max entries + 1 with unique history content
         for i in 0..<51 {
-            let entry = TestFixtures.makeHistoryEntry(name: "Landmark \(i)")
+            let entry = TestFixtures.makeHistoryEntry(name: "Landmark \(i)", history: "Unique history content \(i)")
             await historyService.addEntry(entry, image: nil)
         }
-        
+
         let history = await historyService.loadHistory()
         XCTAssertEqual(history.count, 50, "Should maintain maximum of 50 entries")
         XCTAssertEqual(history.last?.name, "Landmark 1", "Oldest entry (after the first one) should be removed")
@@ -150,13 +153,13 @@ final class HistoryServiceTests: XCTestCase {
     // MARK: - Clear All Tests
     
     func testClearAll_removesAllEntriesAndImages() async {
-        // Add multiple entries with images
+        // Add multiple entries with images and unique history content
         for i in 0..<5 {
-            let entry = TestFixtures.makeHistoryEntry(name: "Landmark \(i)")
+            let entry = TestFixtures.makeHistoryEntry(name: "Landmark \(i)", history: "Unique history content \(i)")
             let testImage = UIImage(systemName: "camera")!
             await historyService.addEntry(entry, image: testImage)
         }
-        
+
         // Verify entries exist
         var history = await historyService.loadHistory()
         XCTAssertEqual(history.count, 5)

@@ -7,6 +7,12 @@ final class HistoryViewModel: ObservableObject {
     @Published var expandedEntryID: UUID?
     @Published var showingClearConfirmation = false
     @Published private(set) var imageURLs: [UUID: URL] = [:]
+    
+    private let historyService: HistoryServiceProtocol
+    
+    init(historyService: HistoryServiceProtocol = HistoryService.shared) {
+        self.historyService = historyService
+    }
 
     var isEmpty: Bool {
         entries.isEmpty
@@ -23,14 +29,14 @@ final class HistoryViewModel: ObservableObject {
     }
 
     func loadHistory() async {
-        entries = await HistoryService.shared.loadHistory()
+        entries = await historyService.loadHistory()
         await loadImageURLs()
     }
 
     private func loadImageURLs() async {
         var urls: [UUID: URL] = [:]
         for entry in entries {
-            if let url = await HistoryService.shared.imageURL(for: entry) {
+            if let url = await historyService.imageURL(for: entry) {
                 urls[entry.id] = url
             }
         }
@@ -38,12 +44,12 @@ final class HistoryViewModel: ObservableObject {
     }
 
     func deleteEntry(_ entry: HistoryEntry) async {
-        await HistoryService.shared.deleteEntry(entry)
+        await historyService.deleteEntry(entry)
         entries.removeAll { $0.id == entry.id }
     }
 
     func clearAll() async {
-        await HistoryService.shared.clearAll()
+        await historyService.clearAll()
         entries = []
     }
 
@@ -78,6 +84,6 @@ final class HistoryViewModel: ObservableObject {
     }
 
     func imageURL(for entry: HistoryEntry) async -> URL? {
-        await HistoryService.shared.imageURL(for: entry)
+        await historyService.imageURL(for: entry)
     }
 }

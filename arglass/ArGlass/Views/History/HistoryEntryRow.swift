@@ -6,6 +6,7 @@ struct HistoryEntryRow: View {
     let formattedTime: String
     let imageURL: URL?
     let onTap: () -> Void
+    @Namespace private var imageAnimation
 
     var body: some View {
         Button(action: onTap) {
@@ -14,7 +15,6 @@ struct HistoryEntryRow: View {
 
                 if isExpanded {
                     expandedContent
-                        .transition(.opacity.combined(with: .move(edge: .top)))
                 }
             }
             .padding(.vertical, 14)
@@ -65,15 +65,20 @@ struct HistoryEntryRow: View {
     @ViewBuilder
     private var thumbnailView: some View {
         if let url = imageURL, let uiImage = UIImage(contentsOfFile: url.path) {
-            Image(uiImage: uiImage)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 44, height: 44)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                }
+            if !isExpanded {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 44, height: 44)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    }
+                    .matchedGeometryEffect(id: "image-\(entry.id)", in: imageAnimation)
+            } else {
+                Color.clear.frame(width: 44, height: 44)
+            }
         } else {
             Image(systemName: "building.columns")
                 .font(.system(size: 18, weight: .semibold))
@@ -88,6 +93,7 @@ struct HistoryEntryRow: View {
             Divider()
                 .background(Color.white.opacity(0.1))
                 .padding(.vertical, 8)
+                .transition(.opacity)
 
             if let url = imageURL, let uiImage = UIImage(contentsOfFile: url.path) {
                 Image(uiImage: uiImage)
@@ -99,6 +105,7 @@ struct HistoryEntryRow: View {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .stroke(Color.white.opacity(0.2), lineWidth: 1)
                     }
+                    .matchedGeometryEffect(id: "image-\(entry.id)", in: imageAnimation)
             }
 
             HStack(spacing: 6) {
@@ -111,12 +118,14 @@ struct HistoryEntryRow: View {
             .padding(.vertical, 5)
             .padding(.horizontal, 10)
             .background(.white.opacity(0.06), in: Capsule(style: .continuous))
+            .transition(.opacity.combined(with: .move(edge: .top)))
 
             Text(entry.history)
                 .font(.system(size: 13))
                 .foregroundStyle(.white.opacity(0.75))
                 .lineSpacing(3)
                 .fixedSize(horizontal: false, vertical: true)
+                .transition(.opacity.combined(with: .move(edge: .top)))
         }
     }
 }
