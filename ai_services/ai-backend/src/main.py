@@ -117,7 +117,8 @@ def build_rag_query_prompt(
 ) -> str:
     """
     Build a RAG query prompt based on VLM caption and user attributes.
-    The query should be designed to retrieve relevant tourism guide information.
+    The query is designed to retrieve relevant tourism guide information with
+    structured output including facility name and description.
     """
     prompt = f"写真の場所: {address}\n"
     prompt += f"写真の説明: {caption}\n\n"
@@ -140,7 +141,18 @@ def build_rag_query_prompt(
             prompt += f"  - {part}\n"
         prompt += "\n"
 
-    prompt += "上記の場所について、ユーザーの属性にパーソナライズした3行程度の説明を生成してください。"
+    prompt += (
+        "上記の場所について、以下の形式で回答してください：\n\n"
+        "【施設/場所の名前】\n"
+        "[ここに施設や場所の正式名称を記入]\n\n"
+        "【観光ガイド情報】\n"
+        "[ユーザーの属性にパーソナライズした3分程度で読める量の情報。"
+        "以下を含めてください：\n"
+        "- 場所の概要と背景\n"
+        "- ユーザーの興味や活動レベルに合わせた見どころ\n"
+        "- 予算に合わせた利用施設やグルメ情報\n"
+        "- 実用的な訪問情報]\n"
+    )
 
     # Add language instruction if specified
     if user_language and user_language != "japanese":
@@ -210,6 +222,62 @@ async def query_rag(
         return None
 
 
+def parse_rag_response(rag_answer: str) -> tuple[str, str]:
+    """
+    Parse RAG response with structured format to extract facility name and description.
+
+    Expected format:
+    【施設/場所の名前】
+    [facility name]
+
+    【観光ガイド情報】
+    [guide content]
+
+    Args:
+        rag_answer: Raw answer text from RAG API
+
+    Returns:
+        Tuple of (facility_name, guide_description).
+        If parsing fails, returns (address fallback, full answer)
+    """
+    facility_name = ""
+    guide_description = ""
+
+    try:
+        # Try to extract facility name
+        name_start = rag_answer.find("【施設/場所の名前】")
+        if name_start != -1:
+            name_start += len("【施設/場所の名前】")
+            name_end = rag_answer.find("【観光ガイド情報】", name_start)
+            if name_end == -1:
+                name_end = len(rag_answer)
+            facility_name = rag_answer[name_start:name_end].strip()
+
+        # Try to extract guide description
+        guide_start = rag_answer.find("【観光ガイド情報】")
+        if guide_start != -1:
+            guide_start += len("【観光ガイド情報】")
+            guide_description = rag_answer[guide_start:].strip()
+
+        # If parsing succeeded, return both
+        if facility_name and guide_description:
+            print(f"Parsed facility name: {facility_name}")
+            return facility_name, guide_description
+
+        # If only guide description was found, use full answer as description
+        if guide_description:
+            print("Using fallback: full answer as guide description")
+            return facility_name or "Unknown Facility", guide_description
+
+        # Fallback: use full answer if no structure found
+        print("No structured format found in RAG response, using full answer")
+        return "Unknown Facility", rag_answer
+
+    except Exception as e:
+        print(f"Error parsing RAG response: {e}")
+        return "Unknown Facility", rag_answer
+
+
 class VLMAgentResponse(BaseModel):
     """
     Response model for VLM inference with RAG-enhanced tourism guide generation.
@@ -221,7 +289,7 @@ class VLMAgentResponse(BaseModel):
     name: str = Field(
         ...,
         description="Name of the place or facility identified in the image",
-        example="Tokyo Tower",
+        example="東京タワー",
     )
     facility_description: str = Field(
         ...,
@@ -386,9 +454,11 @@ async def vlm_inference(
 
         if rag_response and "answer" in rag_response:
             guide_text = rag_response["answer"]
+            # Parse RAG response to extract facility name and description
+            facility_name, facility_description = parse_rag_response(guide_text)
             return VLMAgentResponse(
-                name=address,
-                facility_description=guide_text,
+                name=facility_name,
+                facility_description=facility_description,
                 success=True,
                 error_message=None,
             )
