@@ -3,9 +3,16 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingInterestSettings = false
+    @State private var showingAgeGroupSettings = false
+    @State private var showingBudgetSettings = false
+    @State private var showingActivitySettings = false
+    @State private var showingLanguageSettings = false
+    @State private var currentPreferences = UserPreferencesManager.shared.load()
 
     var body: some View {
         GeometryReader { geometry in
+            let safeRect = geometry.safeAreaInsets.safeRect(in: geometry.size)
+
             ZStack {
                 Color.black
 
@@ -13,20 +20,18 @@ struct SettingsView: View {
                     .opacity(0.15)
 
                 VStack(spacing: 0) {
-                    // Header
                     headerSection
                         .padding(.top, geometry.safeAreaInsets.top + 16)
+                        .hudHorizontalPadding(geometry.safeAreaInsets)
 
-                    // Settings list
                     settingsList
-                        .padding(.horizontal, 20)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.top, 30)
 
                     Spacer()
 
-                    // Close button
                     closeButton
-                        .frame(width: geometry.size.width * 0.5)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.bottom, max(geometry.safeAreaInsets.bottom, 40))
                 }
             }
@@ -34,7 +39,56 @@ struct SettingsView: View {
         .ignoresSafeArea()
         .statusBarHidden(true)
         .fullScreenCover(isPresented: $showingInterestSettings) {
-            InterestSettingsView()
+            OnboardingView(isEditing: true) {
+                showingInterestSettings = false
+            }
+        }
+        .fullScreenCover(isPresented: $showingAgeGroupSettings) {
+            PreferencePickerView<UserAgeGroup>(
+                titleKey: "settings_age_group",
+                selection: Binding(
+                    get: { currentPreferences.ageGroup },
+                    set: { newValue in
+                        currentPreferences.ageGroup = newValue
+                        UserPreferencesManager.shared.save(currentPreferences)
+                    }
+                )
+            )
+        }
+        .fullScreenCover(isPresented: $showingBudgetSettings) {
+            PreferencePickerView<UserBudgetLevel>(
+                titleKey: "settings_budget",
+                selection: Binding(
+                    get: { currentPreferences.budgetLevel },
+                    set: { newValue in
+                        currentPreferences.budgetLevel = newValue
+                        UserPreferencesManager.shared.save(currentPreferences)
+                    }
+                )
+            )
+        }
+        .fullScreenCover(isPresented: $showingActivitySettings) {
+            PreferencePickerView<UserActivityLevel>(
+                titleKey: "settings_activity",
+                selection: Binding(
+                    get: { currentPreferences.activityLevel },
+                    set: { newValue in
+                        currentPreferences.activityLevel = newValue
+                        UserPreferencesManager.shared.save(currentPreferences)
+                    }
+                )
+            )
+        }
+        .fullScreenCover(isPresented: $showingLanguageSettings) {
+            LanguagePickerView(
+                selection: Binding(
+                    get: { currentPreferences.language },
+                    set: { newValue in
+                        currentPreferences.language = newValue
+                        UserPreferencesManager.shared.save(currentPreferences)
+                    }
+                )
+            )
         }
     }
 
@@ -45,12 +99,38 @@ struct SettingsView: View {
     }
 
     private var settingsList: some View {
-        VStack(spacing: 12) {
-            settingsRow(
-                icon: "heart.circle",
-                title: NSLocalizedString("settings_interests", comment: ""),
-                action: { showingInterestSettings = true }
-            )
+        ScrollView {
+            VStack(spacing: 12) {
+                settingsRow(
+                    icon: "heart.circle",
+                    title: NSLocalizedString("settings_interests", comment: ""),
+                    action: { showingInterestSettings = true }
+                )
+
+                settingsRow(
+                    icon: "person.crop.circle",
+                    title: NSLocalizedString("settings_age_group", comment: ""),
+                    action: { showingAgeGroupSettings = true }
+                )
+
+                settingsRow(
+                    icon: "yensign.circle",
+                    title: NSLocalizedString("settings_budget", comment: ""),
+                    action: { showingBudgetSettings = true }
+                )
+
+                settingsRow(
+                    icon: "figure.walk",
+                    title: NSLocalizedString("settings_activity", comment: ""),
+                    action: { showingActivitySettings = true }
+                )
+
+                settingsRow(
+                    icon: "globe",
+                    title: NSLocalizedString("settings_language", comment: ""),
+                    action: { showingLanguageSettings = true }
+                )
+            }
         }
     }
 
@@ -74,6 +154,7 @@ struct SettingsView: View {
             }
             .padding(.vertical, 16)
             .padding(.horizontal, 18)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -89,6 +170,7 @@ struct SettingsView: View {
                 .foregroundStyle(.white.opacity(0.6))
                 .padding(.vertical, 14)
                 .padding(.horizontal, 32)
+                .frame(maxWidth: .infinity)
                 .background(.ultraThinMaterial, in: Capsule(style: .continuous))
                 .overlay {
                     Capsule(style: .continuous)

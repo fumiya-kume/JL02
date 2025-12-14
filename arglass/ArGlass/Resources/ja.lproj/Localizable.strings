@@ -10,21 +10,21 @@
 
 /* Interest Categories */
 "interest_history" = "歴史";
-"interest_finance" = "金融";
-"interest_technology" = "テクノロジー";
-"interest_science" = "科学";
-"interest_art" = "アート";
-"interest_sports" = "スポーツ";
-"interest_music" = "音楽";
-"interest_travel" = "旅行";
-"interest_food" = "グルメ";
 "interest_nature" = "自然";
+"interest_art" = "アート";
+"interest_food" = "グルメ";
+"interest_architecture" = "建築";
+"interest_shopping" = "ショッピング";
+"interest_nightlife" = "ナイトライフ";
 
 /* Settings */
 "settings_title" = "設定";
 "settings_interests" = "興味";
 "settings_edit_interests" = "興味を編集";
+"settings_edit_interests_subtitle" = "興味を変更して体験をカスタマイズ";
 "settings_done" = "完了";
+"settings_save" = "保存";
+"settings_cancel" = "キャンセル";
 
 /* History */
 "history_title" = "履歴";
@@ -49,16 +49,37 @@
 "hud_searching_landmarks" = "ランドマークを検索中…";
 "hud_status_online" = "ONLINE";
 "hud_status_offline" = "OFFLINE";
-
-/* Compass Directions */
-"compass_n" = "北";
-"compass_ne" = "北東";
-"compass_e" = "東";
-"compass_se" = "南東";
-"compass_s" = "南";
-"compass_sw" = "南西";
-"compass_w" = "西";
-"compass_nw" = "北西";
+"hud_area_info" = "周辺情報";
 
 /* Settings Additional */
 "settings_close" = "閉じる";
+
+/* Age Group */
+"settings_age_group" = "年齢層";
+"age_group_20s" = "20代";
+"age_group_30_40s" = "30〜40代";
+"age_group_50splus" = "50代以上";
+"age_group_family_with_kids" = "子連れ家族";
+
+/* Budget Level */
+"settings_budget" = "予算";
+"budget_budget" = "お手頃";
+"budget_mid_range" = "標準";
+"budget_luxury" = "贅沢";
+
+/* Activity Level */
+"settings_activity" = "アクティビティ";
+"activity_active" = "アクティブ";
+"activity_moderate" = "普通";
+"activity_relaxed" = "のんびり";
+
+/* Language */
+"settings_language" = "言語";
+"language_japanese" = "日本語";
+"language_english" = "English";
+"language_chinese" = "中文";
+"language_korean" = "한국어";
+"language_spanish" = "Español";
+"language_french" = "Français";
+"language_german" = "Deutsch";
+"language_thai" = "ไทย";

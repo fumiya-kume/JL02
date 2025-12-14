@@ -20,7 +20,7 @@ struct HUDRootView: View {
 
                 CaptureFlashOverlay(intensity: captureFlashIntensity)
 
-                overlay(safeAreaTop: geometry.safeAreaInsets.top)
+                overlay(safeAreaInsets: geometry.safeAreaInsets)
             }
         }
         .ignoresSafeArea()
@@ -41,7 +41,11 @@ struct HUDRootView: View {
             HistoryView()
         }
         .fullScreenCover(isPresented: $showingImageViewer) {
-            ImageViewerView(image: viewModel.lastCapturedImage, subtitle: currentSubtitle)
+            ImageViewerView(
+                image: viewModel.lastCapturedImage,
+                subtitle: currentSubtitle,
+                captureOrientation: viewModel.lastCaptureOrientation
+            )
         }
     }
 
@@ -77,19 +81,12 @@ struct HUDRootView: View {
             Image(systemName: "clock.arrow.circlepath")
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(Color.accentColor.opacity(0.90))
-                .padding(.vertical, 12)
-                .padding(.horizontal, 14)
-                .background(.ultraThinMaterial, in: Capsule(style: .continuous))
-                .overlay {
-                    Capsule(style: .continuous)
-                        .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
-                }
-                .neonGlow(color: .accentColor, radius: 10, intensity: 0.14)
+                .hudTopCapsuleStyle()
         }
         .contentShape(Capsule())
     }
 
-    private func overlay(safeAreaTop: CGFloat) -> some View {
+    private func overlay(safeAreaInsets: EdgeInsets) -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 10) {
                 historyButton
@@ -104,23 +101,24 @@ struct HUDRootView: View {
                 HUDDebugMenu(viewModel: viewModel)
 #endif
             }
-            .padding(.top, safeAreaTop + 16)
-            .padding(.horizontal, 20)
+            .padding(.top, safeAreaInsets.top + 16)
+            .hudHorizontalPadding(safeAreaInsets)
 
             Spacer()
 
             TargetMarkerView(recognitionState: viewModel.recognitionState)
-                .padding(.horizontal, 20)
+                .hudHorizontalPadding(safeAreaInsets)
 
             Spacer()
 
             HologramPanelView(
                 recognitionState: viewModel.recognitionState,
                 capturedImage: viewModel.lastCapturedImage,
+                captureOrientation: viewModel.lastCaptureOrientation,
                 onImageTap: { showingImageViewer = true }
             )
-            .padding(.horizontal, 20)
-            .padding(.bottom, 24)
+            .hudHorizontalPadding(safeAreaInsets)
+            .padding(.bottom, safeAreaInsets.bottom + 24)
         }
         .animation(.easeInOut(duration: 0.25), value: phaseKey)
     }

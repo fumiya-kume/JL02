@@ -48,12 +48,37 @@ struct LandmarkAPIResponse: Codable {
         }
         return nil
     }
+
+    init(plainText: String) {
+        self.name = Self.extractTitle(from: plainText)
+        self.yearBuilt = "—"
+        self.subtitle = ""
+        self.history = plainText
+    }
+
+    private static func extractTitle(from text: String) -> String {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let sentences = trimmed.components(separatedBy: CharacterSet(charactersIn: "。."))
+        if let firstSentence = sentences.first, !firstSentence.isEmpty {
+            let sentence = firstSentence.trimmingCharacters(in: .whitespacesAndNewlines)
+            if sentence.count <= 60 {
+                return sentence
+            }
+            return String(sentence.prefix(57)) + "..."
+        }
+
+        if trimmed.count <= 60 {
+            return trimmed
+        }
+        return String(trimmed.prefix(57)) + "..."
+    }
 }
 
 actor VLMAPIClient: VLMAPIClientProtocol {
     static let shared = VLMAPIClient()
 
-    private let baseURL = URL(string: "https://ungravitative-unsedately-vanetta.ngrok-free.dev")!
+    private let baseURL = URL(string: "https://app-54c362a6-dce4-4819-9c60-2ce0d0024e46.ingress.apprun.sakura.ne.jp")!
     private let session: URLSession
 
     private init() {
@@ -63,22 +88,19 @@ actor VLMAPIClient: VLMAPIClientProtocol {
         self.session = URLSession(configuration: config)
     }
 
-    func inferLandmark(image: UIImage, locationInfo: LocationInfo? = nil, interests: Set<Interest> = []) async throws -> Landmark {
+    func inferLandmark(image: UIImage, locationInfo: LocationInfo? = nil, interests: Set<Interest> = [], preferences: UserPreferences = .default) async throws -> Landmark {
         guard let jpegData = image.jpegData(compressionQuality: 0.8) else {
             print("[VLM] ❌ Failed to convert image to JPEG")
             throw VLMError.imageConversionFailed
         }
 
-        return try await inferLandmark(jpegData: jpegData, locationInfo: locationInfo, interests: interests)
+        return try await inferLandmark(jpegData: jpegData, locationInfo: locationInfo, interests: interests, preferences: preferences)
     }
 
-    func inferLandmark(jpegData: Data, locationInfo: LocationInfo? = nil, interests: Set<Interest> = []) async throws -> Landmark {
-        let prompt = buildPrompt(locationInfo: locationInfo, interests: interests)
-
+    func inferLandmark(jpegData: Data, locationInfo: LocationInfo? = nil, interests: Set<Interest> = [], preferences: UserPreferences = .default) async throws -> Landmark {
         let url = baseURL.appendingPathComponent("inference")
 
         print("[VLM] 🚀 Sending request to: \(url.absoluteString)")
-        print("[VLM] 📝 Prompt: \(prompt)")
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -96,10 +118,34 @@ actor VLMAPIClient: VLMAPIClientProtocol {
         body.append(jpegData)
         body.append("\r\n".data(using: .utf8)!)
 
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"text\"\r\n\r\n".data(using: .utf8)!)
-        body.append(prompt.data(using: .utf8)!)
-        body.append("\r\n".data(using: .utf8)!)
+        let address = locationInfo?.formattedAddress ?? ""
+        body.appendFormField(name: "address", value: address, boundary: boundary)
+
+        let latitude = locationInfo?.coordinate.latitude ?? 0
+        body.appendFormField(name: "latitude", value: String(latitude), boundary: boundary)
+
+        let longitude = locationInfo?.coordinate.longitude ?? 0
+        body.appendFormField(name: "longitude", value: String(longitude), boundary: boundary)
+
+        if !interests.isEmpty {
+            for interest in interests {
+                body.appendFormField(name: "user_interests", value: interest.id, boundary: boundary)
+            }
+        }
+
+        if let ageGroup = preferences.ageGroup {
+            body.appendFormField(name: "user_age_group", value: ageGroup.rawValue, boundary: boundary)
+        }
+
+        if let budgetLevel = preferences.budgetLevel {
+            body.appendFormField(name: "user_budget_level", value: budgetLevel.rawValue, boundary: boundary)
+        }
+
+        if let activityLevel = preferences.activityLevel {
+            body.appendFormField(name: "user_activity_level", value: activityLevel.rawValue, boundary: boundary)
+        }
+
+        body.appendFormField(name: "user_language", value: preferences.language.rawValue, boundary: boundary)
 
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
 
@@ -131,79 +177,44 @@ actor VLMAPIClient: VLMAPIClientProtocol {
 
         let vlmResponse = try JSONDecoder().decode(VLMResponse.self, from: data)
 
+        print("[VLM] 📋 API Response:")
+        print("[VLM]   - success: \(vlmResponse.success)")
+        print("[VLM]   - error_message: \(vlmResponse.errorMessage ?? "nil")")
+        print("[VLM]   - generated_text: \(vlmResponse.generatedText)")
+
         guard vlmResponse.success else {
             print("[VLM] ❌ API Error: \(vlmResponse.errorMessage ?? "Unknown error")")
             throw VLMError.apiError(message: vlmResponse.errorMessage ?? "Unknown error")
         }
 
-        print("[VLM] ✅ Generated text: \(vlmResponse.generatedText)")
+        let landmarkResponse = parseGeneratedText(vlmResponse.generatedText)
 
-        let landmarkResponse = try parseGeneratedText(vlmResponse.generatedText)
-
-        print("[VLM] 🏛️ Parsed landmark: \(landmarkResponse.name)")
+        print("[VLM] 🏛️ Parsed result:")
+        print("[VLM]   - name: \(landmarkResponse.name)")
+        print("[VLM]   - yearBuilt: \(landmarkResponse.yearBuilt)")
+        print("[VLM]   - history: \(landmarkResponse.history.prefix(100))...")
 
         return Landmark(
             name: landmarkResponse.name,
             yearBuilt: landmarkResponse.yearBuilt,
             subtitle: landmarkResponse.subtitle,
-            history: landmarkResponse.history,
-            distanceMeters: 0,
-            bearingDegrees: 0
+            history: landmarkResponse.history
         )
     }
 
-    private func parseGeneratedText(_ text: String) throws -> LandmarkAPIResponse {
-        guard let jsonStart = text.firstIndex(of: "{"),
-              let jsonEnd = text.lastIndex(of: "}") else {
-            throw VLMError.parsingFailed
-        }
-
-        var jsonString = String(text[jsonStart...jsonEnd])
-
-        // Strip JavaScript-style single-line comments (// ...)
-        jsonString = jsonString.replacingOccurrences(
-            of: "//[^\n]*",
-            with: "",
-            options: .regularExpression
-        )
-
-        guard let jsonData = jsonString.data(using: .utf8) else {
-            throw VLMError.parsingFailed
-        }
-
-        return try JSONDecoder().decode(LandmarkAPIResponse.self, from: jsonData)
+    private func parseGeneratedText(_ text: String) -> LandmarkAPIResponse {
+        return LandmarkAPIResponse(plainText: text)
     }
 
-    private func buildPrompt(locationInfo: LocationInfo?, interests: Set<Interest>) -> String {
-        var contextParts: [String] = []
+}
 
-        if let location = locationInfo {
-            contextParts.append("現在地: \(location.coordinateString)")
-            if !location.formattedAddress.isEmpty {
-                contextParts.append("住所: \(location.formattedAddress)")
-            }
-        }
+// MARK: - Data Extension for Multipart Form
 
-        let contextSection = contextParts.isEmpty
-            ? ""
-            : "【位置情報】\n\(contextParts.joined(separator: "\n"))\n\n"
-
-        let interestsSection: String
-        if interests.isEmpty {
-            interestsSection = ""
-        } else {
-            let interestNames = interests.map { $0.localizedName }.joined(separator: ", ")
-            interestsSection = "【ユーザーの興味】\n\(interestNames)\n\n"
-        }
-
-        let tailorInstruction = interests.isEmpty
-            ? ""
-            : "ユーザーの興味に合わせて説明を作成してください。"
-
-        return """
-        \(contextSection)\(interestsSection)この画像のランドマークをJSON形式で回答してください。\(tailorInstruction)
-        {"name": "名前", "year_built": "建設年", "subtitle": "説明", "history": "歴史"}
-        """
+private extension Data {
+    mutating func appendFormField(name: String, value: String, boundary: String) {
+        append("--\(boundary)\r\n".data(using: .utf8)!)
+        append("Content-Disposition: form-data; name=\"\(name)\"\r\n\r\n".data(using: .utf8)!)
+        append("\(value)\r\n".data(using: .utf8)!)
     }
 }
 

@@ -3,6 +3,7 @@ import SwiftUI
 struct ImageViewerView: View {
     let image: UIImage?
     let subtitle: String?
+    let captureOrientation: CaptureOrientation?
     @Environment(\.dismiss) private var dismiss
     @State private var showingExplanation = true
 
@@ -18,8 +19,10 @@ struct ImageViewerView: View {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
+                        .rotationEffect(.degrees(captureOrientation?.displayRotationDegrees ?? 0))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding(20)
+                        .padding(.vertical, 20)
+                        .hudHorizontalPadding(geometry.safeAreaInsets)
                 }
 
                 VStack {
@@ -31,12 +34,12 @@ struct ImageViewerView: View {
                         closeButton
                     }
                     .padding(.top, geometry.safeAreaInsets.top + 16)
-                    .padding(.horizontal, 20)
+                    .hudHorizontalPadding(geometry.safeAreaInsets)
 
                     Spacer()
 
                     if showingExplanation, let subtitle = subtitle {
-                        explanationPanel(subtitle: subtitle, bottomInset: geometry.safeAreaInsets.bottom)
+                        explanationPanel(subtitle: subtitle, safeAreaInsets: geometry.safeAreaInsets)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
@@ -88,7 +91,7 @@ struct ImageViewerView: View {
         }
     }
 
-    private func explanationPanel(subtitle: String, bottomInset: CGFloat) -> some View {
+    private func explanationPanel(subtitle: String, safeAreaInsets: EdgeInsets) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(subtitle)
                 .font(.system(size: 16, weight: .regular))
@@ -116,11 +119,12 @@ struct ImageViewerView: View {
             )
             .stroke(Color.white.opacity(0.15), lineWidth: 1)
         )
-        .padding(.bottom, bottomInset)
+        .hudHorizontalPadding(safeAreaInsets, base: 0)
+        .padding(.bottom, safeAreaInsets.bottom)
         .onTapGesture {}
     }
 }
 
 #Preview {
-    ImageViewerView(image: nil, subtitle: "銀座四丁目交差点に建つ時計塔。")
+    ImageViewerView(image: nil, subtitle: "銀座四丁目交差点に建つ時計塔。", captureOrientation: nil)
 }

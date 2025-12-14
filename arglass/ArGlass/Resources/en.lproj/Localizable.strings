@@ -10,21 +10,21 @@
 
 /* Interest Categories */
 "interest_history" = "History";
-"interest_finance" = "Finance";
-"interest_technology" = "Technology";
-"interest_science" = "Science";
-"interest_art" = "Art";
-"interest_sports" = "Sports";
-"interest_music" = "Music";
-"interest_travel" = "Travel";
-"interest_food" = "Food";
 "interest_nature" = "Nature";
+"interest_art" = "Art";
+"interest_food" = "Food";
+"interest_architecture" = "Architecture";
+"interest_shopping" = "Shopping";
+"interest_nightlife" = "Nightlife";
 
 /* Settings */
 "settings_title" = "Settings";
 "settings_interests" = "Interests";
 "settings_edit_interests" = "Edit Interests";
+"settings_edit_interests_subtitle" = "Change your interests to customize your experience";
 "settings_done" = "Done";
+"settings_save" = "Save";
+"settings_cancel" = "Cancel";
 
 /* History */
 "history_title" = "History";
@@ -49,16 +49,37 @@
 "hud_searching_landmarks" = "Searching for landmarks...";
 "hud_status_online" = "ONLINE";
 "hud_status_offline" = "OFFLINE";
-
-/* Compass Directions */
-"compass_n" = "N";
-"compass_ne" = "NE";
-"compass_e" = "E";
-"compass_se" = "SE";
-"compass_s" = "S";
-"compass_sw" = "SW";
-"compass_w" = "W";
-"compass_nw" = "NW";
+"hud_area_info" = "Area Information";
 
 /* Settings Additional */
 "settings_close" = "Close";
+
+/* Age Group */
+"settings_age_group" = "Age Group";
+"age_group_20s" = "20s";
+"age_group_30_40s" = "30-40s";
+"age_group_50splus" = "50s+";
+"age_group_family_with_kids" = "Family with Kids";
+
+/* Budget Level */
+"settings_budget" = "Budget";
+"budget_budget" = "Budget";
+"budget_mid_range" = "Mid-range";
+"budget_luxury" = "Luxury";
+
+/* Activity Level */
+"settings_activity" = "Activity Level";
+"activity_active" = "Active";
+"activity_moderate" = "Moderate";
+"activity_relaxed" = "Relaxed";
+
+/* Language */
+"settings_language" = "Language";
+"language_japanese" = "日本語";
+"language_english" = "English";
+"language_chinese" = "中文";
+"language_korean" = "한국어";
+"language_spanish" = "Español";
+"language_french" = "Français";
+"language_german" = "Deutsch";
+"language_thai" = "ไทย";

@@ -2,9 +2,15 @@ import SwiftUI
 
 struct OnboardingView: View {
     @StateObject private var viewModel = OnboardingViewModel()
+    let isEditing: Bool
     let onComplete: () -> Void
 
     @State private var glitchIntensity: CGFloat = 0
+
+    init(isEditing: Bool = false, onComplete: @escaping () -> Void) {
+        self.isEditing = isEditing
+        self.onComplete = onComplete
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -21,6 +27,7 @@ struct OnboardingView: View {
                     // Header
                     headerSection
                         .padding(.top, max(geometry.safeAreaInsets.top, 20) + 20)
+                        .hudHorizontalPadding(geometry.safeAreaInsets)
 
                     // Bubbles container
                     FloatingBubblesContainer(viewModel: viewModel)
@@ -30,6 +37,7 @@ struct OnboardingView: View {
                     // Footer
                     OnboardingFooterView(
                         viewModel: viewModel,
+                        isEditing: isEditing,
                         onContinue: {
                             withAnimation(.easeInOut(duration: 0.4)) {
                                 onComplete()
@@ -41,13 +49,18 @@ struct OnboardingView: View {
                             }
                         }
                     )
-                    .padding(.horizontal, 20)
+                    .hudHorizontalPadding(geometry.safeAreaInsets)
                     .padding(.bottom, max(geometry.safeAreaInsets.bottom, 20))
                 }
             }
         }
         .ignoresSafeArea()
         .statusBarHidden(true)
+        .onAppear {
+            if isEditing {
+                viewModel.loadSelectedInterests()
+            }
+        }
         .onChange(of: viewModel.selectedInterests.count) { _, _ in
             triggerGlitch()
         }
@@ -62,11 +75,11 @@ struct OnboardingView: View {
 
     private var headerSection: some View {
         VStack(spacing: 6) {
-            Text(NSLocalizedString("onboarding_title", comment: ""))
+            Text(NSLocalizedString(isEditing ? "settings_edit_interests" : "onboarding_title", comment: ""))
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(.white.opacity(0.95))
 
-            Text(NSLocalizedString("onboarding_subtitle", comment: ""))
+            Text(NSLocalizedString(isEditing ? "settings_edit_interests_subtitle" : "onboarding_subtitle", comment: ""))
                 .font(.system(size: 8))
                 .foregroundStyle(.white.opacity(0.65))
                 .multilineTextAlignment(.center)

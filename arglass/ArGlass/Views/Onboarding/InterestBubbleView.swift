@@ -5,11 +5,32 @@ struct InterestBubbleView: View {
     let interest: Interest
     let isSelected: Bool
     let canSelect: Bool
+    let scaleFactor: CGFloat
     let onTap: () -> Void
 
     @State private var bounceScale: CGFloat = 1.0
 
     private let hapticFeedback = UIImpactFeedbackGenerator(style: .light)
+
+    // Base sizes (designed for iPhone)
+    private let baseBubbleSize: CGFloat = 110
+    private let baseGlowSize: CGFloat = 120
+    private let baseIconSize: CGFloat = 32
+    private let baseFontSize: CGFloat = 13
+
+    init(
+        interest: Interest,
+        isSelected: Bool,
+        canSelect: Bool,
+        scaleFactor: CGFloat = 1.0,
+        onTap: @escaping () -> Void
+    ) {
+        self.interest = interest
+        self.isSelected = isSelected
+        self.canSelect = canSelect
+        self.scaleFactor = scaleFactor
+        self.onTap = onTap
+    }
 
     // Animation parameters for floating effect - derived from interest id for stability
     private var amplitude: CGFloat {
@@ -41,7 +62,12 @@ struct InterestBubbleView: View {
     }
 
     private var bubbleContent: some View {
-        VStack(spacing: 12) {
+        let bubbleSize = baseBubbleSize * scaleFactor
+        let glowSize = baseGlowSize * scaleFactor
+        let iconSize = baseIconSize * scaleFactor
+        let fontSize = baseFontSize * scaleFactor
+
+        return VStack(spacing: 12 * scaleFactor) {
             ZStack {
                 // Outer glow circle
                 Circle()
@@ -52,11 +78,11 @@ struct InterestBubbleView: View {
                                 Color.clear
                             ],
                             center: .center,
-                            startRadius: 50,
-                            endRadius: 60
+                            startRadius: 50 * scaleFactor,
+                            endRadius: 60 * scaleFactor
                         )
                     )
-                    .frame(width: 120, height: 120)
+                    .frame(width: glowSize, height: glowSize)
 
                 // Main circle with glass effect
                 Circle()
@@ -73,7 +99,7 @@ struct InterestBubbleView: View {
                             ],
                             center: .top,
                             startRadius: 0,
-                            endRadius: 55
+                            endRadius: 55 * scaleFactor
                         )
                     )
 
@@ -95,21 +121,22 @@ struct InterestBubbleView: View {
                     .stroke(borderGradient, lineWidth: isSelected ? 3 : 2)
 
                 Image(systemName: interest.icon)
-                    .font(.system(size: 32, weight: .semibold))
-                    .foregroundStyle(foregroundColor)
-                    .symbolEffect(.pulse, isActive: isSelected)
+                    .font(.system(size: iconSize, weight: .semibold))
+                    .foregroundStyle(iconColor)
+                    .shadow(color: isSelected ? .accentColor.opacity(0.8) : .clear, radius: 8 * scaleFactor)
+                    .shadow(color: isSelected ? .accentColor.opacity(0.5) : .clear, radius: 16 * scaleFactor)
             }
-            .frame(width: 110, height: 110)
-            .neonGlow(color: glowColor, radius: glowRadius, intensity: glowIntensity)
-            .shadow(color: Color.black.opacity(0.3), radius: 8, y: 4)
-            .shadow(color: isSelected ? Color.accentColor.opacity(0.5) : .clear, radius: 20, y: 8)
+            .frame(width: bubbleSize, height: bubbleSize)
+            .neonGlow(color: glowColor, radius: glowRadius * scaleFactor, intensity: glowIntensity)
+            .shadow(color: Color.black.opacity(0.3), radius: 8 * scaleFactor, y: 4 * scaleFactor)
+            .shadow(color: isSelected ? Color.accentColor.opacity(0.5) : .clear, radius: 20 * scaleFactor, y: 8 * scaleFactor)
 
             Text(interest.localizedName)
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(size: fontSize, weight: .bold))
                 .foregroundStyle(foregroundColor)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
-                .frame(width: 110)
+                .frame(width: bubbleSize)
         }
         .animation(.easeInOut(duration: 0.25), value: isSelected)
     }
@@ -119,6 +146,16 @@ struct InterestBubbleView: View {
     private var foregroundColor: Color {
         if isSelected {
             return .white.opacity(0.95)
+        } else if canSelect {
+            return .white.opacity(0.75)
+        } else {
+            return .white.opacity(0.4)
+        }
+    }
+
+    private var iconColor: Color {
+        if isSelected {
+            return .accentColor
         } else if canSelect {
             return .white.opacity(0.75)
         } else {

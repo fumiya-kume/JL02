@@ -4,7 +4,7 @@ import XCTest
 final class InterestTests: XCTestCase {
     
     func testAllInterestsCount() {
-        XCTAssertEqual(Interest.allInterests.count, 10, "Should have 10 predefined interests")
+        XCTAssertEqual(Interest.allInterests.count, 7, "Should have 7 predefined interests")
     }
     
     func testInterestProperties() {
@@ -34,15 +34,15 @@ final class InterestTests: XCTestCase {
     func testHashableAndEquatable() {
         let history1 = Interest.allInterests.first { $0.id == "history" }!
         let history2 = Interest.allInterests.first { $0.id == "history" }!
-        let science = Interest.allInterests.first { $0.id == "science" }!
-        
+        let architecture = Interest.allInterests.first { $0.id == "architecture" }!
+
         XCTAssertEqual(history1, history2, "Same interests should be equal")
-        XCTAssertNotEqual(history1, science, "Different interests should not be equal")
-        
+        XCTAssertNotEqual(history1, architecture, "Different interests should not be equal")
+
         let hash1 = history1.hashValue
         let hash2 = history2.hashValue
-        let hash3 = science.hashValue
-        
+        let hash3 = architecture.hashValue
+
         XCTAssertEqual(hash1, hash2, "Hash values should be equal for equal interests")
         XCTAssertNotEqual(hash1, hash3, "Hash values should differ for different interests")
     }

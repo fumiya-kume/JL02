@@ -1,0 +1,8 @@
+transformers 
+sentencepiece 
+protobuf
+accelerate
+fastapi
+pyngrok
+uvicorn
+python-multipart

@@ -13,8 +13,6 @@ struct TargetMarkerView: View {
                     title: candidate.name,
                     subtitle: NSLocalizedString("hud_badge_scanning", comment: ""),
                     progress: progress,
-                    distanceMeters: candidate.distanceMeters,
-                    bearingDegrees: candidate.bearingDegrees,
                     highlightColor: Color.accentColor.opacity(0.85)
                 )
             case let .locked(target, confidence):
@@ -22,8 +20,6 @@ struct TargetMarkerView: View {
                     title: target.name,
                     subtitle: String(format: "%@ • %.0f%%", NSLocalizedString("hud_badge_locked", comment: ""), confidence * 100),
                     progress: 1,
-                    distanceMeters: target.distanceMeters,
-                    bearingDegrees: target.bearingDegrees,
                     highlightColor: Color.accentColor.opacity(1.0)
                 )
             }
@@ -51,8 +47,6 @@ struct TargetMarkerView: View {
         title: String,
         subtitle: String,
         progress: Double,
-        distanceMeters: Double,
-        bearingDegrees: Double,
         highlightColor: Color
     ) -> some View {
         ZStack {
@@ -77,11 +71,6 @@ struct TargetMarkerView: View {
                         .foregroundStyle(highlightColor.opacity(0.90))
                         .tracking(1.1)
                 }
-
-                DirectionIndicatorView(
-                    distanceMeters: distanceMeters,
-                    bearingDegrees: bearingDegrees
-                )
             }
             .padding(.top, 4)
 
@@ -155,9 +144,7 @@ private struct ReticleCornersShape: Shape {
         name: "Sample Building",
         yearBuilt: "2020",
         subtitle: "A sample landmark for preview.",
-        history: "This is a sample landmark for preview purposes.",
-        distanceMeters: 150,
-        bearingDegrees: 45
+        history: "This is a sample landmark for preview purposes."
     )
     return VStack(spacing: 30) {
         TargetMarkerView(recognitionState: .searching)

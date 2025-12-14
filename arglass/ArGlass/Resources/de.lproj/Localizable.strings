@@ -10,21 +10,21 @@
 
 /* Interest Categories */
 "interest_history" = "Geschichte";
-"interest_finance" = "Finanzen";
-"interest_technology" = "Technologie";
-"interest_science" = "Wissenschaft";
-"interest_art" = "Kunst";
-"interest_sports" = "Sport";
-"interest_music" = "Musik";
-"interest_travel" = "Reisen";
-"interest_food" = "Essen";
 "interest_nature" = "Natur";
+"interest_art" = "Kunst";
+"interest_food" = "Essen";
+"interest_architecture" = "Architektur";
+"interest_shopping" = "Shopping";
+"interest_nightlife" = "Nachtleben";
 
 /* Settings */
 "settings_title" = "Einstellungen";
 "settings_interests" = "Interessen";
 "settings_edit_interests" = "Interessen bearbeiten";
+"settings_edit_interests_subtitle" = "Ändern Sie Ihre Interessen, um Ihr Erlebnis anzupassen";
 "settings_done" = "Fertig";
+"settings_save" = "Speichern";
+"settings_cancel" = "Abbrechen";
 
 /* History */
 "history_title" = "Verlauf";
@@ -37,3 +37,59 @@
 "history_clear_confirm_title" = "Verlauf löschen";
 "history_clear_confirm_message" = "Möchtest du wirklich den gesamten Verlauf löschen?";
 "history_cancel" = "Abbrechen";
+
+/* HUD */
+"hud_guide_standby" = "Guide Bereitschaft";
+"hud_guide_standby_description" = "Erkennt automatisch Sehenswürdigkeiten im Blickfeld.";
+"hud_scanning_analyzing" = "Kontur & Textur werden analysiert...";
+"hud_year_built" = "Baujahr";
+"hud_badge_scanning" = "SCANNING";
+"hud_badge_locked" = "LOCKED";
+"hud_chip_history" = "HIST";
+"hud_searching_landmarks" = "Suche nach Sehenswürdigkeiten...";
+"hud_status_online" = "ONLINE";
+"hud_status_offline" = "OFFLINE";
+"hud_area_info" = "Umgebungsinformationen";
+
+/* Compass Directions */
+"compass_n" = "N";
+"compass_ne" = "NO";
+"compass_e" = "O";
+"compass_se" = "SO";
+"compass_s" = "S";
+"compass_sw" = "SW";
+"compass_w" = "W";
+"compass_nw" = "NW";
+
+/* Settings Additional */
+"settings_close" = "Schließen";
+
+/* Age Group */
+"settings_age_group" = "Altersgruppe";
+"age_group_20s" = "20er";
+"age_group_30_40s" = "30-40er";
+"age_group_50splus" = "50+";
+"age_group_family_with_kids" = "Familie mit Kindern";
+
+/* Budget Level */
+"settings_budget" = "Budget";
+"budget_budget" = "Günstig";
+"budget_mid_range" = "Mittelklasse";
+"budget_luxury" = "Luxus";
+
+/* Activity Level */
+"settings_activity" = "Aktivitätslevel";
+"activity_active" = "Aktiv";
+"activity_moderate" = "Moderat";
+"activity_relaxed" = "Entspannt";
+
+/* Language */
+"settings_language" = "Sprache";
+"language_japanese" = "日本語";
+"language_english" = "English";
+"language_chinese" = "中文";
+"language_korean" = "한국어";
+"language_spanish" = "Español";
+"language_french" = "Français";
+"language_german" = "Deutsch";
+"language_thai" = "ไทย";

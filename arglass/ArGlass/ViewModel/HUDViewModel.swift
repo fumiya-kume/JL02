@@ -30,6 +30,7 @@ final class HUDViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     @Published var isCameraPreviewEnabled: Bool = true
     @Published var lastCapturedImage: UIImage?
+    @Published var lastCaptureOrientation: CaptureOrientation?
 
     let cameraService: CameraServiceProtocol
     let locationService: LocationServiceProtocol
@@ -39,7 +40,8 @@ final class HUDViewModel: ObservableObject {
     private var startupTask: Task<Void, Never>?
     private var inferenceTask: Task<Void, Never>?
 
-    private let inferenceInterval: TimeInterval = 4.0
+    private let inferenceInterval: Duration = .seconds(4)
+    private let retryInterval: Duration = .seconds(1)
     private var consecutiveErrorCount: Int = 0
     private let maxRetries: Int = 3
 
@@ -56,13 +58,7 @@ final class HUDViewModel: ObservableObject {
     }
 
     func start() {
-        startupTask?.cancel()
-        startupTask = Task { [weak self] in
-            guard let self else { return }
-            await self.cameraService.requestAccessAndStart()
-            self.locationService.requestAuthorization()
-            self.startAutoInference()
-        }
+        startAutoInference()
     }
 
     func stop() {
@@ -76,6 +72,8 @@ final class HUDViewModel: ObservableObject {
     func startAutoInference() {
         guard !isAutoInferenceEnabled else { return }
         isAutoInferenceEnabled = true
+        locationService.requestAuthorization()
+        ensureCameraRunning()
         inferenceTask?.cancel()
         inferenceTask = Task { [weak self] in
             while !Task.isCancelled {
@@ -83,14 +81,17 @@ final class HUDViewModel: ObservableObject {
                 let success = await self.performInference()
                 if success {
                     self.consecutiveErrorCount = 0
-                    try? await Task.sleep(for: .seconds(self.inferenceInterval))
+                    try? await Task.sleep(for: self.inferenceInterval)
                 } else {
                     self.consecutiveErrorCount += 1
-                    if self.consecutiveErrorCount >= self.maxRetries {
-                        self.consecutiveErrorCount = 0
-                        print("[VLM] Max retries (\(self.maxRetries)) reached, waiting before next attempt")
-                        try? await Task.sleep(for: .seconds(self.inferenceInterval))
+                    if self.consecutiveErrorCount < self.maxRetries {
+                        try? await Task.sleep(for: self.retryInterval)
+                        continue
                     }
+
+                    self.consecutiveErrorCount = 0
+                    print("[VLM] Max retries (\(self.maxRetries)) reached, waiting before next attempt")
+                    try? await Task.sleep(for: self.inferenceInterval)
                 }
             }
         }
@@ -98,11 +99,36 @@ final class HUDViewModel: ObservableObject {
 
     func stopAutoInference() {
         isAutoInferenceEnabled = false
+        consecutiveErrorCount = 0
         inferenceTask?.cancel()
         inferenceTask = nil
+        locationService.stopUpdating()
+        if !isCameraPreviewEnabled {
+            cameraService.stop()
+        }
+    }
+
+    func toggleCameraPreview() {
+        isCameraPreviewEnabled.toggle()
+
+        if isCameraPreviewEnabled || isAutoInferenceEnabled {
+            ensureCameraRunning()
+        } else {
+            cameraService.stop()
+        }
+    }
+
+    private func ensureCameraRunning() {
+        startupTask?.cancel()
+        startupTask = Task { [weak self] in
+            guard let self else { return }
+            await self.cameraService.requestAccessAndStart()
+        }
     }
 
     func performInference() async -> Bool {
+        let orientation = CaptureOrientation.current()
+
         guard let image = cameraService.captureCurrentFrame() else {
             captureState = .failed
             errorMessage = "カメラからの画像取得に失敗しました"
@@ -131,19 +157,22 @@ final class HUDViewModel: ObservableObject {
 
         do {
             let interests = OnboardingViewModel.getSelectedInterests()
+            let preferences = UserPreferencesManager.shared.load()
             let landmark = try await vlmAPIClient.inferLandmark(
                 jpegData: jpegData,
                 locationInfo: locationService.currentLocation,
-                interests: interests
+                interests: interests,
+                preferences: preferences
             )
             let elapsed = Date().timeIntervalSince(startTime)
             apiRequestState = .success(responseTime: elapsed)
             let confidence = 0.88 + Double.random(in: 0.0...0.10)
             recognitionState = .locked(target: landmark, confidence: min(confidence, 0.99))
             lastCapturedImage = image
+            lastCaptureOrientation = orientation
 
             Task {
-                let entry = HistoryEntry(landmark: landmark)
+                let entry = HistoryEntry(landmark: landmark, captureOrientation: orientation)
                 await historyService.addEntry(entry, image: image)
             }
 
@@ -154,18 +183,5 @@ final class HUDViewModel: ObservableObject {
             print(errorMessage)
             return false
         }
-    }
-
-    func setSearching() {
-        recognitionState = .searching
-        lastCapturedImage = nil
-    }
-
-    func setScanning(candidate: Landmark, progress: Double) {
-        recognitionState = .scanning(candidate: candidate, progress: max(0, min(progress, 1)))
-    }
-
-    func setLocked(target: Landmark, confidence: Double) {
-        recognitionState = .locked(target: target, confidence: max(0, min(confidence, 0.99)))
     }
 }

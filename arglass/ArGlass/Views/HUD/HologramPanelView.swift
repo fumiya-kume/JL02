@@ -3,6 +3,7 @@ import SwiftUI
 struct HologramPanelView: View {
     let recognitionState: HUDViewModel.RecognitionState
     var capturedImage: UIImage?
+    var captureOrientation: CaptureOrientation?
     var onImageTap: (() -> Void)?
 
     var body: some View {
@@ -96,6 +97,7 @@ struct HologramPanelView: View {
                             Image(uiImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
+                                .rotationEffect(.degrees(captureOrientation?.displayRotationDegrees ?? 0))
                                 .frame(width: 72, height: 72)
                                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .overlay {
@@ -108,8 +110,6 @@ struct HologramPanelView: View {
                 }
 
                 HStack(spacing: 10) {
-                    ChipView(label: formatDistance(target.distanceMeters), systemImage: "ruler")
-                    ChipView(label: formatBearing(target.bearingDegrees), systemImage: "location.north.line")
                     ChipView(label: NSLocalizedString("hud_chip_history", comment: ""), systemImage: "book")
                     Spacer()
                 }
@@ -140,18 +140,6 @@ struct HologramPanelView: View {
                 .foregroundStyle(.white.opacity(0.70))
         }
     }
-
-    private func formatDistance(_ meters: Double) -> String {
-        if meters >= 1000 {
-            return String(format: "%.1fkm", meters / 1000.0)
-        }
-        return "\(Int(meters.rounded()))m"
-    }
-
-    private func formatBearing(_ degrees: Double) -> String {
-        let normalized = (degrees.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360)
-        return "\(Int(normalized.rounded()))°"
-    }
 }
 
 private struct ChipView: View {
@@ -181,9 +169,7 @@ private struct ChipView: View {
         name: "Sample Building",
         yearBuilt: "2020",
         subtitle: "A sample landmark for preview.",
-        history: "This is a sample landmark for preview purposes.",
-        distanceMeters: 150,
-        bearingDegrees: 45
+        history: "This is a sample landmark for preview purposes."
     )
     return VStack(spacing: 16) {
         HologramPanelView(recognitionState: .searching)

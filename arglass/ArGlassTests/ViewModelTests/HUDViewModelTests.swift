@@ -61,75 +61,10 @@ final class HUDViewModelTests: XCTestCase {
         XCTAssertEqual(sut.locationService.state, .idle)
     }
     
-    // MARK: - State Management Tests
-    
-    func testSetSearching_updatesState() {
-        sut.lastCapturedImage = UIImage(systemName: "test")
-        
-        sut.setSearching()
-        
-        XCTAssertEqual(sut.recognitionState, .searching)
-        XCTAssertNil(sut.lastCapturedImage)
-    }
-    
-    func testSetScanning_updatesState() {
-        let landmark = TestFixtures.makeLandmark()
-        
-        sut.setScanning(candidate: landmark, progress: 0.5)
-        
-        if case .scanning(let candidate, let progress) = sut.recognitionState {
-            XCTAssertEqual(candidate.name, landmark.name)
-            XCTAssertEqual(progress, 0.5)
-        } else {
-            XCTFail("Expected scanning state")
-        }
-    }
-    
-    func testSetScanning_clampsProgress() {
-        let landmark = TestFixtures.makeLandmark()
-        
-        sut.setScanning(candidate: landmark, progress: -0.5)
-        if case .scanning(_, let progress) = sut.recognitionState {
-            XCTAssertEqual(progress, 0.0, "Progress should be clamped to minimum 0")
-        }
-        
-        sut.setScanning(candidate: landmark, progress: 1.5)
-        if case .scanning(_, let progress) = sut.recognitionState {
-            XCTAssertEqual(progress, 1.0, "Progress should be clamped to maximum 1")
-        }
-    }
-    
-    func testSetLocked_updatesState() {
-        let landmark = TestFixtures.makeLandmark()
-        
-        sut.setLocked(target: landmark, confidence: 0.95)
-        
-        if case .locked(let target, let confidence) = sut.recognitionState {
-            XCTAssertEqual(target.name, landmark.name)
-            XCTAssertEqual(confidence, 0.95)
-        } else {
-            XCTFail("Expected locked state")
-        }
-    }
-    
-    func testSetLocked_clampsConfidence() {
-        let landmark = TestFixtures.makeLandmark()
-        
-        sut.setLocked(target: landmark, confidence: -0.5)
-        if case .locked(_, let confidence) = sut.recognitionState {
-            XCTAssertEqual(confidence, 0.0, "Confidence should be clamped to minimum 0")
-        }
-        
-        sut.setLocked(target: landmark, confidence: 1.5)
-        if case .locked(_, let confidence) = sut.recognitionState {
-            XCTAssertEqual(confidence, 0.99, "Confidence should be clamped to maximum 0.99")
-        }
-    }
-    
     // MARK: - Start/Stop Tests
     
     func testStart_startsServices() async {
-        await sut.start()
+        sut.start()
         
         // Wait a bit for async operations
         try? await Task.sleep(nanoseconds: 100_000_000)
@@ -205,7 +140,7 @@ final class HUDViewModelTests: XCTestCase {
         XCTAssertTrue(sut.errorMessage.isEmpty)
         
         // Verify history was saved
-        await mockHistoryService.addEntry(HistoryEntry(name: "", yearBuilt: "", subtitle: "", history: "", distanceMeters: 0, bearingDegrees: 0), image: nil)
+        await mockHistoryService.addEntry(HistoryEntry(name: "", yearBuilt: "", subtitle: "", history: ""), image: nil)
         let callCount = await mockHistoryService.getAddEntryCallCount()
         XCTAssertEqual(callCount, 2) // One from performInference, one from our manual call
     }
