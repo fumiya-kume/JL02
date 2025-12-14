@@ -82,14 +82,14 @@ def query_rag(api_token, query, top_k=3, threshold=0.3):
 
     except HTTPError as e:
         error_body = e.read().decode('utf-8')
-        logger.error(f"HTTP Error {e.code}: {e.reason}")
-        logger.error(f"Error response: {error_body}")
+        logger.exception(f"HTTP Error {e.code}: {e.reason}")
+        logger.debug(f"Error response: {error_body}")
         return None
     except URLError as e:
-        logger.error(f"URL Error: {e.reason}")
+        logger.exception(f"URL Error: {e.reason}")
         return None
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.exception(f"Unexpected error: {e}")
         return None
 
 
