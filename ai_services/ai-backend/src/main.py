@@ -220,7 +220,7 @@ async def query_rag(
         return None
 
 
-def parse_rag_response(rag_answer: str) -> tuple[str, str]:
+def parse_rag_response(rag_answer: str, address: str = "") -> tuple[str, str]:
     """
     Parse RAG response with structured format to extract facility name and description.
 
@@ -233,10 +233,12 @@ def parse_rag_response(rag_answer: str) -> tuple[str, str]:
 
     Args:
         rag_answer: Raw answer text from RAG API
+        address: Address to use as fallback when facility name is unrecognized
 
     Returns:
         Tuple of (facility_name, guide_description).
-        If parsing fails, returns (address fallback, full answer)
+        If facility name is not extracted, uses address as fallback.
+        If all parsing fails, returns (address or "Unknown Facility", full answer)
     """
     facility_name = ""
     guide_description = ""
@@ -262,18 +264,18 @@ def parse_rag_response(rag_answer: str) -> tuple[str, str]:
             print(f"Parsed facility name: {facility_name}")
             return facility_name, guide_description
 
-        # If only guide description was found, use full answer as description
+        # If only guide description was found, use address as facility name
         if guide_description:
-            print("Using fallback: full answer as guide description")
-            return facility_name or "Unknown Facility", guide_description
+            print("Facility name not recognized, using address as fallback")
+            return address or "Unknown Facility", guide_description
 
-        # Fallback: use full answer if no structure found
-        print("No structured format found in RAG response, using full answer")
-        return "Unknown Facility", rag_answer
+        # Fallback: use address if no structure found
+        print("No structured format found in RAG response, using address as fallback")
+        return address or "Unknown Facility", rag_answer
 
     except Exception as e:
         print(f"Error parsing RAG response: {e}")
-        return "Unknown Facility", rag_answer
+        return address or "Unknown Facility", rag_answer
 
 
 class VLMAgentResponse(BaseModel):
@@ -288,7 +290,7 @@ class VLMAgentResponse(BaseModel):
     2. VLM returns facility description/caption
     3a. If text parameter is None: RAG processes the caption with user attributes
         - Recognizable facility: Returns facility name + 3-line personalized guide
-        - Unknown facility: Returns facility name + 2-line description (image explanation)
+        - Unknown facility: Returns address as facility name + 2-line description (image explanation)
     3b. If text parameter is provided: RAG is skipped
         - Returns address as facility name
         - Returns raw VLM analysis
@@ -302,10 +304,10 @@ class VLMAgentResponse(BaseModel):
     name: str = Field(
         ...,
         description="Facility or place name. "
-        "When text is None (RAG mode): Official name extracted from RAG response. "
-        "For unknown facilities, may be structured as '[Image description]' or '[Unknown Facility]'. "
-        "When text is provided (VLM mode): Address provided as fallback. "
-        "Fallback value is 'Unknown Facility' if parsing fails.",
+        "When text is None (RAG mode): Official facility name extracted from RAG response. "
+        "If facility is unrecognized, falls back to the provided address. "
+        "When text is provided (VLM mode): Address provided as facility name. "
+        "Fallback value is 'Unknown Facility' only if address is not provided.",
         example="東京タワー",
     )
     facility_description: str = Field(
@@ -502,7 +504,8 @@ async def vlm_inference(
         if rag_response and "answer" in rag_response:
             guide_text = rag_response["answer"]
             # Parse RAG response to extract facility name and description
-            facility_name, facility_description = parse_rag_response(guide_text)
+            # Use address as fallback for facility name when facility is unrecognized
+            facility_name, facility_description = parse_rag_response(guide_text, address)
             return VLMAgentResponse(
                 name=facility_name,
                 facility_description=facility_description,
