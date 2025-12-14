@@ -53,6 +53,7 @@
 
 /* Settings Additional */
 "settings_close" = "閉じる";
+"settings_read_aloud" = "読み上げモード";
 
 /* Age Group */
 "settings_age_group" = "年齢層";

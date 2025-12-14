@@ -1,4 +1,5 @@
 import AVFoundation
+import NaturalLanguage
 import SwiftUI
 
 struct HUDRootView: View {
@@ -48,7 +49,8 @@ struct HUDRootView: View {
                 triggerGlitch()
             }
 
-            guard isVoiceInputEnabled else { return }
+            let preferences = UserPreferencesManager.shared.load()
+            guard isVoiceInputEnabled || preferences.isReadAloudEnabled else { return }
             guard case let .locked(target, _) = newValue else { return }
             guard lastSpokenLandmarkID != target.id else { return }
 
@@ -286,6 +288,34 @@ struct HUDRootView: View {
         queryClearToken = UUID()
     }
 
+    private func detectLanguage(for text: String) -> String {
+        let recognizer = NLLanguageRecognizer()
+        recognizer.processString(text)
+
+        guard let detectedLanguage = recognizer.dominantLanguage else {
+            let preferences = UserPreferencesManager.shared.load()
+            return preferences.language.speechLocaleIdentifier
+        }
+
+        return languageToSpeechLocale(detectedLanguage)
+    }
+
+    private func languageToSpeechLocale(_ language: NLLanguage) -> String {
+        switch language {
+        case .japanese: return "ja-JP"
+        case .english: return "en-US"
+        case .simplifiedChinese, .traditionalChinese: return "zh-CN"
+        case .korean: return "ko-KR"
+        case .spanish: return "es-ES"
+        case .french: return "fr-FR"
+        case .german: return "de-DE"
+        case .thai: return "th-TH"
+        default:
+            let preferences = UserPreferencesManager.shared.load()
+            return preferences.language.speechLocaleIdentifier
+        }
+    }
+
     private func speakInferenceResult(target: Landmark) {
         // 読み上げ中に自分の音声を拾って暴発しないよう、認識を一時停止してから読み上げる
         speechTranscriber.pause()
@@ -297,7 +327,9 @@ struct HUDRootView: View {
             speakText = "\(target.name)。\(target.description)"
         }
 
-        speechSpeaker.speak(text: speakText, language: "ja-JP") { [isVoiceInputEnabled] in
+        let detectedLocale = detectLanguage(for: speakText)
+
+        speechSpeaker.speak(text: speakText, language: detectedLocale) { [isVoiceInputEnabled] in
             guard isVoiceInputEnabled else { return }
             // TTS終了直後のレースコンディションを避けるため、短いディレイを入れてから再開
             Task { @MainActor in

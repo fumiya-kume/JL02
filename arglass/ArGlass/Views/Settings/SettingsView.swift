@@ -101,6 +101,18 @@ struct SettingsView: View {
     private var settingsList: some View {
         ScrollView {
             VStack(spacing: 12) {
+                settingsToggleRow(
+                    icon: "speaker.wave.2",
+                    title: NSLocalizedString("settings_read_aloud", comment: ""),
+                    isOn: Binding(
+                        get: { currentPreferences.isReadAloudEnabled },
+                        set: { newValue in
+                            currentPreferences.isReadAloudEnabled = newValue
+                            UserPreferencesManager.shared.save(currentPreferences)
+                        }
+                    )
+                )
+
                 settingsRow(
                     icon: "heart.circle",
                     title: NSLocalizedString("settings_interests", comment: ""),
@@ -160,6 +172,33 @@ struct SettingsView: View {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .stroke(Color.white.opacity(0.15), lineWidth: 1)
             }
+        }
+    }
+
+    private func settingsToggleRow(icon: String, title: String, isOn: Binding<Bool>) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(Color.accentColor)
+                .frame(width: 32)
+
+            Text(title)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.9))
+
+            Spacer()
+
+            Toggle("", isOn: isOn)
+                .labelsHidden()
+                .tint(Color.accentColor)
+        }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.white.opacity(0.15), lineWidth: 1)
         }
     }
 
