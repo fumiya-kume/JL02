@@ -142,12 +142,12 @@ def build_rag_query_prompt(
         prompt += "\n"
 
     prompt += (
-        "上記の場所について、以下の形式で回答してください：\n\n"
+        "上記の場所について、以下の形式で回答してください:\n\n"
         "【施設/場所の名前】\n"
         "[ここに施設や場所の正式名称を記入]\n\n"
         "【観光ガイド情報】\n"
         "[ユーザーの属性にパーソナライズした3行程度の情報。"
-        "以下を含めてください：\n"
+        "以下を含めてください:\n"
         "- 場所の概要\n"
         "- ユーザーの興味や予算に合わせた見どころ\n\n(notion!)もし観光地や施設が不明であれば、ユーザーの属性に応じて画像の説明を2行で説明を行ってください]\n"
     )
@@ -371,7 +371,7 @@ class VLMAgentResponse(BaseModel):
         "and highlights matching user interests/budget. "
         "RAG Mode - Unknown Facility (text=None): 2-line image description personalized for user attributes. "
         "VLM Mode (text provided): Raw facility analysis from VLM without RAG processing.",
-        example="東京タワーは、1958年建設の333mランドマーク。建築好きに最適で、中層展望台（¥900-1100）からの関東平野の眺望が素晴らしい。"
+        example="東京タワーは、1958年建設の333mランドマーク。建築好きに最適で、中層展望台(¥900-1100)からの関東平野の眺望が素晴らしい。"
         "晴天時がおすすめ。赤坂見附駅・神谷町駅から利便性が高い。",
     )
     success: bool = Field(
@@ -532,7 +532,7 @@ async def vlm_inference(
                 error_message=None,
             )
 
-        # textがNoneの場合（デフォルトプロンプト）はRAG処理を実行
+        # textがNoneの場合(デフォルトプロンプト)はRAG処理を実行
         print("Using RAG for tourism guide generation")
 
         # RAGクエリプロンプトを構築
