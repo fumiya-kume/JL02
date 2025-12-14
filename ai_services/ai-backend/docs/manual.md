@@ -14,7 +14,7 @@
 
 ディレクトリ例：
 
-```
+```text
 my-fastapi/
   main.py
   requirements.txt
