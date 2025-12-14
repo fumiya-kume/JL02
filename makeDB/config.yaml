@@ -1,0 +1,46 @@
+# 必要なAPIキーは2つだけ！
+
+# 1. LLM API（説明文生成）
+llm:
+  provider: "gemini"  # "gemini", "openai", "claude" から選択
+
+  # Claude API（Anthropic）
+  claude:
+    api_key: ""  # ← ClaudeのAPIキーをここに入力
+    model: "claude-3-5-sonnet-20241022"  # または "claude-3-opus-20240229"
+    # 取得先: https://console.anthropic.com/
+
+  # Gemini API（Google）
+  gemini:
+    api_key: ""
+    model: "gemini-2.5-flash"  # または "gemini-2.5-pro"
+    # 取得先: https://makersuite.google.com/app/apikey
+
+  # OpenAI API
+  openai:
+    api_key: ""
+    model: "gpt-4"
+    # 取得先: https://platform.openai.com/api-keys
+
+# 2. Google Places API（観光スポット検索 + 詳細情報）
+data_collection:
+  google_places:
+    api_key: ""  # ← ここに入力
+    enabled: true
+    # 取得先: https://console.cloud.google.com/
+
+  # Wikipedia API（APIキー不要）
+  wikipedia:
+    enabled: true
+
+  # Web検索API（Wikipedia情報がない場合の補完用）
+  web_search:
+    api_key: ""  # Google Places APIと同じキーでOK
+    search_engine_id: ""
+    enabled: true  # 有効化
+
+# 生成設定
+generation:
+  max_spots: 20
+  description_min_length: 950
+  description_max_length: 1000
