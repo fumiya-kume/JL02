@@ -149,8 +149,7 @@ def build_rag_query_prompt(
         "[ユーザーの属性にパーソナライズした3行程度の情報。"
         "以下を含めてください：\n"
         "- 場所の概要\n"
-        "- ユーザーの興味や予算に合わせた見どころ\n"
-        "- 実用的な訪問情報]\n"
+        "- ユーザーの興味や予算に合わせた見どころ\n]"
     )
 
     # Add language instruction if specified
@@ -294,7 +293,7 @@ class VLMAgentResponse(BaseModel):
         ...,
         description="Generated tourism guide or facility analysis based on VLM inference and RAG. "
         "This is either a personalized tourism guide (when text is None) or raw VLM analysis (when text is provided)",
-        example="東京のランドマークである東京タワーについて、建築的側面と観光情報をお伝えします...",
+        example="東京のランドマークである東京タワーは、1958年に...",
     )
     success: bool = Field(
         ...,
