@@ -149,7 +149,7 @@ def build_rag_query_prompt(
         "[ユーザーの属性にパーソナライズした3行程度の情報。"
         "以下を含めてください：\n"
         "- 場所の概要\n"
-        "- ユーザーの興味や予算に合わせた見どころ\n]"
+        "- ユーザーの興味や予算に合わせた見どころ\n\n(notion!)もし観光地や施設が不明であれば、ユーザーの属性に応じて画像の説明を2行で説明を行ってください]\n"
     )
 
     # Add language instruction if specified
@@ -287,14 +287,15 @@ class VLMAgentResponse(BaseModel):
     1. Image is sent to VLM API with location context and optional custom prompt
     2. VLM returns facility description/caption
     3a. If text parameter is None: RAG processes the caption with user attributes
-        - Returns facility name extracted by RAG
-        - Returns 3-line personalized tourism guide
+        - Recognizable facility: Returns facility name + 3-line personalized guide
+        - Unknown facility: Returns facility name + 2-line description (image explanation)
     3b. If text parameter is provided: RAG is skipped
         - Returns address as facility name
         - Returns raw VLM analysis
 
-    Response Content Varies By Mode:
-    - RAG Mode (text=None): Concise 3-line tourism guide matching user preferences
+    Response Content Varies By Mode & Facility Recognition:
+    - RAG Mode + Known Facility (text=None): Personalized 3-line tourism guide
+    - RAG Mode + Unknown Facility (text=None): 2-line image description with user preferences
     - VLM Mode (text provided): Raw facility analysis based on custom prompt
     """
 
@@ -302,15 +303,17 @@ class VLMAgentResponse(BaseModel):
         ...,
         description="Facility or place name. "
         "When text is None (RAG mode): Official name extracted from RAG response. "
+        "For unknown facilities, may be structured as '[Image description]' or '[Unknown Facility]'. "
         "When text is provided (VLM mode): Address provided as fallback. "
         "Fallback value is 'Unknown Facility' if parsing fails.",
         example="東京タワー",
     )
     facility_description: str = Field(
         ...,
-        description="Generated content based on processing mode. "
-        "RAG Mode (text=None): Personalized 3-line tourism guide covering overview, "
-        "highlights matching user interests/budget, and practical visit info. "
+        description="Generated content based on processing mode and facility recognition. "
+        "RAG Mode - Known Facility (text=None): Personalized 3-line tourism guide covering overview "
+        "and highlights matching user interests/budget. "
+        "RAG Mode - Unknown Facility (text=None): 2-line image description personalized for user attributes. "
         "VLM Mode (text provided): Raw facility analysis from VLM without RAG processing.",
         example="東京タワーは、1958年建設の333mランドマーク。建築好きに最適で、中層展望台（¥900-1100）からの関東平野の眺望が素晴らしい。"
         "晴天時がおすすめ。赤坂見附駅・神谷町駅から利便性が高い。",
@@ -318,7 +321,8 @@ class VLMAgentResponse(BaseModel):
     success: bool = Field(
         ...,
         description="Whether the VLM inference and (if applicable) RAG generation was successful. "
-        "Returns true even if RAG fails and falls back to VLM output.",
+        "Returns true even if facility is unrecognized (falls back to image description) "
+        "or if RAG fails (falls back to VLM output).",
         example=True,
     )
     error_message: Optional[str] = Field(
@@ -334,7 +338,8 @@ class VLMAgentResponse(BaseModel):
     summary="VLM-based Tourism Guide Generation with RAG",
     description="Infers facility information from an image using Vision-Language Model (VLM) "
     "and generates personalized tourism guides using Retrieval-Augmented Generation (RAG). "
-    "When text parameter is omitted, RAG generates a personalized 3-line guide based on user attributes. "
+    "When text parameter is omitted, RAG generates personalized 3-line tourism guide for recognized facilities, "
+    "or 2-line image description for unknown facilities, both customized to user attributes. "
     "When text parameter is provided, returns raw VLM analysis without RAG processing.",
     tags=["inference"],
 )
