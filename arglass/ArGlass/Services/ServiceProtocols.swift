@@ -59,11 +59,19 @@ extension UIDevice: BatteryProviding {}
 // MARK: - Camera Authorization Protocol
 
 protocol CameraAuthorizationProviding {
-    static func authorizationStatus(for mediaType: AVMediaType) -> AVAuthorizationStatus
-    static func requestAccess(for mediaType: AVMediaType) async -> Bool
+    func authorizationStatus(for mediaType: AVMediaType) -> AVAuthorizationStatus
+    func requestAccess(for mediaType: AVMediaType) async -> Bool
 }
 
-extension AVCaptureDevice: CameraAuthorizationProviding {}
+final class CameraAuthorizationProvider: CameraAuthorizationProviding {
+    func authorizationStatus(for mediaType: AVMediaType) -> AVAuthorizationStatus {
+        AVCaptureDevice.authorizationStatus(for: mediaType)
+    }
+
+    func requestAccess(for mediaType: AVMediaType) async -> Bool {
+        await AVCaptureDevice.requestAccess(for: mediaType)
+    }
+}
 
 // MARK: - Location Manager Protocol
 

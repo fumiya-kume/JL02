@@ -1,39 +1,51 @@
 import AVFoundation
+import Combine
 import XCTest
 @testable import ArGlass
 
 final class CameraServiceTests: XCTestCase {
     private var sut: CameraService!
+    private var mockAuthProvider: MockCameraAuthorizationProvider!
+    private var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
         super.setUp()
-        MockCameraAuthorizationProvider.reset()
+        mockAuthProvider = MockCameraAuthorizationProvider()
+        cancellables = []
     }
 
     override func tearDown() {
         sut = nil
-        MockCameraAuthorizationProvider.reset()
+        mockAuthProvider = nil
+        cancellables = nil
         super.tearDown()
     }
 
     // MARK: - Initial State Tests
 
     func testInit_stateIsIdle() {
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+        sut = CameraService(authorizationProvider: mockAuthProvider)
 
         XCTAssertEqual(sut.state, .idle)
     }
 
     // MARK: - Authorization Tests - Already Authorized
 
-    func testRequestAccessAndStart_whenAuthorized_startsCamera() async {
-        MockCameraAuthorizationProvider.mockStatus = .authorized
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+    func testRequestAccessAndStart_whenAuthorized_doesNotSetUnauthorized() async {
+        mockAuthProvider.mockStatus = .authorized
+        sut = CameraService(authorizationProvider: mockAuthProvider)
 
         await sut.requestAccessAndStart()
 
-        // Give time for state update on main thread
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Wait for async state update
+        let expectation = expectation(description: "State updated")
+        sut.$state
+            .dropFirst()
+            .first { $0 != .idle }
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
+
+        await fulfillment(of: [expectation], timeout: 1.0)
 
         // Note: In unit tests without actual camera hardware, configureIfNeeded() will fail
         // So state will be .failed, not .running
@@ -44,37 +56,51 @@ final class CameraServiceTests: XCTestCase {
     // MARK: - Authorization Tests - Not Determined
 
     func testRequestAccessAndStart_whenNotDetermined_requestsAccess() async {
-        MockCameraAuthorizationProvider.mockStatus = .notDetermined
-        MockCameraAuthorizationProvider.mockGrantAccess = true
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+        mockAuthProvider.mockStatus = .notDetermined
+        mockAuthProvider.mockGrantAccess = true
+        sut = CameraService(authorizationProvider: mockAuthProvider)
 
         await sut.requestAccessAndStart()
 
-        XCTAssertEqual(MockCameraAuthorizationProvider.requestAccessCallCount, 1)
+        XCTAssertEqual(mockAuthProvider.requestAccessCallCount, 1)
     }
 
-    func testRequestAccessAndStart_whenNotDeterminedAndGranted_startsCamera() async {
-        MockCameraAuthorizationProvider.mockStatus = .notDetermined
-        MockCameraAuthorizationProvider.mockGrantAccess = true
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+    func testRequestAccessAndStart_whenNotDeterminedAndGranted_doesNotSetUnauthorized() async {
+        mockAuthProvider.mockStatus = .notDetermined
+        mockAuthProvider.mockGrantAccess = true
+        sut = CameraService(authorizationProvider: mockAuthProvider)
 
         await sut.requestAccessAndStart()
 
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Wait for async state update
+        let expectation = expectation(description: "State updated")
+        sut.$state
+            .dropFirst()
+            .first { $0 != .idle }
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
+
+        await fulfillment(of: [expectation], timeout: 1.0)
 
         // Should not be unauthorized since access was granted
         XCTAssertNotEqual(sut.state, .unauthorized)
     }
 
     func testRequestAccessAndStart_whenNotDeterminedAndDenied_setsUnauthorized() async {
-        MockCameraAuthorizationProvider.mockStatus = .notDetermined
-        MockCameraAuthorizationProvider.mockGrantAccess = false
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+        mockAuthProvider.mockStatus = .notDetermined
+        mockAuthProvider.mockGrantAccess = false
+        sut = CameraService(authorizationProvider: mockAuthProvider)
+
+        let expectation = expectation(description: "State updated to unauthorized")
+        sut.$state
+            .dropFirst()
+            .first { $0 == .unauthorized }
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
 
         await sut.requestAccessAndStart()
 
-        // Wait for async state update on main thread
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await fulfillment(of: [expectation], timeout: 1.0)
 
         XCTAssertEqual(sut.state, .unauthorized)
     }
@@ -82,25 +108,37 @@ final class CameraServiceTests: XCTestCase {
     // MARK: - Authorization Tests - Denied/Restricted
 
     func testRequestAccessAndStart_whenDenied_setsUnauthorized() async {
-        MockCameraAuthorizationProvider.mockStatus = .denied
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+        mockAuthProvider.mockStatus = .denied
+        sut = CameraService(authorizationProvider: mockAuthProvider)
+
+        let expectation = expectation(description: "State updated to unauthorized")
+        sut.$state
+            .dropFirst()
+            .first { $0 == .unauthorized }
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
 
         await sut.requestAccessAndStart()
 
-        // Wait for async state update on main thread
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await fulfillment(of: [expectation], timeout: 1.0)
 
         XCTAssertEqual(sut.state, .unauthorized)
     }
 
     func testRequestAccessAndStart_whenRestricted_setsUnauthorized() async {
-        MockCameraAuthorizationProvider.mockStatus = .restricted
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+        mockAuthProvider.mockStatus = .restricted
+        sut = CameraService(authorizationProvider: mockAuthProvider)
+
+        let expectation = expectation(description: "State updated to unauthorized")
+        sut.$state
+            .dropFirst()
+            .first { $0 == .unauthorized }
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
 
         await sut.requestAccessAndStart()
 
-        // Wait for async state update on main thread
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await fulfillment(of: [expectation], timeout: 1.0)
 
         XCTAssertEqual(sut.state, .unauthorized)
     }
@@ -108,7 +146,7 @@ final class CameraServiceTests: XCTestCase {
     // MARK: - Stop Tests
 
     func testStop_whenIdle_remainsIdle() {
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+        sut = CameraService(authorizationProvider: mockAuthProvider)
         XCTAssertEqual(sut.state, .idle)
 
         sut.stop()
@@ -126,7 +164,7 @@ final class CameraServiceTests: XCTestCase {
     // MARK: - Capture Frame Tests
 
     func testCaptureCurrentFrame_whenNoFrameAvailable_returnsNil() {
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+        sut = CameraService(authorizationProvider: mockAuthProvider)
 
         let frame = sut.captureCurrentFrame()
 
@@ -136,7 +174,7 @@ final class CameraServiceTests: XCTestCase {
     // MARK: - Session Tests
 
     func testSession_isNotNil() {
-        sut = CameraService(authorizationProvider: MockCameraAuthorizationProvider.self)
+        sut = CameraService(authorizationProvider: mockAuthProvider)
 
         XCTAssertNotNil(sut.session)
     }

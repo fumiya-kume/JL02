@@ -204,20 +204,20 @@ final class MockBatteryProvider: BatteryProviding {
 // MARK: - Mock Camera Authorization Provider
 
 final class MockCameraAuthorizationProvider: CameraAuthorizationProviding {
-    static var mockStatus: AVAuthorizationStatus = .notDetermined
-    static var mockGrantAccess: Bool = true
-    static var requestAccessCallCount: Int = 0
+    var mockStatus: AVAuthorizationStatus = .notDetermined
+    var mockGrantAccess: Bool = true
+    var requestAccessCallCount: Int = 0
 
-    static func authorizationStatus(for mediaType: AVMediaType) -> AVAuthorizationStatus {
+    func authorizationStatus(for mediaType: AVMediaType) -> AVAuthorizationStatus {
         return mockStatus
     }
 
-    static func requestAccess(for mediaType: AVMediaType) async -> Bool {
+    func requestAccess(for mediaType: AVMediaType) async -> Bool {
         requestAccessCallCount += 1
         return mockGrantAccess
     }
 
-    static func reset() {
+    func reset() {
         mockStatus = .notDetermined
         mockGrantAccess = true
         requestAccessCallCount = 0

@@ -18,9 +18,9 @@ final class CameraService: ObservableObject, CameraServiceProtocol {
     private var isRunning = false
     private var videoOutput: AVCaptureVideoDataOutput?
     private let frameHandler = FrameHandler()
-    private let authorizationProvider: CameraAuthorizationProviding.Type
+    private let authorizationProvider: CameraAuthorizationProviding
 
-    init(authorizationProvider: CameraAuthorizationProviding.Type = AVCaptureDevice.self) {
+    init(authorizationProvider: CameraAuthorizationProviding = CameraAuthorizationProvider()) {
         self.authorizationProvider = authorizationProvider
     }
 
