@@ -35,9 +35,7 @@ final class CameraServiceTests: XCTestCase {
         mockAuthProvider.mockStatus = .authorized
         sut = CameraService(authorizationProvider: mockAuthProvider)
 
-        await sut.requestAccessAndStart()
-
-        // Wait for async state update
+        // Set up expectation BEFORE calling requestAccessAndStart
         let expectation = expectation(description: "State updated")
         sut.$state
             .dropFirst()
@@ -45,7 +43,9 @@ final class CameraServiceTests: XCTestCase {
             .sink { _ in expectation.fulfill() }
             .store(in: &cancellables)
 
-        await fulfillment(of: [expectation], timeout: 1.0)
+        await sut.requestAccessAndStart()
+
+        await fulfillment(of: [expectation], timeout: 2.0)
 
         // Note: In unit tests without actual camera hardware, configureIfNeeded() will fail
         // So state will be .failed, not .running
@@ -70,9 +70,7 @@ final class CameraServiceTests: XCTestCase {
         mockAuthProvider.mockGrantAccess = true
         sut = CameraService(authorizationProvider: mockAuthProvider)
 
-        await sut.requestAccessAndStart()
-
-        // Wait for async state update
+        // Set up expectation BEFORE calling requestAccessAndStart
         let expectation = expectation(description: "State updated")
         sut.$state
             .dropFirst()
@@ -80,7 +78,9 @@ final class CameraServiceTests: XCTestCase {
             .sink { _ in expectation.fulfill() }
             .store(in: &cancellables)
 
-        await fulfillment(of: [expectation], timeout: 1.0)
+        await sut.requestAccessAndStart()
+
+        await fulfillment(of: [expectation], timeout: 2.0)
 
         // Should not be unauthorized since access was granted
         XCTAssertNotEqual(sut.state, .unauthorized)
