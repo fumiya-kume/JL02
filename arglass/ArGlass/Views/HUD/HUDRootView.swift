@@ -188,7 +188,7 @@ struct HUDRootView: View {
                 onImageTap: { showingImageViewer = true }
             )
             .hudHorizontalPadding(safeAreaInsets)
-            .padding(.bottom, safeAreaInsets.bottom + 24)
+            .padding(.bottom, max(safeAreaInsets.bottom, 34) + 42)
         }
         .animation(.easeInOut(duration: 0.25), value: phaseKey)
     }

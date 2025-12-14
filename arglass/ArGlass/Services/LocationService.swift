@@ -15,18 +15,26 @@ final class LocationService: NSObject, ObservableObject, LocationServiceProtocol
     @Published private(set) var currentLocation: LocationInfo?
     @Published var showDeniedAlert: Bool = false
 
-    private let locationManager = CLLocationManager()
-    private let geocoder = CLGeocoder()
+    private let locationManager: LocationManagerProtocol
+    private let geocoder: GeocoderProtocol
+    private let userDefaults: UserDefaultsProtocol
     private var lastGeocodedLocation: CLLocation?
-    private let geocodeDistanceThreshold: CLLocationDistance = 50
+    let geocodeDistanceThreshold: CLLocationDistance = 50
 
-    private static let deniedAlertShownKey = "LocationService.deniedAlertShown"
+    static let deniedAlertShownKey = "LocationService.deniedAlertShown"
 
-    override init() {
+    init(
+        locationManager: LocationManagerProtocol = CLLocationManager(),
+        geocoder: GeocoderProtocol = CLGeocoder(),
+        userDefaults: UserDefaultsProtocol = UserDefaults.standard
+    ) {
+        self.locationManager = locationManager
+        self.geocoder = geocoder
+        self.userDefaults = userDefaults
         super.init()
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-        locationManager.distanceFilter = 50
+        self.locationManager.delegate = self
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        self.locationManager.distanceFilter = 50
     }
 
     func requestAuthorization() {
@@ -59,13 +67,13 @@ final class LocationService: NSObject, ObservableObject, LocationServiceProtocol
 
     private func handleDenied() {
         state = .denied
-        if !UserDefaults.standard.bool(forKey: Self.deniedAlertShownKey) {
-            UserDefaults.standard.set(true, forKey: Self.deniedAlertShownKey)
+        if !userDefaults.bool(forKey: Self.deniedAlertShownKey) {
+            userDefaults.set(true, forKey: Self.deniedAlertShownKey)
             showDeniedAlert = true
         }
     }
 
-    private func reverseGeocode(location: CLLocation) {
+    func reverseGeocode(location: CLLocation) {
         if let last = lastGeocodedLocation,
            location.distance(from: last) < geocodeDistanceThreshold {
             return
@@ -91,6 +99,29 @@ final class LocationService: NSObject, ObservableObject, LocationServiceProtocol
         }
     }
 
+    func handleAuthorizationChange(status: CLAuthorizationStatus) {
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            state = .authorized
+            startUpdating()
+        case .denied, .restricted:
+            handleDenied()
+        case .notDetermined:
+            state = .idle
+        @unknown default:
+            state = .failed("Unknown status")
+        }
+    }
+
+    func handleLocationError(_ error: Error) {
+        state = .failed(error.localizedDescription)
+        print("[Location] Error: \(error.localizedDescription)")
+    }
+
+    func resetLastGeocodedLocation() {
+        lastGeocodedLocation = nil
+    }
+
     private func updateLocation(coordinate: CLLocationCoordinate2D, placemark: CLPlacemark?) {
         currentLocation = LocationInfo(
             coordinate: coordinate,
@@ -113,25 +144,13 @@ extension LocationService: CLLocationManagerDelegate {
 
     nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         Task { @MainActor in
-            let status = manager.authorizationStatus
-            switch status {
-            case .authorizedWhenInUse, .authorizedAlways:
-                state = .authorized
-                startUpdating()
-            case .denied, .restricted:
-                handleDenied()
-            case .notDetermined:
-                state = .idle
-            @unknown default:
-                state = .failed("Unknown status")
-            }
+            handleAuthorizationChange(status: manager.authorizationStatus)
         }
     }
 
     nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         Task { @MainActor in
-            state = .failed(error.localizedDescription)
-            print("[Location] Error: \(error.localizedDescription)")
+            handleLocationError(error)
         }
     }
 }
