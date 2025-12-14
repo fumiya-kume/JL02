@@ -280,74 +280,118 @@ class VLMAgentResponse(BaseModel):
     """
     Response model for VLM inference with RAG-enhanced tourism guide generation.
 
-    This model encapsulates the output from the vision-language model inference
+    This model encapsulates the output from the vision-language model (VLM) inference
     combined with retrieval-augmented generation (RAG) for personalized tourism guides.
+
+    Processing Flow:
+    1. Image is sent to VLM API with location context and optional custom prompt
+    2. VLM returns facility description/caption
+    3a. If text parameter is None: RAG processes the caption with user attributes
+        - Returns facility name extracted by RAG
+        - Returns 3-line personalized tourism guide
+    3b. If text parameter is provided: RAG is skipped
+        - Returns address as facility name
+        - Returns raw VLM analysis
+
+    Response Content Varies By Mode:
+    - RAG Mode (text=None): Concise 3-line tourism guide matching user preferences
+    - VLM Mode (text provided): Raw facility analysis based on custom prompt
     """
 
     name: str = Field(
         ...,
-        description="Name of the place or facility identified in the image",
+        description="Facility or place name. "
+        "When text is None (RAG mode): Official name extracted from RAG response. "
+        "When text is provided (VLM mode): Address provided as fallback. "
+        "Fallback value is 'Unknown Facility' if parsing fails.",
         example="東京タワー",
     )
     facility_description: str = Field(
         ...,
-        description="Generated tourism guide or facility analysis based on VLM inference and RAG. "
-        "This is either a personalized tourism guide (when text is None) or raw VLM analysis (when text is provided)",
-        example="東京のランドマークである東京タワーは、1958年に...",
+        description="Generated content based on processing mode. "
+        "RAG Mode (text=None): Personalized 3-line tourism guide covering overview, "
+        "highlights matching user interests/budget, and practical visit info. "
+        "VLM Mode (text provided): Raw facility analysis from VLM without RAG processing.",
+        example="東京タワーは、1958年建設の333mランドマーク。建築好きに最適で、中層展望台（¥900-1100）からの関東平野の眺望が素晴らしい。"
+        "晴天時がおすすめ。赤坂見附駅・神谷町駅から利便性が高い。",
     )
     success: bool = Field(
         ...,
-        description="Whether the inference and generation was successful",
+        description="Whether the VLM inference and (if applicable) RAG generation was successful. "
+        "Returns true even if RAG fails and falls back to VLM output.",
         example=True,
     )
     error_message: Optional[str] = Field(
         None,
-        description="Error message if inference or generation failed. None on success",
+        description="Error message if inference or generation failed. None on success.",
         example=None,
     )
 
 
-@app.post("/inference", response_model=VLMAgentResponse)
+@app.post(
+    "/inference",
+    response_model=VLMAgentResponse,
+    summary="VLM-based Tourism Guide Generation with RAG",
+    description="Infers facility information from an image using Vision-Language Model (VLM) "
+    "and generates personalized tourism guides using Retrieval-Augmented Generation (RAG). "
+    "When text parameter is omitted, RAG generates a personalized 3-line guide based on user attributes. "
+    "When text parameter is provided, returns raw VLM analysis without RAG processing.",
+    tags=["inference"],
+)
 async def vlm_inference(
-    image: UploadFile = File(..., description="Image file (PNG, JPG, etc.)"),
+    image: UploadFile = File(..., description="Image file containing a landmark or facility (PNG, JPG, etc.)"),
     user_age_group: Optional[AgeGroup] = Form(
         None,
-        description="Traveler's age group for marketing segmentation. Options: 20s, 30-40s, 50s+, family_with_kids",
+        description="Traveler's age group for personalizing recommendations. "
+        "Options: 20s, 30-40s, 50s+, family_with_kids. Used for RAG guide generation.",
     ),
     user_budget_level: Optional[BudgetLevel] = Form(
         None,
-        description="Travel budget level affecting facility recommendations. Options: budget, mid-range, luxury",
+        description="Travel budget level affecting facility and dining recommendations. "
+        "Options: budget, mid-range, luxury. Used for RAG guide generation.",
     ),
     user_interests: Optional[list[Interest]] = Form(
         None,
-        description="Categories of interest (multiple selection allowed) for attractions. Options: history, nature, art, food, architecture, shopping, nightlife",
+        description="Categories of interest for personalizing attractions and recommendations. "
+        "Multiple selection allowed. Options: history, nature, art, food, architecture, shopping, nightlife. "
+        "Used for RAG guide generation.",
     ),
     user_activity_level: Optional[ActivityLevel] = Form(
         None,
-        description="Physical activity level for recommended activities. Options: active, moderate, relaxed",
+        description="Physical activity level for recommending activities. "
+        "Options: active, moderate, relaxed. Used for RAG guide generation.",
     ),
     user_language: Language = Form(
         Language.JAPANESE,
-        description="User's preferred language for guide content. Options: japanese, english, chinese, korean, spanish, french, german, thai",
+        description="User's preferred language for guide content. "
+        "Options: japanese, english, chinese, korean, spanish, french, german, thai. "
+        "Affects RAG-generated guide output language.",
     ),
     address: str = Form(
-        ..., description="Address of the location where the image was taken"
+        ..., description="Address of the location where the image was taken. "
+        "Used in VLM prompt context and returned as name when text parameter is provided."
     ),
-    latitude: float = Form(..., description="Latitude coordinate of the location"),
-    longitude: float = Form(..., description="Longitude coordinate of the location"),
-    text: Optional[str] = Form(None, description="Text prompt for the image"),
+    latitude: float = Form(..., description="Latitude coordinate of the location. Used for nearby attraction lookup."),
+    longitude: float = Form(..., description="Longitude coordinate of the location. Used for nearby attraction lookup."),
+    text: Optional[str] = Form(
+        None,
+        description="Optional custom text prompt for VLM analysis. "
+        "If omitted (None): Uses default prompt and applies RAG for personalized 3-line tourism guide. "
+        "If provided: Uses custom prompt and returns raw VLM output without RAG processing. "
+        "This allows flexibility between personalized guides and custom analysis."
+    ),
     temperature: Optional[float] = Form(
         0.7,
-        description="Temperature for generation (0.0-1.0, higher means more random)",
+        description="Temperature for VLM generation (0.0-1.0). Higher values increase randomness. Used in VLM API calls only.",
     ),
     top_p: Optional[float] = Form(
-        0.99, description="Top-p value for generation (nucleus sampling threshold)"
+        0.99, description="Top-p value for VLM generation (nucleus sampling threshold). Used in VLM API calls only."
     ),
     max_new_tokens: Optional[int] = Form(
-        128, description="Maximum number of new tokens to generate"
+        128, description="Maximum number of tokens for VLM generation. Used in VLM API calls only."
     ),
     repetition_penalty: Optional[float] = Form(
-        1.05, description="Repetition penalty (>1.0 discourages repetition)"
+        1.05, description="Repetition penalty for VLM generation (>1.0 discourages repetition). Used in VLM API calls only."
     ),
 ):
     ngrok_domain = os.getenv("NGROK_DOMAIN")
