@@ -171,9 +171,9 @@ def build_rag_query_prompt(
 
 def is_facility_name_unknown(facility_name: str) -> bool:
     """
-    Check if facility name indicates unknown facility.
+    Check if facility name indicates unknown facility across multiple languages.
 
-    Returns True if facility name contains indicators like "不明", "詳細不明", etc.
+    Returns True if facility name contains indicators like "不明", "Unknown", "未知", etc.
     This handles cases where RAG returns facility names that explicitly indicate
     the facility is unrecognized, allowing fallback to address instead.
 
@@ -183,8 +183,35 @@ def is_facility_name_unknown(facility_name: str) -> bool:
     Returns:
         True if facility name contains unknown indicators, False otherwise
     """
-    unknown_indicators = ["不明", "詳細不明", "不詳", "未確認", "未定義"]
-    return any(indicator in facility_name for indicator in unknown_indicators)
+    # Japanese: 不明, 詳細不明, 不詳, 未確認, 未定義
+    # English: Unknown, Unspecified, Not specified, Unclear, Not identified, Not determined
+    # Chinese: 未知, 不清楚, 不明, 未确定, 不详, 未定义
+    # Korean: 불명, 미상, 미정, 상세불명, 미확인, 미정의
+    # Spanish: Desconocido, No especificado, No identificado, Indeterminado
+    # French: Inconnu, Non spécifié, Indéterminé, Non identifié
+    # German: Unbekannt, Nicht angegeben, Unidentifiziert, Nicht bestimmt
+    # Thai: ไม่ทราบ, ไม่ชัดเจน, ไม่ระบุ, ยังไม่ได้กำหนด
+    unknown_indicators = [
+        # Japanese
+        "不明", "詳細不明", "不詳", "未確認", "未定義",
+        # English
+        "unknown", "unspecified", "not specified", "unclear", "not identified", "not determined",
+        # Chinese
+        "未知", "不清楚", "未确定", "不详", "未定义",
+        # Korean
+        "불명", "미상", "미정", "상세불명", "미확인", "미정의",
+        # Spanish
+        "desconocido", "no especificado", "no identificado", "indeterminado",
+        # French
+        "inconnu", "non spécifié", "indéterminé", "non identifié",
+        # German
+        "unbekannt", "nicht angegeben", "unidentifiziert", "nicht bestimmt",
+        # Thai
+        "ไม่ทราบ", "ไม่ชัดเจน", "ไม่ระบุ", "ยังไม่ได้กำหนด",
+    ]
+    # Case-insensitive search for mixed-case indicators (English, Spanish, French, German)
+    facility_name_lower = facility_name.lower()
+    return any(indicator.lower() in facility_name_lower for indicator in unknown_indicators)
 
 
 async def query_rag(
