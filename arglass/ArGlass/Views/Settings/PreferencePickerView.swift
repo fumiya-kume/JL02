@@ -21,6 +21,8 @@ struct PreferencePickerView<T: PreferenceOption>: View {
 
     var body: some View {
         GeometryReader { geometry in
+            let safeRect = geometry.safeAreaInsets.safeRect(in: geometry.size)
+
             ZStack {
                 Color.black
 
@@ -39,14 +41,14 @@ struct PreferencePickerView<T: PreferenceOption>: View {
                                 optionRow(option: option)
                             }
                         }
-                        .padding(.horizontal, 24)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.top, 30)
                     }
 
                     Spacer()
 
                     closeButton
-                        .padding(.horizontal, 24)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.bottom, max(geometry.safeAreaInsets.bottom, 40))
                 }
             }
@@ -63,7 +65,7 @@ struct PreferencePickerView<T: PreferenceOption>: View {
             HStack(spacing: 14) {
                 Image(systemName: option.icon)
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(selection == option ? Color.accentColor : .white.opacity(0.6))
+                    .foregroundStyle(Color.accentColor)
                     .frame(width: 32)
 
                 Text(option.localizedName)
@@ -81,19 +83,10 @@ struct PreferencePickerView<T: PreferenceOption>: View {
             .padding(.vertical, 16)
             .padding(.horizontal, 18)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                selection == option
-                    ? Color.accentColor.opacity(0.15)
-                    : Color.clear,
-                in: RoundedRectangle(cornerRadius: 16, style: .continuous)
-            )
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(
-                        selection == option ? Color.accentColor.opacity(0.5) : Color.white.opacity(0.15),
-                        lineWidth: 1
-                    )
+                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
             }
         }
     }
@@ -123,6 +116,8 @@ struct LanguagePickerView: View {
 
     var body: some View {
         GeometryReader { geometry in
+            let safeRect = geometry.safeAreaInsets.safeRect(in: geometry.size)
+
             ZStack {
                 Color.black
 
@@ -141,14 +136,14 @@ struct LanguagePickerView: View {
                                 optionRow(option: option)
                             }
                         }
-                        .padding(.horizontal, 24)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.top, 30)
                     }
 
                     Spacer()
 
                     closeButton
-                        .padding(.horizontal, 24)
+                        .frame(width: safeRect.width * 0.5)
                         .padding(.bottom, max(geometry.safeAreaInsets.bottom, 40))
                 }
             }
@@ -165,7 +160,7 @@ struct LanguagePickerView: View {
             HStack(spacing: 14) {
                 Image(systemName: option.icon)
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(selection == option ? Color.accentColor : .white.opacity(0.6))
+                    .foregroundStyle(Color.accentColor)
                     .frame(width: 32)
 
                 Text(option.localizedName)
@@ -183,19 +178,10 @@ struct LanguagePickerView: View {
             .padding(.vertical, 16)
             .padding(.horizontal, 18)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                selection == option
-                    ? Color.accentColor.opacity(0.15)
-                    : Color.clear,
-                in: RoundedRectangle(cornerRadius: 16, style: .continuous)
-            )
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(
-                        selection == option ? Color.accentColor.opacity(0.5) : Color.white.opacity(0.15),
-                        lineWidth: 1
-                    )
+                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
             }
         }
     }
