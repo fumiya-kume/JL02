@@ -18,15 +18,20 @@ final class CameraService: ObservableObject, CameraServiceProtocol {
     private var isRunning = false
     private var videoOutput: AVCaptureVideoDataOutput?
     private let frameHandler = FrameHandler()
+    private let authorizationProvider: CameraAuthorizationProviding
+
+    init(authorizationProvider: CameraAuthorizationProviding = CameraAuthorizationProvider()) {
+        self.authorizationProvider = authorizationProvider
+    }
 
     func requestAccessAndStart() async {
-        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        let status = authorizationProvider.authorizationStatus(for: .video)
         switch status {
         case .authorized:
             guard !Task.isCancelled else { return }
             start()
         case .notDetermined:
-            let granted = await AVCaptureDevice.requestAccess(for: .video)
+            let granted = await authorizationProvider.requestAccess(for: .video)
             guard !Task.isCancelled else { return }
             granted ? start() : setUnauthorized()
         default:

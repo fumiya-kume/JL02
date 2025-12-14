@@ -182,12 +182,146 @@ final class HUDViewModelTests: XCTestCase {
     }
     
     // MARK: - Camera Preview Toggle Tests
-    
+
     func testToggleCameraPreview_togglesState() {
         let initialState = sut.isCameraPreviewEnabled
-        
+
         sut.isCameraPreviewEnabled.toggle()
-        
+
         XCTAssertNotEqual(sut.isCameraPreviewEnabled, initialState)
+    }
+
+    // MARK: - Retry Logic Tests
+
+    func testPerformInference_failure_returnsConsecutiveFalse() async {
+        // Setup
+        mockCameraService.mockFrame = UIImage(systemName: "camera")
+        await mockVLMClient.setShouldFailInference(true)
+
+        // Execute
+        let result1 = await sut.performInference()
+        let result2 = await sut.performInference()
+
+        // Assert
+        XCTAssertFalse(result1)
+        XCTAssertFalse(result2)
+        XCTAssertEqual(sut.apiRequestState, .error(message: "API error: Mock error"))
+    }
+
+    func testPerformInference_successAfterFailure_resetsState() async {
+        // Setup
+        let testImage = UIImage(systemName: "camera")!
+        mockCameraService.mockFrame = testImage
+        await mockVLMClient.setShouldFailInference(true)
+
+        // First call fails
+        let failResult = await sut.performInference()
+        XCTAssertFalse(failResult)
+
+        // Configure success
+        await mockVLMClient.setShouldFailInference(false)
+        await mockVLMClient.setMockLandmark(TestFixtures.makeLandmark())
+
+        // Second call succeeds
+        let successResult = await sut.performInference()
+
+        // Assert
+        XCTAssertTrue(successResult)
+        if case .success = sut.apiRequestState { } else {
+            XCTFail("Expected success state but got \(sut.apiRequestState)")
+        }
+    }
+
+    func testPerformInference_multipleConsecutiveFailures_allReturnFalse() async {
+        // Setup
+        mockCameraService.mockFrame = UIImage(systemName: "camera")
+        await mockVLMClient.setShouldFailInference(true)
+
+        // Execute
+        var results: [Bool] = []
+        for _ in 0..<4 {
+            results.append(await sut.performInference())
+        }
+
+        // Assert
+        XCTAssertEqual(results, [false, false, false, false])
+        XCTAssertEqual(sut.apiRequestState, .error(message: "API error: Mock error"))
+    }
+
+    // MARK: - Stop Auto Inference Camera State Tests
+
+    func testStopAutoInference_whenCameraPreviewEnabled_keepsCameraRunning() async {
+        // Setup
+        sut.isCameraPreviewEnabled = true
+        sut.startAutoInference()
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        // Execute
+        sut.stopAutoInference()
+
+        // Assert
+        XCTAssertFalse(sut.isAutoInferenceEnabled)
+        XCTAssertEqual(mockCameraService.state, .running)
+    }
+
+    func testStopAutoInference_whenCameraPreviewDisabled_stopsCamera() async {
+        // Setup
+        sut.startAutoInference()
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        sut.isCameraPreviewEnabled = false
+
+        // Execute
+        sut.stopAutoInference()
+
+        // Assert
+        XCTAssertFalse(sut.isAutoInferenceEnabled)
+        XCTAssertEqual(mockCameraService.state, .idle)
+    }
+
+    // MARK: - Toggle Camera Preview Logic Tests
+
+    func testToggleCameraPreview_enablePreview_startsCamera() async {
+        // Setup
+        sut.isCameraPreviewEnabled = false
+        mockCameraService.stop()
+
+        // Execute
+        sut.toggleCameraPreview()
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        // Assert
+        XCTAssertTrue(sut.isCameraPreviewEnabled)
+        XCTAssertEqual(mockCameraService.state, .running)
+    }
+
+    func testToggleCameraPreview_disableWithAutoInferenceRunning_keepsCameraRunning() async {
+        // Setup
+        sut.isCameraPreviewEnabled = true
+        sut.startAutoInference()
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertEqual(mockCameraService.state, .running)
+
+        // Execute
+        sut.toggleCameraPreview()
+
+        // Assert
+        XCTAssertFalse(sut.isCameraPreviewEnabled)
+        XCTAssertTrue(sut.isAutoInferenceEnabled)
+        XCTAssertEqual(mockCameraService.state, .running)
+    }
+
+    func testToggleCameraPreview_disableWithNoAutoInference_stopsCamera() async {
+        // Setup
+        sut.isCameraPreviewEnabled = true
+        await mockCameraService.requestAccessAndStart()
+        XCTAssertFalse(sut.isAutoInferenceEnabled)
+
+        // Execute
+        sut.toggleCameraPreview()
+
+        // Assert
+        XCTAssertFalse(sut.isCameraPreviewEnabled)
+        XCTAssertFalse(sut.isAutoInferenceEnabled)
+        XCTAssertEqual(mockCameraService.state, .idle)
     }
 }

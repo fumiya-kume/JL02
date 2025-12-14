@@ -200,3 +200,83 @@ final class MockBatteryProvider: BatteryProviding {
     var batteryLevel: Float = 0.5
     var batteryState: UIDevice.BatteryState = .unplugged
 }
+
+// MARK: - Mock Camera Authorization Provider
+
+final class MockCameraAuthorizationProvider: CameraAuthorizationProviding {
+    var mockStatus: AVAuthorizationStatus = .notDetermined
+    var mockGrantAccess: Bool = true
+    var requestAccessCallCount: Int = 0
+
+    func authorizationStatus(for mediaType: AVMediaType) -> AVAuthorizationStatus {
+        return mockStatus
+    }
+
+    func requestAccess(for mediaType: AVMediaType) async -> Bool {
+        requestAccessCallCount += 1
+        return mockGrantAccess
+    }
+
+    func reset() {
+        mockStatus = .notDetermined
+        mockGrantAccess = true
+        requestAccessCallCount = 0
+    }
+}
+
+// MARK: - Mock Location Manager
+
+final class MockLocationManager: LocationManagerProtocol {
+    weak var delegate: (any CLLocationManagerDelegate)?
+    var authorizationStatus: CLAuthorizationStatus = .notDetermined
+    var desiredAccuracy: CLLocationAccuracy = 0
+    var distanceFilter: CLLocationDistance = 0
+
+    var requestAuthorizationCallCount = 0
+    var startUpdatingCallCount = 0
+    var stopUpdatingCallCount = 0
+
+    func requestWhenInUseAuthorization() {
+        requestAuthorizationCallCount += 1
+    }
+
+    func startUpdatingLocation() {
+        startUpdatingCallCount += 1
+    }
+
+    func stopUpdatingLocation() {
+        stopUpdatingCallCount += 1
+    }
+
+    func reset() {
+        authorizationStatus = .notDetermined
+        requestAuthorizationCallCount = 0
+        startUpdatingCallCount = 0
+        stopUpdatingCallCount = 0
+    }
+}
+
+// MARK: - Mock Geocoder
+
+final class MockGeocoder: GeocoderProtocol {
+    var mockPlacemarks: [CLPlacemark]?
+    var mockError: Error?
+    var reverseGeocodeCallCount = 0
+    var lastGeocodedLocation: CLLocation?
+
+    func reverseGeocodeLocation(
+        _ location: CLLocation,
+        completionHandler: @escaping @Sendable ([CLPlacemark]?, (any Error)?) -> Void
+    ) {
+        reverseGeocodeCallCount += 1
+        lastGeocodedLocation = location
+        completionHandler(mockPlacemarks, mockError)
+    }
+
+    func reset() {
+        mockPlacemarks = nil
+        mockError = nil
+        reverseGeocodeCallCount = 0
+        lastGeocodedLocation = nil
+    }
+}

@@ -55,3 +55,45 @@ protocol BatteryProviding {
 }
 
 extension UIDevice: BatteryProviding {}
+
+// MARK: - Camera Authorization Protocol
+
+protocol CameraAuthorizationProviding {
+    func authorizationStatus(for mediaType: AVMediaType) -> AVAuthorizationStatus
+    func requestAccess(for mediaType: AVMediaType) async -> Bool
+}
+
+final class CameraAuthorizationProvider: CameraAuthorizationProviding {
+    func authorizationStatus(for mediaType: AVMediaType) -> AVAuthorizationStatus {
+        AVCaptureDevice.authorizationStatus(for: mediaType)
+    }
+
+    func requestAccess(for mediaType: AVMediaType) async -> Bool {
+        await AVCaptureDevice.requestAccess(for: mediaType)
+    }
+}
+
+// MARK: - Location Manager Protocol
+
+protocol LocationManagerProtocol: AnyObject {
+    var delegate: (any CLLocationManagerDelegate)? { get set }
+    var authorizationStatus: CLAuthorizationStatus { get }
+    var desiredAccuracy: CLLocationAccuracy { get set }
+    var distanceFilter: CLLocationDistance { get set }
+    func requestWhenInUseAuthorization()
+    func startUpdatingLocation()
+    func stopUpdatingLocation()
+}
+
+extension CLLocationManager: LocationManagerProtocol {}
+
+// MARK: - Geocoder Protocol
+
+protocol GeocoderProtocol {
+    func reverseGeocodeLocation(
+        _ location: CLLocation,
+        completionHandler: @escaping @Sendable ([CLPlacemark]?, (any Error)?) -> Void
+    )
+}
+
+extension CLGeocoder: GeocoderProtocol {}
