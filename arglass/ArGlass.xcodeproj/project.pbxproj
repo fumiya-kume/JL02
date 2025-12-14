@@ -72,6 +72,7 @@
 		F30459AC1469373567BF26CF /* UserPreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F38AD8D2468E1815D9B48 /* UserPreferencesManager.swift */; };
 		F56A372856E65A5D01DA98EF /* LocationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBCEBEC7BD717D47DD36381 /* LocationServiceTests.swift */; };
 		F7D4F0518FE742CCF4368FDF /* HUDStatusBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855690BED08F2CC626DAF79B /* HUDStatusBarView.swift */; };
+		7A1B2C3D4E5F6789ABCD0123 /* UserPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5D2A91C8E7F4B6D0A2E39 /* UserPreferencesTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -158,6 +159,7 @@
 		FA15DD0BF023669B168DE6B1 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		FDAFC854335E61BE2CC30AC1 /* HistoryServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryServiceTests.swift; sourceTree = "<group>"; };
 		FFC06399F58E119A98D23F28 /* HUDViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDViewModelTests.swift; sourceTree = "<group>"; };
+		B3F5D2A91C8E7F4B6D0A2E39 /* UserPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -350,6 +352,7 @@
 				1DC56EBDAF4E6700BDC94A5D /* InterestTests.swift */,
 				3C049970BF03EB9315D7ADDA /* LandmarkTests.swift */,
 				505AEA5A4EFBE071F1E67568 /* LocationInfoTests.swift */,
+				B3F5D2A91C8E7F4B6D0A2E39 /* UserPreferencesTests.swift */,
 			);
 			path = ModelTests;
 			sourceTree = "<group>";
@@ -556,6 +559,7 @@
 				46A4F3603BC5C2BA217DF059 /* SpeechTranscriberTests.swift in Sources */,
 				41C679517071D7D9FAE967AB /* TestHelpers.swift in Sources */,
 				04E556F2334B8E0FDBBBC9E3 /* UserPreferencesManagerTests.swift in Sources */,
+				7A1B2C3D4E5F6789ABCD0123 /* UserPreferencesTests.swift in Sources */,
 				2804DAE1A9D487CB471CD07D /* VLMAPIClientTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
