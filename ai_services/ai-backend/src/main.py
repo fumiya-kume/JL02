@@ -400,58 +400,58 @@ class VLMAgentResponse(BaseModel):
     tags=["inference"],
 )
 async def vlm_inference(
-    image: UploadFile = File(..., description="Image file containing a landmark or facility (PNG, JPG, etc.)"),
-    user_age_group: Optional[AgeGroup] = Form(
+    image: UploadFile = File(..., description="Image file containing a landmark or facility (PNG, JPG, etc.)"),  # noqa: B008
+    user_age_group: Optional[AgeGroup] = Form(  # noqa: B008
         None,
         description="Traveler's age group for personalizing recommendations. "
         "Options: 20s, 30-40s, 50s+, family_with_kids. Used for RAG guide generation.",
     ),
-    user_budget_level: Optional[BudgetLevel] = Form(
+    user_budget_level: Optional[BudgetLevel] = Form(  # noqa: B008
         None,
         description="Travel budget level affecting facility and dining recommendations. "
         "Options: budget, mid-range, luxury. Used for RAG guide generation.",
     ),
-    user_interests: Optional[list[Interest]] = Form(
+    user_interests: Optional[list[Interest]] = Form(  # noqa: B008
         None,
         description="Categories of interest for personalizing attractions and recommendations. "
         "Multiple selection allowed. Options: history, nature, art, food, architecture, shopping, nightlife. "
         "Used for RAG guide generation.",
     ),
-    user_activity_level: Optional[ActivityLevel] = Form(
+    user_activity_level: Optional[ActivityLevel] = Form(  # noqa: B008
         None,
         description="Physical activity level for recommending activities. "
         "Options: active, moderate, relaxed. Used for RAG guide generation.",
     ),
-    user_language: Language = Form(
+    user_language: Language = Form(  # noqa: B008
         Language.JAPANESE,
         description="User's preferred language for guide content. "
         "Options: japanese, english, chinese, korean, spanish, french, german, thai. "
         "Affects RAG-generated guide output language.",
     ),
-    address: str = Form(
+    address: str = Form(  # noqa: B008
         ..., description="Address of the location where the image was taken. "
         "Used in VLM prompt context and returned as name when text parameter is provided."
     ),
-    latitude: float = Form(..., description="Latitude coordinate of the location. Used for nearby attraction lookup."),
-    longitude: float = Form(..., description="Longitude coordinate of the location. Used for nearby attraction lookup."),
-    text: Optional[str] = Form(
+    latitude: float = Form(..., description="Latitude coordinate of the location. Used for nearby attraction lookup."),  # noqa: B008
+    longitude: float = Form(..., description="Longitude coordinate of the location. Used for nearby attraction lookup."),  # noqa: B008
+    text: Optional[str] = Form(  # noqa: B008
         None,
         description="Optional custom text prompt for VLM analysis. "
         "If omitted (None): Uses default prompt and applies RAG for personalized 3-line tourism guide. "
         "If provided: Uses custom prompt and returns raw VLM output without RAG processing. "
         "This allows flexibility between personalized guides and custom analysis."
     ),
-    temperature: Optional[float] = Form(
+    temperature: Optional[float] = Form(  # noqa: B008
         0.7,
         description="Temperature for VLM generation (0.0-1.0). Higher values increase randomness. Used in VLM API calls only.",
     ),
-    top_p: Optional[float] = Form(
+    top_p: Optional[float] = Form(  # noqa: B008
         0.99, description="Top-p value for VLM generation (nucleus sampling threshold). Used in VLM API calls only."
     ),
-    max_new_tokens: Optional[int] = Form(
+    max_new_tokens: Optional[int] = Form(  # noqa: B008
         128, description="Maximum number of tokens for VLM generation. Used in VLM API calls only."
     ),
-    repetition_penalty: Optional[float] = Form(
+    repetition_penalty: Optional[float] = Form(  # noqa: B008
         1.05, description="Repetition penalty for VLM generation (>1.0 discourages repetition). Used in VLM API calls only."
     ),
 ):
