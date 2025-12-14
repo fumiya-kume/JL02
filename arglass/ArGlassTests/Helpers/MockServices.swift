@@ -163,3 +163,40 @@ actor MockHistoryService: HistoryServiceProtocol {
         mockImageURLs = [:]
     }
 }
+
+// MARK: - Mock UserDefaults
+
+final class MockUserDefaults: UserDefaultsProtocol {
+    private var store: [String: Any] = [:]
+
+    func data(forKey defaultName: String) -> Data? {
+        store[defaultName] as? Data
+    }
+
+    func set(_ value: Any?, forKey defaultName: String) {
+        if let value = value {
+            store[defaultName] = value
+        } else {
+            store.removeValue(forKey: defaultName)
+        }
+    }
+
+    func bool(forKey defaultName: String) -> Bool {
+        store[defaultName] as? Bool ?? false
+    }
+
+    func stringArray(forKey defaultName: String) -> [String]? {
+        store[defaultName] as? [String]
+    }
+
+    func reset() {
+        store.removeAll()
+    }
+}
+
+// MARK: - Mock Battery Provider
+
+final class MockBatteryProvider: BatteryProviding {
+    var batteryLevel: Float = 0.5
+    var batteryState: UIDevice.BatteryState = .unplugged
+}

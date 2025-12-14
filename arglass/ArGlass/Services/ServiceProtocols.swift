@@ -35,3 +35,23 @@ protocol HistoryServiceProtocol: Actor {
     func clearAll() async
     func imageURL(for entry: HistoryEntry) -> URL?
 }
+
+// MARK: - UserDefaults Protocol
+
+protocol UserDefaultsProtocol {
+    func data(forKey defaultName: String) -> Data?
+    func set(_ value: Any?, forKey defaultName: String)
+    func bool(forKey defaultName: String) -> Bool
+    func stringArray(forKey defaultName: String) -> [String]?
+}
+
+extension UserDefaults: UserDefaultsProtocol {}
+
+// MARK: - Battery Providing Protocol
+
+protocol BatteryProviding {
+    var batteryLevel: Float { get }
+    var batteryState: UIDevice.BatteryState { get }
+}
+
+extension UIDevice: BatteryProviding {}
