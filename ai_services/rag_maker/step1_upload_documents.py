@@ -11,7 +11,6 @@ import logging
 import tempfile
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
-import mimetypes
 
 # Set up logging
 logging.basicConfig(
