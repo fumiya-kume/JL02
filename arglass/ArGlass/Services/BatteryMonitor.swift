@@ -26,7 +26,11 @@ final class BatteryMonitor: ObservableObject {
         notificationCenter.publisher(for: UIDevice.batteryLevelDidChangeNotification)
             .merge(with: notificationCenter.publisher(for: UIDevice.batteryStateDidChangeNotification))
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in self?.refresh() }
+            .sink { [weak self] _ in
+                Task { @MainActor in
+                    self?.refresh()
+                }
+            }
             .store(in: &cancellables)
     }
 

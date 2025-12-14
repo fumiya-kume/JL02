@@ -329,12 +329,12 @@ struct HUDRootView: View {
 
         let detectedLocale = detectLanguage(for: speakText)
 
-        speechSpeaker.speak(text: speakText, language: detectedLocale) { [isVoiceInputEnabled] in
-            guard isVoiceInputEnabled else { return }
+        speechSpeaker.speak(text: speakText, language: detectedLocale) {
+            guard self.isVoiceInputEnabled else { return }
             // TTS終了直後のレースコンディションを避けるため、短いディレイを入れてから再開
             Task { @MainActor in
                 try? await Task.sleep(for: .milliseconds(200))
-                guard isVoiceInputEnabled else { return }
+                guard self.isVoiceInputEnabled else { return }
                 self.speechTranscriber.resume(localeIdentifier: "ja-JP")
             }
         }

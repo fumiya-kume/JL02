@@ -32,8 +32,11 @@ final class SpeechTranscriber: ObservableObject {
 
     private var speechRecognizer: SFSpeechRecognizer?
     private let audioEngine = AVAudioEngine()
-    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    // SFSpeechAudioBufferRecognitionRequest.append(_:) is thread-safe, and the audio tap callback
+    // is invoked on a non-MainActor context.
+    nonisolated(unsafe) private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
+    private var isTapInstalled = false
 
     private var shouldKeepRunning = false
     private var isPaused = false
@@ -174,7 +177,7 @@ final class SpeechTranscriber: ObservableObject {
     }
 
     private func startRecording(localeIdentifier: String) throws {
-        stopRecording()
+        stopRecognition()
 
         let locale = Locale(identifier: localeIdentifier)
         let recognizer = SFSpeechRecognizer(locale: locale)
@@ -187,16 +190,7 @@ final class SpeechTranscriber: ObservableObject {
         request.shouldReportPartialResults = true
         recognitionRequest = request
 
-        let inputNode = audioEngine.inputNode
-        let format = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
-            guard let self else { return }
-            self.recognitionRequest?.append(buffer)
-            self.updateAudioLevel(from: buffer)
-        }
-
-        audioEngine.prepare()
-        try audioEngine.start()
+        try ensureAudioEngineRunning()
 
         isRunning = true
 
@@ -222,19 +216,49 @@ final class SpeechTranscriber: ObservableObject {
         }
     }
 
+    private func ensureAudioEngineRunning() throws {
+        let inputNode = audioEngine.inputNode
+        let format = inputNode.outputFormat(forBus: 0)
+
+        if !isTapInstalled {
+            inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
+                self?.recognitionRequest?.append(buffer)
+                Task { @MainActor [weak self] in
+                    self?.updateAudioLevel(from: buffer)
+                }
+            }
+            isTapInstalled = true
+        }
+
+        guard !audioEngine.isRunning else { return }
+        audioEngine.prepare()
+        try audioEngine.start()
+    }
+
     private func stopRecording() {
-        recognitionTask?.cancel()
-        recognitionTask = nil
+        stopRecognition()
 
-        recognitionRequest?.endAudio()
-        recognitionRequest = nil
-
+        if isTapInstalled {
+            audioEngine.inputNode.removeTap(onBus: 0)
+            isTapInstalled = false
+        }
         if audioEngine.isRunning {
             audioEngine.stop()
         }
+        audioEngine.reset()
 
-        audioEngine.inputNode.removeTap(onBus: 0)
+        audioLevel = 0
+        smoothedAudioLevel = 0
         isRunning = false
+    }
+
+    private func stopRecognition() {
+        recognitionTask?.cancel()
+        recognitionTask = nil
+
+        let request = recognitionRequest
+        recognitionRequest = nil
+        request?.endAudio()
     }
 
     private func restartIfNeeded() {
@@ -243,16 +267,19 @@ final class SpeechTranscriber: ObservableObject {
 
         restartTask?.cancel()
         restartTask = Task { @MainActor in
-            stopRecording()
-            try? await Task.sleep(for: .milliseconds(250))
+            stopRecognition()
+            try? await Task.sleep(for: .milliseconds(60))
             guard shouldKeepRunning else { return }
             guard !isPaused else { return }
             do {
+                try configureAudioSession()
+                try ensureAudioEngineRunning()
                 try startRecording(localeIdentifier: speechRecognizer?.locale.identifier ?? "ja-JP")
             } catch {
                 lastErrorMessage = error.localizedDescription
-                shouldKeepRunning = false
-                stopRecording()
+                // Keep voice mode alive; retry a bit later in case the recognizer is temporarily unavailable.
+                try? await Task.sleep(for: .milliseconds(600))
+                self.restartIfNeeded()
             }
         }
     }
@@ -273,10 +300,7 @@ final class SpeechTranscriber: ObservableObject {
 
         let normalized = ((db + 55.0) / 55.0).clamped(to: 0...1)
         smoothedAudioLevel = (smoothedAudioLevel * 0.80) + (normalized * 0.20)
-
-        DispatchQueue.main.async { [weak self] in
-            self?.audioLevel = self?.smoothedAudioLevel ?? 0
-        }
+        audioLevel = smoothedAudioLevel
     }
 
     private func setupAudioSessionObservers() {

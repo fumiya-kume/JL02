@@ -3,8 +3,8 @@ import Foundation
 import UIKit
 
 struct VLMResponse: Codable {
-    let name: String
-    let facilityDescription: String
+    let name: String?
+    let facilityDescription: String?
     let success: Bool
     let errorMessage: String?
 
@@ -143,17 +143,23 @@ actor VLMAPIClient: VLMAPIClientProtocol {
         print("[VLM] 📋 API Response:")
         print("[VLM]   - success: \(vlmResponse.success)")
         print("[VLM]   - error_message: \(vlmResponse.errorMessage ?? "nil")")
-        print("[VLM]   - name: \(vlmResponse.name)")
-        print("[VLM]   - facility_description: \(vlmResponse.facilityDescription.prefix(100))...")
+        print("[VLM]   - name: \(vlmResponse.name ?? "nil")")
+        print("[VLM]   - facility_description: \(vlmResponse.facilityDescription?.prefix(100) ?? "nil")...")
 
         guard vlmResponse.success else {
             print("[VLM] ❌ API Error: \(vlmResponse.errorMessage ?? "Unknown error")")
             throw VLMError.apiError(message: vlmResponse.errorMessage ?? "Unknown error")
         }
 
+        guard let name = vlmResponse.name,
+              let facilityDescription = vlmResponse.facilityDescription else {
+            print("[VLM] ❌ Success response missing required fields (name or facility_description)")
+            throw VLMError.parsingFailed
+        }
+
         return Landmark(
-            name: vlmResponse.name,
-            description: vlmResponse.facilityDescription
+            name: name,
+            description: facilityDescription
         )
     }
 

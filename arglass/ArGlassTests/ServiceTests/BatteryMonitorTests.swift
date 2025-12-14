@@ -1,3 +1,4 @@
+import Combine
 import XCTest
 @testable import ArGlass
 
@@ -6,16 +7,19 @@ final class BatteryMonitorTests: XCTestCase {
     private var sut: BatteryMonitor!
     private var mockBatteryProvider: MockBatteryProvider!
     private var notificationCenter: NotificationCenter!
+    private var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
         mockBatteryProvider = MockBatteryProvider()
         notificationCenter = NotificationCenter()
+        cancellables = []
     }
 
     override func tearDown() {
         sut = nil
         mockBatteryProvider = nil
         notificationCenter = nil
+        cancellables = nil
     }
 
     // MARK: - Initial State Tests
@@ -62,31 +66,43 @@ final class BatteryMonitorTests: XCTestCase {
 
     // MARK: - Notification Tests
 
-    func testBatteryLevelChange_notification_updatesLevel() async {
+    func testBatteryLevelChange_notification_updatesLevel() {
         mockBatteryProvider.batteryLevel = 0.5
         sut = BatteryMonitor(device: mockBatteryProvider, notificationCenter: notificationCenter)
         XCTAssertEqual(sut.level, 0.5)
 
+        let expectation = expectation(description: "Level updated to 0.8")
+
+        sut.$level
+            .dropFirst()
+            .first { $0 == 0.8 }
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
+
         mockBatteryProvider.batteryLevel = 0.8
         notificationCenter.post(name: UIDevice.batteryLevelDidChangeNotification, object: nil)
 
-        // Wait for the notification to be processed on main queue
-        await Task.yield()
-
+        wait(for: [expectation], timeout: 1.0)
         XCTAssertEqual(sut.level, 0.8)
     }
 
-    func testBatteryStateChange_notification_updatesState() async {
+    func testBatteryStateChange_notification_updatesState() {
         mockBatteryProvider.batteryState = .unplugged
         sut = BatteryMonitor(device: mockBatteryProvider, notificationCenter: notificationCenter)
         XCTAssertEqual(sut.state, .unplugged)
 
+        let expectation = expectation(description: "State updated to charging")
+
+        sut.$state
+            .dropFirst()
+            .first { $0 == .charging }
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
+
         mockBatteryProvider.batteryState = .charging
         notificationCenter.post(name: UIDevice.batteryStateDidChangeNotification, object: nil)
 
-        // Wait for the notification to be processed on main queue
-        await Task.yield()
-
+        wait(for: [expectation], timeout: 1.0)
         XCTAssertEqual(sut.state, .charging)
     }
 
@@ -107,8 +123,19 @@ final class BatteryMonitorTests: XCTestCase {
         sut = BatteryMonitor(device: mockBatteryProvider, notificationCenter: notificationCenter)
         XCTAssertEqual(sut.level, 0.0)
 
+        let expectation = expectation(description: "Level updated to 1.0")
+
+        sut.$level
+            .dropFirst()
+            .first { $0 == 1.0 }
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
+
         mockBatteryProvider.batteryLevel = 1.0
         notificationCenter.post(name: UIDevice.batteryLevelDidChangeNotification, object: nil)
+
+        wait(for: [expectation], timeout: 1.0)
+        XCTAssertEqual(sut.level, 1.0)
     }
 
     func testLevel_handlesZeroLevel() {
