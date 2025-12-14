@@ -169,6 +169,24 @@ def build_rag_query_prompt(
     return prompt
 
 
+def is_facility_name_unknown(facility_name: str) -> bool:
+    """
+    Check if facility name indicates unknown facility.
+
+    Returns True if facility name contains indicators like "不明", "詳細不明", etc.
+    This handles cases where RAG returns facility names that explicitly indicate
+    the facility is unrecognized, allowing fallback to address instead.
+
+    Args:
+        facility_name: The extracted facility name from RAG response
+
+    Returns:
+        True if facility name contains unknown indicators, False otherwise
+    """
+    unknown_indicators = ["不明", "詳細不明", "不詳", "未確認", "未定義"]
+    return any(indicator in facility_name for indicator in unknown_indicators)
+
+
 async def query_rag(
     api_token: str,
     query: str,
@@ -237,7 +255,9 @@ def parse_rag_response(rag_answer: str, address: str = "") -> tuple[str, str]:
 
     Returns:
         Tuple of (facility_name, guide_description).
-        If facility name is not extracted, uses address as fallback.
+        Uses address as fallback if:
+        - Facility name is not extracted from response
+        - Facility name contains unknown indicators (e.g., "不明", "詳細不明")
         If all parsing fails, returns (address or "Unknown Facility", full answer)
     """
     facility_name = ""
@@ -259,10 +279,14 @@ def parse_rag_response(rag_answer: str, address: str = "") -> tuple[str, str]:
             guide_start += len("【観光ガイド情報】")
             guide_description = rag_answer[guide_start:].strip()
 
-        # If parsing succeeded, return both
+        # If parsing succeeded, check if facility name is valid (not "不明", etc.)
         if facility_name and guide_description:
-            print(f"Parsed facility name: {facility_name}")
-            return facility_name, guide_description
+            if is_facility_name_unknown(facility_name):
+                print(f"Facility name indicates unknown facility ('{facility_name}'), using address as fallback")
+                return address or "Unknown Facility", guide_description
+            else:
+                print(f"Parsed facility name: {facility_name}")
+                return facility_name, guide_description
 
         # If only guide description was found, use address as facility name
         if guide_description:
