@@ -6,14 +6,14 @@ final class VLMAPIClientTests: XCTestCase {
     // MARK: - VLMResponse Decoding Tests
 
     func testVLMResponse_decodesSuccessResponse() throws {
-        let json = """
+        let json = Data("""
         {
             "name": "Tokyo Tower",
             "facility_description": "Tokyo Tower is an iconic landmark",
             "success": true,
             "error_message": null
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let response = try JSONDecoder().decode(VLMResponse.self, from: json)
 
@@ -24,14 +24,14 @@ final class VLMAPIClientTests: XCTestCase {
     }
 
     func testVLMResponse_decodesErrorResponse() throws {
-        let json = """
+        let json = Data("""
         {
             "name": "",
             "facility_description": "",
             "success": false,
             "error_message": "Model unavailable"
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let response = try JSONDecoder().decode(VLMResponse.self, from: json)
 
@@ -42,13 +42,13 @@ final class VLMAPIClientTests: XCTestCase {
     }
 
     func testVLMResponse_decodesWithMissingErrorMessage() throws {
-        let json = """
+        let json = Data("""
         {
             "name": "Test Landmark",
             "facility_description": "Some description",
             "success": true
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let response = try JSONDecoder().decode(VLMResponse.self, from: json)
 
@@ -60,14 +60,14 @@ final class VLMAPIClientTests: XCTestCase {
 
     func testVLMResponse_decodesWithLongDescription() throws {
         let longDescription = String(repeating: "Tokyo Tower is an iconic landmark. ", count: 100)
-        let json = """
+        let json = Data("""
         {
             "name": "Tokyo Tower",
             "facility_description": "\(longDescription)",
             "success": true,
             "error_message": null
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let response = try JSONDecoder().decode(VLMResponse.self, from: json)
 
@@ -77,14 +77,14 @@ final class VLMAPIClientTests: XCTestCase {
     }
 
     func testVLMResponse_decodesWithJapaneseContent() throws {
-        let json = """
+        let json = Data("""
         {
             "name": "東京タワー",
             "facility_description": "東京タワーは1958年に建てられた通信塔です。",
             "success": true,
             "error_message": null
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let response = try JSONDecoder().decode(VLMResponse.self, from: json)
 
