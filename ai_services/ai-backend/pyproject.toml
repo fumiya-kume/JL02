@@ -1,0 +1,20 @@
+[project]
+name = "ai-backend"
+version = "0.1.0"
+description = "FastAPI-based AI backend for VLM inference and RAG-enhanced tourism guide generation"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.124.4",
+    "httpx>=0.28.1",
+    "numpy>=2.3.5",
+    "openai>=2.11.0",
+    "openai-agents>=0.6.3",
+    "pillow>=12.0.0",
+    "uvicorn[standard]>=0.38.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.9",
+]
