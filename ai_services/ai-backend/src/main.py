@@ -260,8 +260,11 @@ async def query_rag(
                 print(f"RAG API error: Status {response.status_code}")
                 print(f"Response: {response.text}")
                 return None
-    except Exception as e:
-        print(f"Error querying RAG: {e}")
+    except httpx.TimeoutException as e:
+        print(f"RAG API timeout: {e}")
+        return None
+    except httpx.RequestError as e:
+        print(f"RAG API request error: {e}")
         return None
 
 
@@ -544,7 +547,7 @@ async def vlm_inference(
             user_activity_level=user_activity_level.value
             if user_activity_level
             else None,
-            user_language=user_language.value if user_language else None,
+            user_language=user_language.value,
         )
 
         print("RAG Query:", rag_query)

@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 # プロジェクトルートに移動
-cd "${PROJECT_ROOT}"
+cd "${PROJECT_ROOT}" || exit 1
 
 echo "Project root: ${PROJECT_ROOT}"
 echo "Backend directory: ${SCRIPT_DIR}"
@@ -48,7 +48,7 @@ FULL_IMAGE_NAME="${REGISTRY_HOST}/${AIBE_IMAGE_NAME}:${TAG}"
 
 echo "=== Generating requirements.txt from uv dependencies ==="
 # uvの依存関係からrequirements.txtを生成
-cd "${SCRIPT_DIR}"
+cd "${SCRIPT_DIR}" || exit 1
 uv export --format requirements.txt --output-file requirements.txt --no-dev
 
 if [ $? -ne 0 ]; then
