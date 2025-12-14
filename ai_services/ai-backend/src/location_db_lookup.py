@@ -41,7 +41,7 @@ class LocationDBLookup:
                 if db_path:
                     break
             else:
-                raise FileNotFoundError(
+                raise FileNotFoundError(  # noqa: TRY003
                     "Could not find tourist spots database file. Please provide explicit path."
                 )
 
