@@ -1,7 +1,7 @@
 [project]
 name = "ai-backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "FastAPI-based AI backend for VLM inference and RAG-enhanced tourism guide generation"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
