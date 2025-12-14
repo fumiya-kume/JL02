@@ -27,9 +27,7 @@ class LocationDBLookup:
             # Search for database file in parent directories
             current_path = Path(__file__).parent
             # Try common database locations
-            for parent in [current_path.parent.parent.parent] + list(
-                current_path.parents
-            ):
+            for parent in [current_path.parent.parent.parent, *current_path.parents]:
                 for db_name in ["GinzaDB", "LocationDB", "TouristSpotsDB"]:
                     for file_name in [
                         f"{db_name.lower()}.json",
@@ -49,6 +47,7 @@ class LocationDBLookup:
 
         self.db_path = db_path
         self.spots = self._load_database()
+        self._default_top_k = int(os.getenv("LOCATION_TOP_K", 5))
 
     def _load_database(self) -> List[Dict[str, Any]]:
         """Load tourist spots from JSON file."""
@@ -213,7 +212,7 @@ class LocationDBLookup:
             List of top-k nearest spots, sorted by distance
         """
         if k is None:
-            k = int(os.getenv("LOCATION_TOP_K", 5))
+            k = self._default_top_k
         if not self.spots:
             return []
 
