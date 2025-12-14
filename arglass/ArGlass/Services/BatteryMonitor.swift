@@ -7,22 +7,36 @@ final class BatteryMonitor: ObservableObject {
     @Published private(set) var state: UIDevice.BatteryState = .unknown
 
     private var cancellables = Set<AnyCancellable>()
+    private let device: BatteryProviding
+    private let notificationCenter: NotificationCenter
 
-    init() {
-        UIDevice.current.isBatteryMonitoringEnabled = true
+    init(
+        device: BatteryProviding = UIDevice.current,
+        notificationCenter: NotificationCenter = .default
+    ) {
+        self.device = device
+        self.notificationCenter = notificationCenter
+
+        if let uiDevice = device as? UIDevice {
+            uiDevice.isBatteryMonitoringEnabled = true
+        }
+
         refresh()
 
-        NotificationCenter.default.publisher(for: UIDevice.batteryLevelDidChangeNotification)
-            .merge(with: NotificationCenter.default.publisher(for: UIDevice.batteryStateDidChangeNotification))
+        notificationCenter.publisher(for: UIDevice.batteryLevelDidChangeNotification)
+            .merge(with: notificationCenter.publisher(for: UIDevice.batteryStateDidChangeNotification))
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in self?.refresh() }
+            .sink { [weak self] _ in
+                Task { @MainActor in
+                    self?.refresh()
+                }
+            }
             .store(in: &cancellables)
     }
 
     private func refresh() {
-        let currentLevel = UIDevice.current.batteryLevel
+        let currentLevel = device.batteryLevel
         level = currentLevel < 0 ? nil : currentLevel
-        state = UIDevice.current.batteryState
+        state = device.batteryState
     }
 }
-

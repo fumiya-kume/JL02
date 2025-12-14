@@ -53,6 +53,7 @@
 
 /* Settings Additional */
 "settings_close" = "Close";
+"settings_read_aloud" = "Read Aloud";
 
 /* Age Group */
 "settings_age_group" = "Age Group";

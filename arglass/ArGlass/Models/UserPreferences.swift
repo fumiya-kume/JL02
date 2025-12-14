@@ -128,6 +128,19 @@ enum UserLanguage: String, Codable, CaseIterable, Identifiable {
 
     var icon: String { "globe" }
 
+    var speechLocaleIdentifier: String {
+        switch self {
+        case .japanese: return "ja-JP"
+        case .english: return "en-US"
+        case .chinese: return "zh-CN"
+        case .korean: return "ko-KR"
+        case .spanish: return "es-ES"
+        case .french: return "fr-FR"
+        case .german: return "de-DE"
+        case .thai: return "th-TH"
+        }
+    }
+
     static func fromDeviceLocale() -> UserLanguage {
         let languageCode = Locale.current.language.languageCode?.identifier ?? "ja"
         switch languageCode {
@@ -151,11 +164,36 @@ struct UserPreferences: Codable, Equatable {
     var budgetLevel: UserBudgetLevel?
     var activityLevel: UserActivityLevel?
     var language: UserLanguage
+    var isReadAloudEnabled: Bool
 
     static let `default` = UserPreferences(
         ageGroup: nil,
         budgetLevel: nil,
         activityLevel: nil,
-        language: .fromDeviceLocale()
+        language: .fromDeviceLocale(),
+        isReadAloudEnabled: false
     )
+
+    init(
+        ageGroup: UserAgeGroup? = nil,
+        budgetLevel: UserBudgetLevel? = nil,
+        activityLevel: UserActivityLevel? = nil,
+        language: UserLanguage = .fromDeviceLocale(),
+        isReadAloudEnabled: Bool = false
+    ) {
+        self.ageGroup = ageGroup
+        self.budgetLevel = budgetLevel
+        self.activityLevel = activityLevel
+        self.language = language
+        self.isReadAloudEnabled = isReadAloudEnabled
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        ageGroup = try container.decodeIfPresent(UserAgeGroup.self, forKey: .ageGroup)
+        budgetLevel = try container.decodeIfPresent(UserBudgetLevel.self, forKey: .budgetLevel)
+        activityLevel = try container.decodeIfPresent(UserActivityLevel.self, forKey: .activityLevel)
+        language = try container.decodeIfPresent(UserLanguage.self, forKey: .language) ?? .fromDeviceLocale()
+        isReadAloudEnabled = try container.decodeIfPresent(Bool.self, forKey: .isReadAloudEnabled) ?? false
+    }
 }

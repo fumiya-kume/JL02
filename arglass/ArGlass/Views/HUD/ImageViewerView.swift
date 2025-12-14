@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ImageViewerView: View {
     let image: UIImage?
-    let subtitle: String?
+    let description: String?
     let captureOrientation: CaptureOrientation?
     @Environment(\.dismiss) private var dismiss
     @State private var showingExplanation = true
@@ -27,7 +27,7 @@ struct ImageViewerView: View {
 
                 VStack {
                     HStack {
-                        if subtitle != nil {
+                        if description != nil {
                             infoButton
                         }
                         Spacer()
@@ -38,8 +38,8 @@ struct ImageViewerView: View {
 
                     Spacer()
 
-                    if showingExplanation, let subtitle = subtitle {
-                        explanationPanel(subtitle: subtitle, safeAreaInsets: geometry.safeAreaInsets)
+                    if showingExplanation, let description = description {
+                        explanationPanel(description: description, safeAreaInsets: geometry.safeAreaInsets)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
@@ -91,9 +91,9 @@ struct ImageViewerView: View {
         }
     }
 
-    private func explanationPanel(subtitle: String, safeAreaInsets: EdgeInsets) -> some View {
+    private func explanationPanel(description: String, safeAreaInsets: EdgeInsets) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(subtitle)
+            Text(description)
                 .font(.system(size: 16, weight: .regular))
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.leading)
@@ -126,5 +126,5 @@ struct ImageViewerView: View {
 }
 
 #Preview {
-    ImageViewerView(image: nil, subtitle: "銀座四丁目交差点に建つ時計塔。", captureOrientation: nil)
+    ImageViewerView(image: nil, description: "銀座四丁目交差点に建つ時計塔。", captureOrientation: nil)
 }

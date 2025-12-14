@@ -44,7 +44,7 @@ struct HistoryEntryRow: View {
                     .foregroundStyle(.white.opacity(0.92))
                     .lineLimit(1)
 
-                Text(entry.subtitle)
+                Text(entry.description)
                     .font(.system(size: 12))
                     .foregroundStyle(.white.opacity(0.6))
                     .lineLimit(1)
@@ -108,19 +108,7 @@ struct HistoryEntryRow: View {
                     .matchedGeometryEffect(id: "image-\(entry.id)", in: imageAnimation)
             }
 
-            HStack(spacing: 6) {
-                Image(systemName: "calendar")
-                    .font(.system(size: 11, weight: .semibold))
-                Text(entry.yearBuilt)
-                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
-            }
-            .foregroundStyle(.white.opacity(0.7))
-            .padding(.vertical, 5)
-            .padding(.horizontal, 10)
-            .background(.white.opacity(0.06), in: Capsule(style: .continuous))
-            .transition(.opacity.combined(with: .move(edge: .top)))
-
-            Text(entry.history)
+            Text(entry.description)
                 .font(.system(size: 13))
                 .foregroundStyle(.white.opacity(0.75))
                 .lineSpacing(3)

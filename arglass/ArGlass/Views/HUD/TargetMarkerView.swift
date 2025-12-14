@@ -142,9 +142,7 @@ private struct ReticleCornersShape: Shape {
 #Preview {
     let sampleLandmark = Landmark(
         name: "Sample Building",
-        yearBuilt: "2020",
-        subtitle: "A sample landmark for preview.",
-        history: "This is a sample landmark for preview purposes."
+        description: "A sample landmark for preview. This is a sample landmark for preview purposes."
     )
     return VStack(spacing: 30) {
         TargetMarkerView(recognitionState: .searching)

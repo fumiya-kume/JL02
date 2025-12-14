@@ -9,14 +9,23 @@ struct InterestBubbleView: View {
     let onTap: () -> Void
 
     @State private var bounceScale: CGFloat = 1.0
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private let hapticFeedback = UIImpactFeedbackGenerator(style: .light)
 
-    // Base sizes (designed for iPhone)
-    private let baseBubbleSize: CGFloat = 110
-    private let baseGlowSize: CGFloat = 120
-    private let baseIconSize: CGFloat = 32
-    private let baseFontSize: CGFloat = 13
+    // Base sizes - iPhone uses smaller size, iPad uses larger
+    private var baseBubbleSize: CGFloat {
+        horizontalSizeClass == .compact ? 80 : 110
+    }
+    private var baseGlowSize: CGFloat {
+        horizontalSizeClass == .compact ? 90 : 120
+    }
+    private var baseIconSize: CGFloat {
+        horizontalSizeClass == .compact ? 24 : 32
+    }
+    private var baseFontSize: CGFloat {
+        horizontalSizeClass == .compact ? 11 : 13
+    }
 
     init(
         interest: Interest,

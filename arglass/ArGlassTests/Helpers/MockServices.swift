@@ -63,10 +63,12 @@ actor MockVLMAPIClient: VLMAPIClientProtocol {
     var mockLandmark: Landmark?
     var inferenceCallCount = 0
     var lastPreferences: UserPreferences?
+    var lastText: String?
 
-    func inferLandmark(image: UIImage, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences) async throws -> Landmark {
+    func inferLandmark(image: UIImage, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences, text: String?) async throws -> Landmark {
         inferenceCallCount += 1
         lastPreferences = preferences
+        lastText = text
 
         if shouldFailInference {
             throw VLMError.apiError(message: "Mock error")
@@ -75,8 +77,8 @@ actor MockVLMAPIClient: VLMAPIClientProtocol {
         return mockLandmark ?? TestFixtures.makeLandmark(name: "Mock Landmark")
     }
 
-    func inferLandmark(jpegData: Data, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences) async throws -> Landmark {
-        return try await inferLandmark(image: UIImage(), locationInfo: locationInfo, interests: interests, preferences: preferences)
+    func inferLandmark(jpegData: Data, locationInfo: LocationInfo?, interests: Set<Interest>, preferences: UserPreferences, text: String?) async throws -> Landmark {
+        return try await inferLandmark(image: UIImage(), locationInfo: locationInfo, interests: interests, preferences: preferences, text: text)
     }
 
     func setShouldFailInference(_ value: Bool) {
@@ -160,4 +162,41 @@ actor MockHistoryService: HistoryServiceProtocol {
         lastDeletedEntry = nil
         mockImageURLs = [:]
     }
+}
+
+// MARK: - Mock UserDefaults
+
+final class MockUserDefaults: UserDefaultsProtocol {
+    private var store: [String: Any] = [:]
+
+    func data(forKey defaultName: String) -> Data? {
+        store[defaultName] as? Data
+    }
+
+    func set(_ value: Any?, forKey defaultName: String) {
+        if let value = value {
+            store[defaultName] = value
+        } else {
+            store.removeValue(forKey: defaultName)
+        }
+    }
+
+    func bool(forKey defaultName: String) -> Bool {
+        store[defaultName] as? Bool ?? false
+    }
+
+    func stringArray(forKey defaultName: String) -> [String]? {
+        store[defaultName] as? [String]
+    }
+
+    func reset() {
+        store.removeAll()
+    }
+}
+
+// MARK: - Mock Battery Provider
+
+final class MockBatteryProvider: BatteryProviding {
+    var batteryLevel: Float = 0.5
+    var batteryState: UIDevice.BatteryState = .unplugged
 }
