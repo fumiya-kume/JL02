@@ -18,6 +18,7 @@ struct HUDRootView: View {
     @State private var autoInferenceWasEnabledBeforeVoice = false
     @State private var queryClearToken = UUID()
     @State private var lastSpokenLandmarkID: UUID?
+    @State private var cameraStartTask: Task<Void, Never>?
 
     var body: some View {
         GeometryReader { geometry in
@@ -214,7 +215,7 @@ struct HUDRootView: View {
         viewModel.stopAutoInference()
 
         viewModel.locationService.requestAuthorization()
-        Task {
+        cameraStartTask = Task {
             await viewModel.cameraService.requestAccessAndStart()
         }
 
@@ -222,6 +223,8 @@ struct HUDRootView: View {
     }
 
     private func stopVoiceInputMode() {
+        cameraStartTask?.cancel()
+        cameraStartTask = nil
         speechTranscriber.stop()
         cancelQueryClear()
         voiceQueryText = ""

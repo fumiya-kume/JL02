@@ -23,9 +23,11 @@ final class CameraService: ObservableObject, CameraServiceProtocol {
         let status = AVCaptureDevice.authorizationStatus(for: .video)
         switch status {
         case .authorized:
+            guard !Task.isCancelled else { return }
             start()
         case .notDetermined:
             let granted = await AVCaptureDevice.requestAccess(for: .video)
+            guard !Task.isCancelled else { return }
             granted ? start() : setUnauthorized()
         default:
             setUnauthorized()
