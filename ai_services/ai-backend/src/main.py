@@ -210,13 +210,38 @@ async def query_rag(
         return None
 
 
-class VLMResponse(BaseModel):
-    generated_text: str
-    success: bool
-    error_message: Optional[str] = None
+class VLMAgentResponse(BaseModel):
+    """
+    Response model for VLM inference with RAG-enhanced tourism guide generation.
+
+    This model encapsulates the output from the vision-language model inference
+    combined with retrieval-augmented generation (RAG) for personalized tourism guides.
+    """
+
+    name: str = Field(
+        ...,
+        description="Name of the place or facility identified in the image",
+        example="Tokyo Tower",
+    )
+    facility_description: str = Field(
+        ...,
+        description="Generated tourism guide or facility analysis based on VLM inference and RAG. "
+        "This is either a personalized tourism guide (when text is None) or raw VLM analysis (when text is provided)",
+        example="東京のランドマークである東京タワーについて、建築的側面と観光情報をお伝えします...",
+    )
+    success: bool = Field(
+        ...,
+        description="Whether the inference and generation was successful",
+        example=True,
+    )
+    error_message: Optional[str] = Field(
+        None,
+        description="Error message if inference or generation failed. None on success",
+        example=None,
+    )
 
 
-@app.post("/inference", response_model=VLMResponse)
+@app.post("/inference", response_model=VLMAgentResponse)
 async def vlm_inference(
     image: UploadFile = File(..., description="Image file (PNG, JPG, etc.)"),
     user_age_group: Optional[AgeGroup] = Form(
@@ -329,7 +354,12 @@ async def vlm_inference(
         # ユーザーがカスタムテキスト指示を入力している場合はRAGをスキップ
         if text is not None:
             print("Custom text instruction provided, skipping RAG")
-            return VLMResponse(generated_text=vlm_caption, success=True)
+            return VLMAgentResponse(
+                name=address,
+                facility_description=vlm_caption,
+                success=True,
+                error_message=None,
+            )
 
         # textがNoneの場合（デフォルトプロンプト）はRAG処理を実行
         print("Using RAG for tourism guide generation")
@@ -356,8 +386,18 @@ async def vlm_inference(
 
         if rag_response and "answer" in rag_response:
             guide_text = rag_response["answer"]
-            return VLMResponse(generated_text=guide_text, success=True)
+            return VLMAgentResponse(
+                name=address,
+                facility_description=guide_text,
+                success=True,
+                error_message=None,
+            )
         else:
             # RAGが失敗した場合はVLMの出力を返す
             print("RAG query failed, returning VLM output")
-            return VLMResponse(generated_text=vlm_caption, success=True)
+            return VLMAgentResponse(
+                name=address,
+                facility_description=vlm_caption,
+                success=True,
+                error_message=None,
+            )
